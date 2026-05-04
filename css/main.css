@@ -6542,7 +6542,7 @@ h2 {
   background-color: #424065;
 }
 
-.text-block-6,
+.nav-games-label,
 .nav-dropdown-caret {
   color: var(--_colors---kato-light-pearl);
 }
@@ -7138,7 +7138,7 @@ h2 {
   max-width: none;
 }
 
-.section-17 {
+.game-page-main {
   flex-flow: column;
   justify-content: flex-start;
   align-items: flex-start;
@@ -7280,7 +7280,7 @@ h2 {
   display: flex;
 }
 
-.collection-list-6 {
+.game-concept-art-list {
   grid-column-gap: 16px;
   grid-row-gap: 16px;
   grid-template-rows: auto auto;
@@ -7289,7 +7289,7 @@ h2 {
   display: grid;
 }
 
-.div-block-67 {
+.game-concept-art-item {
   aspect-ratio: 3 / 2;
   object-fit: contain;
   justify-content: center;
@@ -7298,7 +7298,7 @@ h2 {
   display: flex;
 }
 
-.collection-item-5 {
+.game-concept-art-list-item {
   justify-content: center;
   align-items: center;
   width: 100%;
@@ -7310,18 +7310,18 @@ h2 {
   height: 100%;
 }
 
-.div-block-72 {
+.game-framed-art {
   grid-area: 1 / 1;
 }
 
-.div-block-74 {
+.game-info-panel {
   justify-content: center;
   align-items: center;
   display: flex;
   position: relative;
 }
 
-.section-18 {
+.game-story-section {
   grid-column-gap: 12px;
   grid-row-gap: 12px;
   justify-content: center;
@@ -7329,22 +7329,22 @@ h2 {
   display: flex;
 }
 
-.div-block-75 {
+.game-story-layout {
   flex: 1;
   max-width: 75%;
 }
 
-.div-block-76 {
+.game-story-image-wrapper {
   max-width: 25%;
   max-height: 50%;
 }
 
-.image-37 {
+.game-story-image {
   aspect-ratio: 2 / 3;
   object-fit: contain;
 }
 
-.div-block-77 {
+.game-hero-bg-wrapper {
   z-index: -10;
   grid-column-gap: 16px;
   grid-row-gap: 16px;
@@ -7361,13 +7361,13 @@ h2 {
   inset: 5vh 0% auto;
 }
 
-.div-block-78 {
+.game-hero-bg-layer {
   z-index: -5;
   grid-area: 1 / 1;
   position: relative;
 }
 
-.div-block-78-copy {
+.game-hero-bg-wireframe {
   z-index: -10;
   grid-area: 1 / 1;
   max-width: 1533px;
@@ -7375,7 +7375,7 @@ h2 {
   top: 7vw;
 }
 
-.div-block-80 {
+.game-hero-art-wrapper {
   grid-column-gap: 16px;
   grid-row-gap: 16px;
   grid-template-rows: auto;
@@ -7385,12 +7385,12 @@ h2 {
   display: grid;
 }
 
-.div-block-81 {
+.game-hero-art-mobile {
   text-align: center;
   display: none;
 }
 
-.div-block-82 {
+.game-gameplay-desktop {
   aspect-ratio: 1.35;
   background-image: url("https://cdn.prod.website-files.com/698c011e3b27f3bde0b4b604/69d837630d1e8e0e1046d3e1_frame_corebound_gameplay.svg");
   background-position: 50%;
@@ -7407,11 +7407,11 @@ h2 {
   display: flex;
 }
 
-.div-block-83 {
+.game-gameplay-mobile {
   display: none;
 }
 
-.div-block-84 {
+.game-story-desktop {
   grid-column-gap: 16px;
   grid-row-gap: 16px;
   aspect-ratio: 1.9;
@@ -7431,15 +7431,15 @@ h2 {
   display: flex;
 }
 
-.div-block-85 {
+.game-story-mobile {
   display: none;
 }
 
-.image-41 {
+.game-hero-art-frame-desktop {
   object-fit: cover;
 }
 
-.div-block-88 {
+.game-hero-bg-mobile-wrapper {
   display: none;
 }
 
@@ -7470,17 +7470,17 @@ h2 {
   display: flex;
 }
 
-.div-block-96 {
+.game-gameplay-inner {
   grid-area: 1 / 1;
 }
 
-.div-block-100 {
+.game-story-inner {
   flex-flow: column;
   grid-area: 1 / 1;
   display: flex;
 }
 
-.div-block-101 {
+.game-gameplay-heading-wrapper {
   display: flex;
 }
 
@@ -7509,18 +7509,18 @@ h2 {
   overflow: hidden;
 }
 
-.frame_text {
+.game-richtext {
   color: #000;
   font-family: Reem Kufi, sans-serif;
   font-size: min(.9rem, 1.275vw);
   line-height: 100%;
 }
 
-.frame_text.story {
+.game-richtext.story {
   line-height: 150%;
 }
 
-.heading-6 {
+.game-section-heading {
   color: #000;
   font-family: RocknRoll One, sans-serif;
   font-size: 1.5rem;
@@ -8181,7 +8181,7 @@ h2 {
     flex-flow: wrap;
   }
 
-  .section-17 {
+  .game-page-main {
     margin-top: auto;
   }
 
@@ -8224,15 +8224,15 @@ h2 {
     display: flex;
   }
 
-  .div-block-75 {
+  .game-story-layout {
     max-width: 100%;
   }
 
-  .frame_text {
+  .game-richtext {
     font-size: min(.7rem, 1.1vw);
   }
 
-  .heading-6 {
+  .game-section-heading {
     font-size: 1rem;
   }
 }
@@ -8910,7 +8910,7 @@ h2 {
     align-items: flex-end;
   }
 
-  .section-17 {
+  .game-page-main {
     justify-content: center;
     align-self: center;
     align-items: center;
@@ -8985,24 +8985,24 @@ h2 {
     margin-bottom: 16px;
   }
 
-  .collection-list-6 {
+  .game-concept-art-list {
     flex-flow: column;
     grid-template-columns: 1fr;
     display: flex;
   }
 
-  .div-block-72 {
+  .game-framed-art {
     justify-content: space-between;
     align-items: center;
     min-width: 0%;
     max-width: 75vw;
   }
 
-  .div-block-74 {
+  .game-info-panel {
     flex: 1;
   }
 
-  .section-18 {
+  .game-story-section {
     grid-row-gap: 8px;
     flex-flow: column;
     align-self: center;
@@ -9011,7 +9011,7 @@ h2 {
     display: flex;
   }
 
-  .div-block-76 {
+  .game-story-image-wrapper {
     justify-content: space-between;
     align-self: center;
     align-items: center;
@@ -9020,19 +9020,19 @@ h2 {
     display: flex;
   }
 
-  .image-37 {
+  .game-story-image {
     aspect-ratio: auto;
   }
 
-  .div-block-77 {
+  .game-hero-bg-wrapper {
     display: none;
   }
 
-  .div-block-78 {
+  .game-hero-bg-layer {
     min-width: 150%;
   }
 
-  .div-block-80 {
+  .game-hero-art-wrapper {
     grid-column-gap: 16px;
     grid-row-gap: 16px;
     grid-template-rows: auto;
@@ -9042,7 +9042,7 @@ h2 {
     display: none;
   }
 
-  .div-block-81 {
+  .game-hero-art-mobile {
     aspect-ratio: 2.45 / 2;
     background-image: url("https://cdn.prod.website-files.com/698c011e3b27f3bde0b4b604/69eaf1b8cdab2555a016f851_game_framed_art_mobile.svg");
     background-position: 0 0;
@@ -9063,11 +9063,11 @@ h2 {
     position: relative;
   }
 
-  .div-block-82 {
+  .game-gameplay-desktop {
     display: none;
   }
 
-  .div-block-83 {
+  .game-gameplay-mobile {
     grid-column-gap: 16px;
     grid-row-gap: 16px;
     aspect-ratio: 2 / 3;
@@ -9084,11 +9084,11 @@ h2 {
     display: flex;
   }
 
-  .div-block-84 {
+  .game-story-desktop {
     display: none;
   }
 
-  .div-block-85 {
+  .game-story-mobile {
     grid-column-gap: 16px;
     grid-row-gap: 16px;
     aspect-ratio: 1 / 2.2;
@@ -9104,7 +9104,7 @@ h2 {
     display: flex;
   }
 
-  .div-block-86 {
+  .game-concept-art-gallery {
     align-self: center;
   }
 
@@ -9119,7 +9119,7 @@ h2 {
     rotate: 5deg;
   }
 
-  .div-block-88 {
+  .game-hero-bg-mobile-wrapper {
     z-index: -5;
     justify-content: flex-end;
     align-self: center;
@@ -9150,7 +9150,7 @@ h2 {
     inset: 0% 0% 0% auto;
   }
 
-  .div-block-91 {
+  .game-hero-bg-mobile-image {
     flex: none;
     justify-content: flex-end;
     align-items: center;
@@ -9162,7 +9162,7 @@ h2 {
     inset: 0% 0% auto;
   }
 
-  .image-44 {
+  .game-hero-bg-mobile {
     object-fit: cover;
     min-width: 100%;
     min-height: 300px;
@@ -9170,15 +9170,15 @@ h2 {
     right: 0;
   }
 
-  .frame_text {
+  .game-richtext {
     font-size: min(.85rem, 5vw);
   }
 
-  .frame_text.story {
+  .game-richtext.story {
     line-height: 125%;
   }
 
-  .heading-6 {
+  .game-section-heading {
     font-size: 1.5rem;
   }
 }
@@ -9642,7 +9642,7 @@ h2 {
     width: 75%;
   }
 
-  .section-17 {
+  .game-page-main {
     align-self: center;
     margin-top: auto;
     margin-left: 7.5%;
@@ -9675,45 +9675,45 @@ h2 {
     align-items: flex-start;
   }
 
-  .collection-list-6 {
+  .game-concept-art-list {
     display: flex;
   }
 
-  .div-block-72 {
+  .game-framed-art {
     max-width: 100%;
   }
 
-  .section-18 {
+  .game-story-section {
     grid-column-gap: 16px;
     grid-row-gap: 16px;
     margin-top: 8px;
   }
 
-  .div-block-75 {
+  .game-story-layout {
     align-self: center;
   }
 
-  .div-block-83 {
+  .game-gameplay-mobile {
     padding-top: 12.5%;
     padding-bottom: 12.5%;
   }
 
-  .div-block-85 {
+  .game-story-mobile {
     grid-column-gap: 16px;
     grid-row-gap: 16px;
     aspect-ratio: 1 / 2.15;
   }
 
-  .div-block-91 {
+  .game-hero-bg-mobile-image {
     margin-left: -75%;
     margin-right: 0;
   }
 
-  .image-44 {
+  .game-hero-bg-mobile {
     object-fit: cover;
   }
 
-  .frame_text {
+  .game-richtext {
     font-size: min(.85rem, 4vw);
   }
 }
