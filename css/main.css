@@ -10184,3 +10184,15 @@ h2 {
     grid-column-end: 7;
   }
 }
+
+.frame-141 {
+  display: flex;
+  text-decoration: none;
+  width: 100%;
+  flex-direction: column;
+  justify-content: flex-start;
+  padding: 64px 120px;
+  align-items: center;
+  row-gap: 48px;
+  background-image: linear-gradient(-76.73deg, rgb(117, 115, 157) 0%, rgb(66, 64, 101) 100%);
+}
