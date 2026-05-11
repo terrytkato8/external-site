@@ -224,28 +224,28 @@ th {
 }
 
 .w-icon-slider-right:before {
-  content: "î˜€";
+  content: "\e600";
 }
 
 .w-icon-slider-left:before {
-  content: "î˜";
+  content: "\e601";
 }
 
 .w-icon-nav-menu:before {
-  content: "î˜‚";
+  content: "\e602";
 }
 
 .w-icon-arrow-down:before,
 .w-icon-dropdown-toggle:before {
-  content: "î˜ƒ";
+  content: "\e603";
 }
 
 .w-icon-file-upload-remove:before {
-  content: "î¤€";
+  content: "\e900";
 }
 
 .w-icon-file-upload-icon:before {
-  content: "î¤ƒ";
+  content: "\e903";
 }
 
 * {
