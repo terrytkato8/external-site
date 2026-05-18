@@ -1,3 +1,5 @@
+import GoFundMeWidget from '../components/GoFundMeWidget'
+
 export default function AboutPage() {
   return (
     <>
@@ -46,23 +48,7 @@ export default function AboutPage() {
             of support helps move the studio one step closer to our first release.
           </div>
         </div>
-        <a
-          href="https://www.gofundme.com/f/help-launch-my-retro-game-studio"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="frame-123 w-inline-block"
-        >
-          <img src="/Assets/img/solar-heart-bold.svg" loading="lazy" width="20" height="20" alt="" className="solarheart-bold" />
-          <div className="text-18">Visit Our GoFundMe</div>
-        </a>
-        <img
-          src="/Assets/img/gofundme-logo.png"
-          loading="lazy"
-          sizes="100vw"
-          srcSet="/Assets/img/gofundme-logo-500.png 500w, /Assets/img/gofundme-logo-800.png 800w, /Assets/img/gofundme-logo-1080.png 1080w, /Assets/img/gofundme-logo.png 1280w"
-          alt="GoFundMe"
-          className="image-8"
-        />
+        <GoFundMeWidget size="large" />
       </div>
     </>
   )
