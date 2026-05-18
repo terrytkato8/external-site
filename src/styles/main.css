@@ -6690,9 +6690,10 @@ h2 {
   margin-top: 0;
   margin-bottom: 0;
   font-family: RocknRoll One, sans-serif;
-  font-size: 2rem;
+  font-size: clamp(1.75rem, 4vw, 2.5rem);
   font-weight: 400;
-  line-height: 100%;
+  line-height: 1.15;
+  letter-spacing: 0.01em;
   text-decoration: none;
 }
 
@@ -6854,6 +6855,8 @@ h2 {
 
 .hero-intro-paragraph {
   font-family: Reem Kufi, sans-serif;
+  font-size: 1.25rem;
+  line-height: 1.5;
 }
 
 .games-list-section {
@@ -6918,7 +6921,7 @@ h2 {
 
 .hero-tagline-wrapper {
   text-align: center;
-  max-width: 60%;
+  max-width: 50ch;
   margin-left: auto;
   margin-right: auto;
   font-size: 1.13rem;
@@ -7029,6 +7032,7 @@ h2 {
   margin-bottom: 0;
   font-size: 1.5rem;
   font-weight: 400;
+  letter-spacing: 0.01em;
 }
 
 .game-card-description {
@@ -7529,6 +7533,13 @@ h2 {
 
 .image-45 {
   object-fit: cover;
+}
+
+@media screen and (max-width: 1199px) {
+  .game-card {
+    aspect-ratio: auto;
+    min-height: 16rem;
+  }
 }
 
 @media screen and (max-width: 991px) {
