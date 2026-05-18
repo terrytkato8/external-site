@@ -6921,7 +6921,7 @@ h2 {
 
 .hero-tagline-wrapper {
   text-align: center;
-  max-width: 50ch;
+  max-width: calc(100% - 32rem);
   margin-left: auto;
   margin-right: auto;
   font-size: 1.13rem;
@@ -8177,6 +8177,10 @@ h2 {
   .support-section {
     margin-top: 0;
     padding: 0 4rem;
+  }
+
+  .hero-tagline-wrapper {
+    max-width: calc(100% - 8rem);
   }
 
   .game-card {
