@@ -5637,6 +5637,11 @@ h2 {
   display: grid;
 }
 
+.footer .grid_6-col {
+  grid-template-columns: 3fr 1fr 1fr 1fr;
+  align-items: start;
+}
+
 .grid_5-col {
   grid-template-rows: auto;
   grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) 1fr 1fr 1fr;
@@ -6690,9 +6695,10 @@ h2 {
   margin-top: 0;
   margin-bottom: 0;
   font-family: RocknRoll One, sans-serif;
-  font-size: 2rem;
+  font-size: clamp(1.75rem, 4vw, 2.5rem);
   font-weight: 400;
-  line-height: 100%;
+  line-height: 1.15;
+  letter-spacing: 0.01em;
   text-decoration: none;
 }
 
@@ -6854,6 +6860,8 @@ h2 {
 
 .hero-intro-paragraph {
   font-family: Reem Kufi, sans-serif;
+  font-size: 1.25rem;
+  line-height: 1.5;
 }
 
 .games-list-section {
@@ -6918,7 +6926,7 @@ h2 {
 
 .hero-tagline-wrapper {
   text-align: center;
-  max-width: 60%;
+  max-width: calc(100% - 32rem);
   margin-left: auto;
   margin-right: auto;
   font-size: 1.13rem;
@@ -6999,7 +7007,7 @@ h2 {
 }
 
 .game-card-overlay {
-  background-image: linear-gradient(#fff0, #000000e6);
+  background-image: linear-gradient(hsla(0, 0%, 0%, 0.25), #000000e6);
   border-radius: 20px;
   flex: 1;
   justify-content: flex-start;
@@ -7029,6 +7037,7 @@ h2 {
   margin-bottom: 0;
   font-size: 1.5rem;
   font-weight: 400;
+  letter-spacing: 0.01em;
 }
 
 .game-card-description {
@@ -7529,6 +7538,13 @@ h2 {
 
 .image-45 {
   object-fit: cover;
+}
+
+@media screen and (max-width: 1199px) {
+  .game-card {
+    aspect-ratio: auto;
+    min-height: 16rem;
+  }
 }
 
 @media screen and (max-width: 991px) {
@@ -8084,6 +8100,14 @@ h2 {
     grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) 1fr;
   }
 
+  .footer .grid_6-col {
+    grid-template-columns: 1fr 1fr 1fr;
+  }
+
+  .footer .footer-brand-block {
+    grid-column: 1 / -1;
+  }
+
   .grid_6-col.tablet-1-col {
     grid-template-columns: minmax(0, 1fr);
   }
@@ -8166,6 +8190,10 @@ h2 {
   .support-section {
     margin-top: 0;
     padding: 0 4rem;
+  }
+
+  .hero-tagline-wrapper {
+    max-width: calc(100% - 8rem);
   }
 
   .game-card {
@@ -8746,6 +8774,10 @@ h2 {
     grid-template-columns: minmax(0, 1fr) 1fr;
   }
 
+  .footer .grid_6-col {
+    grid-template-columns: 1fr 1fr;
+  }
+
   .grid_4-col {
     grid-template-columns: minmax(0, 1fr);
   }
@@ -8896,7 +8928,7 @@ h2 {
   }
 
   .game-card-overlay {
-    background-image: linear-gradient(270deg, #fff0, #000000e6);
+    background-image: linear-gradient(270deg, hsla(0, 0%, 0%, 0.25), #000000e6);
     padding: 1rem;
   }
 
@@ -9519,6 +9551,10 @@ h2 {
   .padding-horizontal_none,
   .padding-vertical_none {
     padding: 0;
+  }
+
+  .footer .grid_6-col {
+    grid-template-columns: minmax(0, 1fr);
   }
 
   .grid_9-col,
