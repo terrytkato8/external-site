@@ -1,0 +1,305 @@
+.card {
+  border: 0px solid var(--_colors---card--card-primary-border);
+  border-radius: var(--_sizes---card--card-radius);
+  background-color: var(--_colors---background-color--bg-secondary);
+  width: 100%;
+  box-shadow: 0 0 0 2px var(--_colors---text-color--text-primary), 6px 6px 0 var(--_colors---text-color--text-primary);
+  color: var(--_colors---text-color--text-primary);
+  background-image: none;
+  flex-flow: column;
+  flex: 0 auto;
+  list-style-type: none;
+  display: flex;
+  position: relative;
+  overflow: hidden;
+}
+
+.card.is-secondary {
+  border-color: var(--_colors---card--card-secondary-border);
+  background-color: var(--_colors---card--card-secondary-bg);
+  color: var(--_colors---card--card-secondary-text);
+}
+
+.card.is-accent-primary {
+  border-color: var(--_colors---card--card-accent-primary-border);
+  background-color: var(--_colors---card--card-accent-primary-bg);
+  color: var(--_colors---card--card-accent-primary-text);
+}
+
+.card.is-inverse {
+  border-color: var(--_colors---card--card-inverse-border);
+  background-color: var(--_colors---card--card-inverse-bg);
+  color: var(--_colors---card--card-inverse-text);
+}
+
+.card.on-secondary {
+  border-color: var(--_colors---border-color--border-primary);
+  background-color: var(--_colors---background-color--bg-primary);
+  box-shadow: 0 0 0 2px var(--_colors---text-color--text-primary), 6px 6px 0 var(--_colors---text-color--text-primary);
+  color: var(--_colors---text-color--text-primary);
+  background-image: none;
+}
+
+.card.on-inverse {
+  border-color: var(--_colors---border-color--border-primary);
+  background-color: var(--_colors---core-color-tint--neutral-primary-a10);
+  box-shadow: 0 0 0 2px var(--_colors---text-color--text-inverse-primary), 6px 6px 0 var(--_colors---text-color--text-inverse-primary);
+  color: var(--_colors---text-color--text-inverse-primary);
+  background-image: none;
+}
+
+.card.ix_card-slide-up-1,
+.card.ix_card-slide-up-2,
+.card.ix_card-slide-up-3 {
+  z-index: 1;
+  pointer-events: auto;
+  transition: opacity .3s cubic-bezier(.55, .055, .675, .19), transform .3s cubic-bezier(.55, .055, .675, .19);
+  position: relative;
+}
+
+.card.ix_card-slide-up-3:hover {
+  position: relative;
+}
+
+.card.ix_card-slide-up-4 {
+  z-index: 1;
+  pointer-events: auto;
+  transition: opacity .3s cubic-bezier(.55, .055, .675, .19), transform .3s cubic-bezier(.55, .055, .675, .19);
+  position: relative;
+}
+
+.card.ix_card-slide-up-4:hover {
+  z-index: 99;
+}
+
+.card.ix_card-deck-space {
+  z-index: 1;
+  margin-right: var(--_interactions---ix--ix-card-spacing);
+  flex: none;
+  align-self: stretch;
+  transition: margin-right .5s cubic-bezier(.68, -.55, .265, 1.55);
+}
+
+.card.on-accent-primary {
+  background-color: var(--_colors---background-color--bg-primary);
+  box-shadow: 0 0 0 2px var(--_colors---text-color--text-on-accent-primary), 6px 6px 0 var(--_colors---core-color-tint--neutral-primary-a30);
+  color: var(--_colors---text-color--text-primary);
+  background-image: none;
+}
+
+.card.on-accent-secondary {
+  background-color: var(--_colors---background-color--bg-primary);
+  box-shadow: 0 0 0 2px var(--_colors---text-color--text-on-accent-secondary), 6px 6px 0 var(--_colors---core-color-tint--neutral-inverse-a30);
+  color: var(--_colors---text-color--text-primary);
+  background-image: none;
+}
+
+.card.on-accent-tertiary {
+  background-color: var(--_colors---background-color--bg-primary);
+  box-shadow: 0 0 0 2px var(--_colors---text-color--text-on-accent-tertiary), 6px 6px 0 var(--_colors---core-color-tint--neutral-inverse-a30);
+  color: var(--_colors---text-color--text-primary);
+  background-image: none;
+}
+
+.card.is-featured {
+  border-color: var(--_colors---border-color--border-accent);
+  box-shadow: 0 0 0 2px var(--_colors---border-color--border-accent);
+}
+
+.card.is-accent-secondary {
+  background-color: var(--_colors---card--card-accent-secondary-bg);
+  color: var(--_colors---text-color--text-on-accent-secondary);
+}
+
+.card.is-accent-tertiary {
+  background-color: var(--_colors---card--card-accent-tertiary-bg);
+  color: var(--_colors---text-color--text-on-accent-tertiary);
+}
+
+.card.is-tight {
+  border-radius: 0;
+  width: auto;
+  margin: -1px;
+}
+
+.card_body {
+  z-index: 1;
+  width: 100%;
+  padding: var(--_sizes---card--card-padding);
+  flex-flow: column;
+  flex: 1;
+  justify-content: flex-start;
+  align-items: stretch;
+  display: flex;
+  position: relative;
+}
+
+.card_body.is-small {
+  padding: var(--_sizes---gap--sm-gap);
+}
+
+.card_body.is-align-center {
+  text-align: center;
+  justify-content: flex-start;
+  align-items: center;
+}
+
+.card-link {
+  border: 0px solid var(--_colors---card--card-primary-border);
+  border-radius: var(--_sizes---card--card-radius);
+  background-color: var(--_colors---background-color--bg-secondary);
+  width: 100%;
+  box-shadow: 0 0 0 2px var(--_colors---text-color--text-primary), 6px 6px 0 var(--_colors---text-color--text-primary);
+  opacity: 1;
+  color: var(--_colors---text-color--text-primary);
+  background-image: none;
+  flex-flow: column;
+  flex: 1;
+  text-decoration: none;
+  list-style-type: none;
+  transition: all .16s linear;
+  display: flex;
+  position: relative;
+  overflow: clip;
+  transform: translateY(0);
+}
+
+.card-link:hover {
+  background-color: var(--_colors---background-color--bg-secondary);
+  box-shadow: 0 0 0 2px var(--_colors---text-color--text-primary), 9px 9px 0 var(--_colors---text-color--text-primary);
+  opacity: 1;
+  color: var(--_colors---card--card-primary-text);
+  transform: translateY(0);
+}
+
+.card-link.is-inverse {
+  border-color: var(--_colors---card--card-inverse-border);
+  background-color: var(--_colors---card--card-inverse-bg);
+  color: var(--_colors---card--card-inverse-text);
+}
+
+.card-link.is-inverse:hover {
+  background-color: var(--_colors---card--card-inverse-bg-hover);
+  color: var(--_colors---card--card-inverse-text);
+}
+
+.card-link.on-secondary {
+  background-color: var(--_colors---background-color--bg-primary);
+  box-shadow: 0 0 0 2px var(--_colors---text-color--text-primary), 6px 6px 0 var(--_colors---text-color--text-primary);
+  color: var(--_colors---text-color--text-primary);
+  -webkit-text-stroke-color: black;
+  background-image: none;
+  border-color: #000000e6;
+}
+
+.card-link.on-secondary:hover {
+  background-color: var(--_colors---background-color--bg-primary);
+  box-shadow: 0 0 0 2px var(--_colors---text-color--text-primary), 9px 9px 0 var(--_colors---text-color--text-primary);
+  color: #000;
+}
+
+.card-link.on-accent-primary {
+  background-color: var(--_colors---background-color--bg-primary);
+  box-shadow: 0 0 0 2px var(--_colors---text-color--text-on-accent-primary), 6px 6px 0 var(--_colors---core-color-tint--neutral-primary-a30);
+  color: var(--_colors---text-color--text-primary);
+  -webkit-text-stroke-color: black;
+  background-image: none;
+  border-color: #000000e6;
+}
+
+.card-link.on-accent-primary:hover {
+  background-color: var(--_colors---background-color--bg-primary);
+  box-shadow: 0 0 0 2px var(--_colors---text-color--text-on-accent-primary), 9px 9px 0 var(--_colors---core-color-tint--neutral-primary-a30);
+  color: #000;
+}
+
+.card-link.on-inverse {
+  background-color: var(--_colors---core-color-tint--neutral-primary-a10);
+  box-shadow: 0 0 0 2px var(--_colors---text-color--text-inverse-primary), 6px 6px 0 var(--_colors---text-color--text-inverse-primary);
+  color: var(--_colors---text-color--text-inverse-primary);
+  -webkit-text-stroke-color: black;
+  background-image: none;
+  border-color: #000000e6;
+}
+
+.card-link.on-inverse:hover {
+  background-color: var(--_colors---core-color-tint--neutral-primary-a10);
+  box-shadow: 0 0 0 2px var(--_colors---text-color--text-inverse-primary), 9px 9px 0 var(--_colors---text-color--text-inverse-primary);
+  color: #000;
+}
+
+.card-link.on-accent-secondary {
+  background-color: var(--_colors---background-color--bg-primary);
+  box-shadow: 0 0 0 2px var(--_colors---text-color--text-on-accent-secondary), 6px 6px 0 var(--_colors---core-color-tint--neutral-inverse-a30);
+  color: var(--_colors---text-color--text-primary);
+  background-image: none;
+}
+
+.card-link.on-accent-secondary:hover {
+  background-color: var(--_colors---background-color--bg-primary);
+  box-shadow: 0 0 0 2px var(--_colors---text-color--text-on-accent-secondary), 9px 9px 0 var(--_colors---core-color-tint--neutral-inverse-a30);
+}
+
+.card-link.on-accent-tertiary {
+  background-color: var(--_colors---background-color--bg-primary);
+  box-shadow: 0 0 0 2px var(--_colors---text-color--text-on-accent-tertiary), 6px 6px 0 var(--_colors---core-color-tint--neutral-inverse-a30);
+  color: var(--_colors---text-color--text-primary);
+  background-image: none;
+}
+
+.card-link.on-accent-tertiary:hover {
+  background-color: var(--_colors---background-color--bg-primary);
+  box-shadow: 0 0 0 2px var(--_colors---text-color--text-on-accent-tertiary), 9px 9px 0 var(--_colors---core-color-tint--neutral-inverse-a30);
+}
+
+.card_header {
+  z-index: 1;
+  padding: var(--_sizes---card--card-padding) var(--_sizes---card--card-padding) 0px;
+  grid-column-gap: var(--_sizes---gap--sm-gap);
+  grid-row-gap: var(--_sizes---gap--sm-gap);
+  justify-content: space-between;
+  align-items: stretch;
+  display: flex;
+  position: relative;
+}
+
+.card_body_small {
+  z-index: 1;
+  padding: var(--_sizes---card--card-padding-sm);
+  flex-flow: column;
+  flex: 1;
+  display: flex;
+  position: relative;
+}
+
+@media screen and (max-width: 991px) {
+  .card.tablet-unset-card {
+      border-style: none;
+    }
+
+  .card_header {
+      padding-top: var(--\<unknown\|variable-b61407e2-882f-525c-111b-d4c97e76015f\>);
+      padding-right: var(--\<unknown\|variable-b61407e2-882f-525c-111b-d4c97e76015f\>);
+      padding-left: var(--\<unknown\|variable-b61407e2-882f-525c-111b-d4c97e76015f\>);
+    }
+}
+
+
+@media screen and (max-width: 767px) {
+  .card_header {
+      padding-top: var(--\<unknown\|variable-c6e35437-20b2-f8dc-ceec-e93fc23e0b61\>);
+      padding-right: var(--\<unknown\|variable-c6e35437-20b2-f8dc-ceec-e93fc23e0b61\>);
+      padding-left: var(--\<unknown\|variable-c6e35437-20b2-f8dc-ceec-e93fc23e0b61\>);
+      flex-flow: column-reverse;
+    }
+}
+
+
+@media screen and (max-width: 479px) {
+  .card_header {
+      padding-top: var(--\<unknown\|variable-1cac192c-9991-6e85-7b34-77f03c79d513\>);
+      padding-right: var(--\<unknown\|variable-1cac192c-9991-6e85-7b34-77f03c79d513\>);
+      padding-left: var(--\<unknown\|variable-1cac192c-9991-6e85-7b34-77f03c79d513\>);
+    }
+}
+

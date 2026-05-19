@@ -1,0 +1,147 @@
+.tag {
+  grid-column-gap: var(--_sizes---tag--tag-padding-horizontal);
+  grid-row-gap: var(--_sizes---tag--tag-padding-horizontal);
+  border-top-left-radius: var(--_sizes---tag--tag-radius);
+  border-top-right-radius: var(--_sizes---tag--tag-radius);
+  border-bottom-left-radius: var(--_sizes---tag--tag-radius);
+  border-bottom-right-radius: var(--_sizes---tag--tag-radius);
+  font-family: var(--_typography---font--body-font);
+  font-size: var(--_typography---tag--tag-size);
+  letter-spacing: .035em;
+  text-transform: uppercase;
+  color: inherit;
+  background-color: color-mix(in srgb, currentColor 10%, transparent);
+  border: 1px solid #0000;
+  justify-content: center;
+  align-items: center;
+  padding: .15em .75em;
+  text-decoration: none;
+  transition-property: border-color, color, background-color;
+  transition-duration: .2s, .2s, .2s;
+  transition-timing-function: ease, ease, ease;
+  display: inline-flex;
+}
+
+.tag.is-inverse {
+  background-color: var(--_colors---core-color-tint--neutral-inverse-a80);
+  color: var(--_colors---core-neutral-color--neutral-primary);
+}
+
+.tag.is-accent-primary {
+  background-color: var(--_colors---core-accent-color--accent-primary);
+  color: var(--_colors---text-color--text-on-accent-primary);
+}
+
+.tag.on-accent-secondary {
+  color: var(--_colors---text-color--text-on-accent-secondary);
+  background-color: color-mix(in srgb, currentColor 10%, transparent);
+}
+
+.tag.on-accent-tertiary {
+  color: var(--_colors---text-color--text-on-accent-tertiary);
+  background-color: color-mix(in srgb, currentColor 10%, transparent);
+}
+
+.tag_group {
+  margin-bottom: var(--_sizes---spacing--0-5x);
+  grid-column-gap: var(--_sizes---spacing--0-5x);
+  grid-row-gap: var(--_sizes---spacing--0-5x);
+  background-color: #0000;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+  align-items: center;
+  display: flex;
+}
+
+.tag_group.is-vertical {
+  flex-flow: column;
+  justify-content: flex-start;
+  align-items: flex-start;
+}
+
+.tag_group.is-align-center {
+  justify-content: center;
+  align-items: center;
+}
+
+.tag-2 {
+  grid-column-gap: 10px;
+  background-color: #fecc862e;
+  border: 1px solid #fecc8647;
+  border-radius: 99999px;
+  flex: 0 auto;
+  justify-content: center;
+  align-items: center;
+  padding: 3px 10px;
+  text-decoration: none;
+  display: flex;
+  overflow: hidden;
+}
+
+.category {
+  grid-column-gap: 0px;
+  grid-row-gap: 0px;
+  text-align: center;
+  white-space: nowrap;
+  border-style: solid;
+  border-width: 1px;
+  border-radius: 128px;
+  flex-flow: row;
+  justify-content: center;
+  align-items: center;
+  padding-left: 2%;
+  padding-right: 2%;
+  font-family: Reem Kufi, sans-serif;
+  display: flex;
+}
+
+.category.category-number {
+  background-color: #fecc862e;
+  border-color: #fecc8647;
+}
+
+.category-text {
+  text-align: center;
+  text-transform: uppercase;
+  font-family: Reem Kufi, sans-serif;
+  font-weight: 400;
+}
+
+.category-text.category-number {
+  color: #fecc86;
+}
+
+.tag-4 {
+  grid-column-gap: 10px;
+  border: 1px solid #cdb2e547;
+  border-radius: 99999px;
+  flex: 0 auto;
+  justify-content: center;
+  align-items: center;
+  padding: 3px 10px;
+  text-decoration: none;
+  display: flex;
+  overflow: hidden;
+}
+
+.category-2 {
+  color: #e2d3e7;
+  margin-top: 0;
+  margin-bottom: 0;
+  font-family: Reem Kufi, sans-serif;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 100%;
+  text-decoration: none;
+}
+
+.category-3 {
+  color: #fecc86;
+  margin-top: 0;
+  margin-bottom: 0;
+  font-family: Reem Kufi, sans-serif;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 100%;
+  text-decoration: none;
+}
