@@ -71,13 +71,13 @@
 
 @media screen and (max-width: 479px) {
   .button {
-        white-space: nowrap;
-      }
+          white-space: nowrap;
+        }
 
   .button-group {
-        flex-flow: column;
-        justify-content: flex-start;
-        align-items: stretch;
-        width: 100%;
-      }
+          flex-flow: column;
+          justify-content: flex-start;
+          align-items: stretch;
+          width: 100%;
+        }
 }

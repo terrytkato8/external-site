@@ -144,51 +144,51 @@
 
 @media screen and (max-width: 991px) {
   .nav {
-        height: auto;
-        padding-left: 80px;
-        padding-right: 80px;
-      }
+          height: auto;
+          padding-left: 80px;
+          padding-right: 80px;
+        }
 
   .nav_menu {
-        height: auto;
-        padding-top: var(--_sizes---spacing--1x);
-        padding-right: var(--_sizes---spacing--1x);
-        padding-bottom: var(--_sizes---spacing--1x);
-        padding-left: var(--_sizes---spacing--1x);
-        border-top-left-radius: var(--_sizes---radius--md-radius);
-        border-top-right-radius: var(--_sizes---radius--md-radius);
-        border-bottom-left-radius: var(--_sizes---radius--md-radius);
-        border-bottom-right-radius: var(--_sizes---radius--md-radius);
-        background-color: var(--_colors---background-color--bg-primary);
-        max-height: calc(100dvh - 10rem);
-        position: absolute;
-        top: 100%;
-        overflow: auto;
-        box-shadow: 0 4px 8px #0000001a;
-      }
+          height: auto;
+          padding-top: var(--_sizes---spacing--1x);
+          padding-right: var(--_sizes---spacing--1x);
+          padding-bottom: var(--_sizes---spacing--1x);
+          padding-left: var(--_sizes---spacing--1x);
+          border-top-left-radius: var(--_sizes---radius--md-radius);
+          border-top-right-radius: var(--_sizes---radius--md-radius);
+          border-bottom-left-radius: var(--_sizes---radius--md-radius);
+          border-bottom-right-radius: var(--_sizes---radius--md-radius);
+          background-color: var(--_colors---background-color--bg-primary);
+          max-height: calc(100dvh - 10rem);
+          position: absolute;
+          top: 100%;
+          overflow: auto;
+          box-shadow: 0 4px 8px #0000001a;
+        }
 
   .nav_menu-list {
-        flex-flow: column;
-      }
+          flex-flow: column;
+        }
 
   .nav-about-link {
-        text-decoration: none;
-      }
+          text-decoration: none;
+        }
 }
 
 @media screen and (max-width: 767px) {
   .nav {
-        padding-right: 60px;
-      }
+          padding-right: 60px;
+        }
 
   .nav_menu {
-        transform: translate(0);
-      }
+          transform: translate(0);
+        }
 }
 
 @media screen and (max-width: 479px) {
   .nav {
-        padding-left: 24px;
-        padding-right: 14px;
-      }
+          padding-left: 24px;
+          padding-right: 14px;
+        }
 }

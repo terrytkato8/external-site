@@ -40,29 +40,29 @@
 
 @media screen and (max-width: 991px) {
   .grid_9-col,
-      .grid_6-col {
-        grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) 1fr;
-      }
+        .grid_6-col {
+          grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) 1fr;
+        }
 }
 
 @media screen and (max-width: 767px) {
   .grid_9-col,
-      .grid_6-col,
-      .grid_5-col {
-        grid-template-columns: minmax(0, 1fr) 1fr;
-      }
+        .grid_6-col,
+        .grid_5-col {
+          grid-template-columns: minmax(0, 1fr) 1fr;
+        }
 
   .image-4 {
-        margin-bottom: 36px;
-      }
+          margin-bottom: 36px;
+        }
 }
 
 @media screen and (max-width: 479px) {
   .grid_9-col,
-      .grid_6-col,
-      .grid_5-col,
-      .grid_12-col,
-      .grid_8-col {
-        grid-template-columns: minmax(0, 1fr);
-      }
+        .grid_6-col,
+        .grid_5-col,
+        .grid_12-col,
+        .grid_8-col {
+          grid-template-columns: minmax(0, 1fr);
+        }
 }

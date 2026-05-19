@@ -18,7 +18,6 @@ import './styles/main/pages/home.css'
 import './styles/main/pages/about.css'
 import './styles/main/support.css'
 import './styles/main/pages/games.css'
-import './styles/main/grid-areas.css'
 import './styles/mobile-menu.css'
 
 ReactDOM.createRoot(document.getElementById('root')).render(
