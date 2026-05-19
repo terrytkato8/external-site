@@ -1,8 +1,7 @@
 .text-13 {
   color: #fff;
   width: 100%;
-  margin-top: 0;
-  margin-bottom: 0;
+  margin-block: 0;
   font-family: Reem Kufi, sans-serif;
   font-size: 18px;
   font-weight: 400;
@@ -22,8 +21,7 @@
   width: 100%;
   max-width: 1512px;
   padding-top: 48px;
-  padding-left: 120px;
-  padding-right: 120px;
+  padding-inline: 120px;
   text-decoration: none;
   display: flex;
 }
@@ -42,8 +40,7 @@
 .text-14 {
   color: #000;
   width: 100%;
-  margin-top: 0;
-  margin-bottom: 0;
+  margin-block: 0;
   font-family: RocknRoll One, sans-serif;
   font-size: 36px;
   font-weight: 400;
@@ -54,8 +51,7 @@
 .text-15 {
   color: #000;
   width: 100%;
-  margin-top: 0;
-  margin-bottom: 0;
+  margin-block: 0;
   font-family: Reem Kufi, sans-serif;
   font-size: 18px;
   font-weight: 400;
@@ -79,8 +75,7 @@
         }
 
   .about-us-section {
-          padding-left: 80px;
-          padding-right: 80px;
+          padding-inline: 80px;
         }
 }
 
@@ -100,8 +95,7 @@
         }
 
   .about-us-section {
-          padding-left: 24px;
-          padding-right: 24px;
+          padding-inline: 24px;
         }
 
   .text-14 {

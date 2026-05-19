@@ -6,8 +6,7 @@ body {
 }
 
 h2 {
-  margin-top: 20px;
-  margin-bottom: 10px;
+  margin-block: 20px 10px;
   font-family: RocknRoll One, sans-serif;
   font-size: 32px;
   font-weight: 700;
@@ -17,16 +16,14 @@ h2 {
 .container {
   z-index: 1;
   width: 100%;
-  max-width: var(--_sizes---container--container-width);
-  padding-right: var(--_sizes---container--container-padding-horizontal);
-  padding-left: var(--_sizes---container--container-padding-horizontal);
-  margin-left: auto;
-  margin-right: auto;
+  max-width: 1280px;
+  padding-inline: 0rem;
+  margin-inline: auto;
   position: relative;
 }
 
 .section-2 {
-  color: var(--_colors---text-color--text-primary);
+  color: var(--text-primary);
 }
 
 .svg {
@@ -46,14 +43,13 @@ h2 {
   color: #9e9a9e;
   min-width: 148px;
   margin-top: 12px;
-  padding-left: 12px;
-  padding-right: 12px;
+  padding-inline: 12px;
   text-decoration: none;
   display: block;
 }
 
 .link.w--current {
-  color: var(--_colors---kato-light-pearl);
+  color: var(--light-pearl);
   text-decoration: none;
 }
 
@@ -85,10 +81,10 @@ h2 {
           --_typography---base-typography--base-margin-bottom: .75em;
           --_typography---text-sm--sm-text-line-height: 1.6em;
           --_typography---text-sm--sm-text-letter-spacing: 0em;
-          --_typography---button--button-font: var(--_typography---font--body-font);
+          --_typography---button--button-font: var(--font-body);
           --_typography---base-typography--base-font-size: 1rem;
-          --_sizes---gap--xs-gap: var(--_sizes---spacing--1x);
-          --_sizes---gap--sm-gap: var(--_sizes---spacing--2x);
+          --_sizes---gap--xs-gap: var(--space-1);
+          --_sizes---gap--sm-gap: var(--space-2);
           --_sizes---container--container-width: 900px;
           --_sizes---container--container-padding-horizontal: 0px;
           --_sizes---spacing--1-25x: 1.25rem;
@@ -111,8 +107,7 @@ h2 {
         }
 
   .section-5 {
-          margin-left: 80px;
-          margin-right: 80px;
+          margin-inline: 80px;
         }
 }
 
@@ -128,10 +123,10 @@ h2 {
           --_typography---base-typography--base-margin-bottom: .75em;
           --_typography---text-sm--sm-text-line-height: 1.6em;
           --_typography---text-sm--sm-text-letter-spacing: 0em;
-          --_typography---button--button-font: var(--_typography---font--body-font);
+          --_typography---button--button-font: var(--font-body);
           --_typography---base-typography--base-font-size: 1rem;
-          --_sizes---gap--xs-gap: var(--_sizes---spacing--1x);
-          --_sizes---gap--sm-gap: var(--_sizes---spacing--2x);
+          --_sizes---gap--xs-gap: var(--space-1);
+          --_sizes---gap--sm-gap: var(--space-2);
           --_sizes---container--container-width: 1280px;
           --_sizes---container--container-padding-horizontal: 0rem;
           --_sizes---spacing--1-25x: 1.25rem;
@@ -154,8 +149,7 @@ h2 {
         }
 
   .section-5 {
-          margin-left: 80px;
-          margin-right: 80px;
+          margin-inline: 80px;
         }
 }
 
@@ -171,10 +165,10 @@ h2 {
           --_typography---base-typography--base-margin-bottom: .75em;
           --_typography---text-sm--sm-text-line-height: 1.6em;
           --_typography---text-sm--sm-text-letter-spacing: 0em;
-          --_typography---button--button-font: var(--_typography---font--body-font);
+          --_typography---button--button-font: var(--font-body);
           --_typography---base-typography--base-font-size: 1rem;
-          --_sizes---gap--xs-gap: var(--_sizes---spacing--1x);
-          --_sizes---gap--sm-gap: var(--_sizes---spacing--2x);
+          --_sizes---gap--xs-gap: var(--space-1);
+          --_sizes---gap--sm-gap: var(--space-2);
           --_sizes---container--container-width: 1280px;
           --_sizes---container--container-padding-horizontal: 0rem;
           --_sizes---spacing--1-25x: 1.25rem;
@@ -201,7 +195,6 @@ h2 {
         }
 
   .section-5 {
-          margin-left: 24px;
-          margin-right: 24px;
+          margin-inline: 24px;
         }
 }

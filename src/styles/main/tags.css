@@ -9,8 +9,7 @@
   flex-flow: row;
   justify-content: center;
   align-items: center;
-  padding-left: 2%;
-  padding-right: 2%;
+  padding-inline: 2%;
   font-family: Reem Kufi, sans-serif;
   display: flex;
 }

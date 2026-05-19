@@ -1,21 +1,20 @@
 .heading_xxsmall {
-  margin-top: 0;
-  margin-bottom: var(--_typography---h6-heading--h6-margin-bottom);
-  font-family: var(--_typography---font--body-font);
-  color: var(--_colors---kato-squid-pink);
-  font-size: var(--_typography---text-sm--sm-text-size);
-  line-height: var(--_typography---h6-heading--h6-line-height);
-  font-weight: var(--_typography---h6-heading--h6-weight);
-  letter-spacing: var(--_typography---h6-heading--h6-letter-spacing);
+  margin-block: 0 .5em;
+  font-family: var(--font-body);
+  color: var(--squid-pink);
+  font-size: var(--text-sm-size);
+  line-height: 1.3em;
+  font-weight: 500;
+  letter-spacing: .1em;
   text-transform: uppercase;
 }
 
 .paragraph_small {
-  margin-bottom: var(--_typography---base-typography--base-margin-bottom);
-  font-family: var(--_typography---font--body-font);
-  font-size: var(--_typography---text-sm--sm-text-size);
-  line-height: var(--_typography---text-sm--sm-text-line-height);
-  letter-spacing: var(--_typography---text-sm--sm-text-letter-spacing);
+  margin-bottom: .75em;
+  font-family: var(--font-body);
+  font-size: var(--text-sm-size);
+  line-height: 1.6em;
+  letter-spacing: 0em;
 }
 
 .text-color_secondary {
@@ -46,7 +45,6 @@
 
 @media screen and (max-width: 479px) {
   .paragraph-2 {
-          margin-left: 24px;
-          margin-right: 24px;
+          margin-inline: 24px;
         }
 }

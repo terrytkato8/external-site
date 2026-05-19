@@ -1,6 +1,6 @@
 .footer_icon {
-  width: var(--_sizes---spacing--1-5x);
-  height: var(--_sizes---spacing--1-5x);
+  width: var(--space-15);
+  height: var(--space-15);
   color: inherit;
   justify-content: center;
   align-items: center;

@@ -1,15 +1,13 @@
 .footer {
-  padding-top: var(--_sizes---spacing--4x);
-  padding-bottom: var(--_sizes---spacing--4x);
-  background-color: var(--_colors---background-color--bg-primary);
-  color: var(--_colors---text-color--text-primary);
+  padding-block: var(--space-4);
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
 }
 
 .footer.is-secondary {
-  background-color: var(--kato-dark-cobalt);
-  color: var(--_colors---kato-squid-pink);
-  padding-left: 120px;
-  padding-right: 120px;
+  background-color: var(--dark-cobalt);
+  color: var(--squid-pink);
+  padding-inline: 120px;
   position: relative;
 }
 
@@ -19,8 +17,7 @@
   color: color-mix(in srgb, currentColor 60%, transparent);
   justify-content: flex-start;
   align-items: center;
-  padding-top: .35em;
-  padding-bottom: .35em;
+  padding-block: .35em;
   font-family: Reem Kufi, sans-serif;
   font-weight: 400;
   text-decoration: none;
@@ -39,8 +36,8 @@
 }
 
 .footer_bottom {
-  grid-column-gap: var(--_sizes---gap--xs-gap);
-  grid-row-gap: var(--_sizes---gap--xs-gap);
+  grid-column-gap: var(--space-1);
+  grid-row-gap: var(--space-1);
   justify-content: space-between;
   align-items: center;
   display: flex;
@@ -48,13 +45,11 @@
 
 @media screen and (max-width: 991px) {
   .footer {
-          padding-top: var(--_sizes---spacing--3x);
-          padding-bottom: var(--_sizes---spacing--3x);
+          padding-block: var(--space-3);
         }
 
   .footer.is-secondary {
-          padding-left: 80px;
-          padding-right: 80px;
+          padding-inline: 80px;
         }
 
   .footer .grid_6-col {
@@ -79,8 +74,7 @@
 
 @media screen and (max-width: 479px) {
   .footer.is-secondary {
-          padding-left: 24px;
-          padding-right: 24px;
+          padding-inline: 24px;
         }
 
   .footer .grid_6-col {

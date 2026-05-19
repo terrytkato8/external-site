@@ -5,8 +5,7 @@
   justify-content: flex-start;
   align-items: center;
   width: 100%;
-  margin-top: 96px;
-  margin-bottom: 96px;
+  margin-block: 96px;
   text-decoration: none;
   display: flex;
   position: relative;
@@ -15,8 +14,7 @@
 .support-section_heading {
   color: #000;
   text-align: center;
-  margin-top: 0;
-  margin-bottom: 0;
+  margin-block: 0;
   font-family: RocknRoll One, sans-serif;
   font-size: clamp(1.75rem, 4vw, 2.5rem);
   font-weight: 400;
@@ -31,8 +29,7 @@
   flex-flow: column;
   justify-content: center;
   align-items: center;
-  margin-top: 48px;
-  margin-bottom: 48px;
+  margin-block: 48px;
   padding: 1rem 16rem;
   display: flex;
   position: relative;
@@ -53,8 +50,7 @@
 
 @media screen and (max-width: 991px) {
   .support-kato8-section {
-          margin-top: 48px;
-          margin-bottom: 48px;
+          margin-block: 48px;
         }
 
   .support-section {
@@ -82,12 +78,10 @@
         }
 
   .support-section_heading {
-          padding-left: 28px;
-          padding-right: 28px;
+          padding-inline: 28px;
         }
 
   .support-section {
-          padding-left: 0;
-          padding-right: 0;
+          padding-inline: 0;
         }
 }
