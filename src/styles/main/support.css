@@ -51,102 +51,43 @@
   line-height: 150%;
 }
 
-.gofundme-label {
-  color: #fff;
-  white-space: nowrap;
-  font-family: Reem Kufi, sans-serif;
-  font-size: 1rem;
-  display: block;
-}
-
-.gofundme-button-label {
-  border-radius: 6px;
-  padding: 1.125% 2.5%;
-  font-size: 1.25rem;
-}
-
-.gofundme-logo-wrapper {
-  width: 33%;
-}
-
-.gofundme-button {
-  background-image: linear-gradient(90deg, #e6738a, #fecb86);
-  border-radius: 6px;
-  flex-flow: row;
-  justify-content: center;
-  align-self: center;
-  align-items: center;
-  padding: 1.125% 2.5%;
-  text-decoration: none;
-  display: flex;
-}
-
-.gofundme-button-inner {
-  flex-flow: row;
-  justify-content: center;
-  align-items: center;
-  display: flex;
-}
-
-.gofundme-button-alt {
-  white-space: nowrap;
-  flex: 0 auto;
-  justify-content: center;
-  align-self: auto;
-  align-items: center;
-  text-decoration: none;
-  display: flex;
-}
-
-.gofundme-logo-image {
-  width: 100%;
-  max-width: none;
-}
-
 @media screen and (max-width: 991px) {
   .support-kato8-section {
-      margin-top: 48px;
-      margin-bottom: 48px;
-    }
+        margin-top: 48px;
+        margin-bottom: 48px;
+      }
 
   .support-section {
-      margin-top: 0;
-      padding: 0 4rem;
-    }
+        margin-top: 0;
+        padding: 0 4rem;
+      }
 }
-
 
 @media screen and (max-width: 767px) {
   .support-kato8-section {
-      margin-top: 48px;
-    }
+        margin-top: 48px;
+      }
 
   .support-section {
-      margin-top: 0;
-      padding: 0;
-    }
+        margin-top: 0;
+        padding: 0;
+      }
 }
-
 
 @media screen and (max-width: 479px) {
   .support-kato8-section {
-      justify-content: flex-start;
-      align-items: center;
-      margin-top: 48px;
-    }
+        justify-content: flex-start;
+        align-items: center;
+        margin-top: 48px;
+      }
 
   .support-section_heading {
-      padding-left: 28px;
-      padding-right: 28px;
-    }
+        padding-left: 28px;
+        padding-right: 28px;
+      }
 
   .support-section {
-      padding-left: 0;
-      padding-right: 0;
-    }
-
-  .gofundme-logo-wrapper {
-      width: 75%;
-    }
+        padding-left: 0;
+        padding-right: 0;
+      }
 }
-
