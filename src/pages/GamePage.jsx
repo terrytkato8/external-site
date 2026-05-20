@@ -1,6 +1,8 @@
 import { useParams } from 'react-router-dom'
 import { getGameBySlug } from '../data/games'
+import { gameRoutes } from '../data/seo-config'
 import NotFoundPage from './NotFoundPage'
+import Seo from '../components/Seo'
 import { asset } from '../utils/asset.js'
 
 function RichText({ paragraphs, extraClass = '' }) {
@@ -19,8 +21,11 @@ export default function GamePage() {
 
   if (!game) return <NotFoundPage />
 
+  const seo = gameRoutes[slug]
+
   return (
     <section className="game-page-main">
+      {seo && <Seo path={`/games/${slug}`} {...seo} />}
       <div className="game-hero-bg-wrapper">
         <div className="game-hero-bg-layer">
           <img src={asset('/assets/img/corebound-hero-background.svg')} loading="lazy" alt="" className="game-hero-bg-image" />

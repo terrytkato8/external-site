@@ -1,9 +1,12 @@
 import GoFundMeWidget from '../components/GoFundMeWidget'
+import Seo from '../components/Seo'
+import { staticRoutes } from '../data/seo-config'
 import { asset } from '../utils/asset.js'
 
 export default function AboutPage() {
   return (
     <>
+      <Seo path="/about-us" {...staticRoutes['/about-us']} />
       <section>
         <div className="about-us-section">
           <img src={asset('/assets/img/logo-no-mouth.png')} loading="lazy" width="203" alt="Kato.8 Studios mascot" className="image-4" />
