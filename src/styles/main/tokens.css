@@ -1,0 +1,18 @@
+:root {
+  --squid-pink: #e5718a;
+  --squid-pink-hover: #fe84ab;
+  --light-pearl: #f5efef;
+  --dark-cobalt: #1b1b26;
+  --neutral-primary: #161616;
+  --text-primary: var(--dark-cobalt);
+  --bg-primary: var(--light-pearl);
+  --font-body: "Reem Kufi", sans-serif;
+  --text-sm-size: .88rem;
+  --space-1: 1rem;
+  --space-15: 1.5rem;
+  --space-2: 2rem;
+  --space-3: 3rem;
+  --space-4: 4rem;
+  --radius-md: .5rem;
+  --card-radius: .75rem;
+}

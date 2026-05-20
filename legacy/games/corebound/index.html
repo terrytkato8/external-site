@@ -1,0 +1,575 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <title>Corebound | Cyberpunk Metroidvania Game | Kato.8 Studios</title>
+  <meta name="description"
+    content="Corebound is a fast-paced 2D action-adventure where you replace your body with cybernetic upgrades to save your kidnapped sister. Inspired by Mega Man X and Castlevania. Coming soon." />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <!-- Favicon -->
+  <link rel="shortcut icon" type="image/x-icon" href="../../Assets/img/kato-favicon.png" />
+  <link rel="apple-touch-icon" href="../../Assets/img/kato-webclip.png" />
+
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com" rel="preconnect" />
+  <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin="anonymous" />
+  <script src="/js/webfont.js" type="text/javascript"></script>
+  <script type="text/javascript">
+    WebFont.load({
+      google: {
+        families: [
+          "Manrope:300,400,500,600,700",
+          "Montserrat Alternates:300,400,500,600,700",
+          "Reem Kufi:300,400,500,600,700",
+          "RocknRoll One:300,400,500,600,700"
+        ]
+      }
+    });
+  </script>
+
+  <!-- Stylesheets -->
+  <!-- webflow-base.css: Webflow's reset/normalize and utility classes. Do not edit. -->
+  <!-- main.css: Your site's styles. Edit freely. -->
+  <link href="/css/webflow-base.css" rel="stylesheet" type="text/css" />
+  <link href="/css/main.css" rel="stylesheet" type="text/css" />
+
+  <!-- Structured Data -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "VideoGame",
+    "name": "Corebound",
+    "description": "Upgrade your body. Discover the truth.",
+    "url": "/games/corebound",
+    "image": "../../Assets/img/corebound-outside-city-concept.png",
+    "genre": "Survival Horror",
+    "gamePlatform": "PC",
+    "publisher": {
+      "@type": "Organization",
+      "name": "Kato.8 Studios"
+    }
+  }
+  </script>
+
+  <!-- Google Tag Manager -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=GTM-M5VN733J"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag() { dataLayer.push(arguments); }
+    gtag('js', new Date());
+    gtag('config', 'GTM-M5VN733J');
+  </script>
+</head>
+
+<body class="body-2">
+
+  <!-- ========== NAVIGATION ========== -->
+  <div class="nav">
+    <div data-duration="400" data-animation="default" data-easing2="ease" data-easing="ease" data-collapse="medium"
+      role="banner" data-no-scroll="1" class="nav_container w-nav">
+
+      <!-- Logo -->
+      <div class="nav_left">
+        <a href="/" class="nav_logo w-inline-block">
+          <div class="nav-logo-inner">
+            <div class="nav_logo-icon">
+              <svg width="100%" height="100%" viewBox="0 0 33 33" preserveAspectRatio="xMidYMid meet" class="svg"></svg>
+            </div>
+          </div>
+        </a>
+      </div>
+
+      <!-- Right nav -->
+      <div class="nav_right">
+
+        <!-- Games dropdown -->
+        <div data-hover="false" data-delay="0" class="w-dropdown">
+          <div class="w-dropdown-toggle">
+            <div class="nav-dropdown-caret w-icon-dropdown-toggle"></div>
+            <div class="nav-games-label">Games</div>
+          </div>
+          <nav class="nav-games-dropdown w-dropdown-list">
+            <div class="nav-games-list-wrapper w-dyn-list">
+              <div role="list" class="nav-games-list w-dyn-items">
+                <div role="listitem" class="nav-games-item w-dyn-item">
+                  <a href="/games/corebound" aria-current="page" class="link w--current">Corebound</a>
+                </div>
+                <div role="listitem" class="nav-games-item w-dyn-item">
+                  <a href="/games/last-light" class="link">Last Light</a>
+                </div>
+                <div role="listitem" class="nav-games-item w-dyn-item">
+                  <a href="/games/big-boss-cleanup" class="link">Big Boss Cleanup</a>
+                </div>
+              </div>
+            </div>
+          </nav>
+        </div>
+
+        <nav role="navigation" class="nav_menu w-nav-menu">
+          <ul role="list" class="nav_menu-list w-list-unstyled"></ul>
+        </nav>
+
+        <a href="/about-us" class="nav-about-link">About</a>
+
+        <!-- Social icons -->
+        <div class="nav-social-icons">
+          <a href="https://www.instagram.com/kato.8_studios/" target="_blank" rel="noopener" class="w-inline-block">
+            <div class="w-embed">
+              <svg role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" width="20" height="20"
+                fill="white">
+                <title>Instagram</title>
+                <path
+                  d="M7.0301.084c-1.2768.0602-2.1487.264-2.911.5634-.7888.3075-1.4575.72-2.1228 1.3877-.6652.6677-1.075 1.3368-1.3802 2.127-.2954.7638-.4956 1.6365-.552 2.914-.0564 1.2775-.0689 1.6882-.0626 4.947.0062 3.2586.0206 3.6671.0825 4.9473.061 1.2765.264 2.1482.5635 2.9107.308.7889.72 1.4573 1.388 2.1228.6679.6655 1.3365 1.0743 2.1285 1.38.7632.295 1.6361.4961 2.9134.552 1.2773.056 1.6884.069 4.9462.0627 3.2578-.0062 3.668-.0207 4.9478-.0814 1.28-.0607 2.147-.2652 2.9098-.5633.7889-.3086 1.4578-.72 2.1228-1.3881.665-.6682 1.0745-1.3378 1.3795-2.1284.2957-.7632.4966-1.636.552-2.9124.056-1.2809.0692-1.6898.063-4.948-.0063-3.2583-.021-3.6668-.0817-4.9465-.0607-1.2797-.264-2.1487-.5633-2.9117-.3084-.7889-.72-1.4568-1.3876-2.1228C21.2982 1.33 20.628.9208 19.8378.6165 19.074.321 18.2017.1197 16.9244.0645 15.6471.0093 15.236-.005 11.977.0014 8.718.0076 8.31.0215 7.0301.0839m.1402 21.6932c-1.17-.0509-1.8053-.2453-2.2287-.408-.5606-.216-.96-.4771-1.3819-.895-.422-.4178-.6811-.8186-.9-1.378-.1644-.4234-.3624-1.058-.4171-2.228-.0595-1.2645-.072-1.6442-.079-4.848-.007-3.2037.0053-3.583.0607-4.848.05-1.169.2456-1.805.408-2.2282.216-.5613.4762-.96.895-1.3816.4188-.4217.8184-.6814 1.3783-.9003.423-.1651 1.0575-.3614 2.227-.4171 1.2655-.06 1.6447-.072 4.848-.079 3.2033-.007 3.5835.005 4.8495.0608 1.169.0508 1.8053.2445 2.228.408.5608.216.96.4754 1.3816.895.4217.4194.6816.8176.9005 1.3787.1653.4217.3617 1.056.4169 2.2263.0602 1.2655.0739 1.645.0796 4.848.0058 3.203-.0055 3.5834-.061 4.848-.051 1.17-.245 1.8055-.408 2.2294-.216.5604-.4763.96-.8954 1.3814-.419.4215-.8181.6811-1.3783.9-.4224.1649-1.0577.3617-2.2262.4174-1.2656.0595-1.6448.072-4.8493.079-3.2045.007-3.5825-.006-4.848-.0608M16.953 5.5864A1.44 1.44 0 1 0 18.39 4.144a1.44 1.44 0 0 0-1.437 1.4424M5.8385 12.012c.0067 3.4032 2.7706 6.1557 6.173 6.1493 3.4026-.0065 6.157-2.7701 6.1506-6.1733-.0065-3.4032-2.771-6.1565-6.174-6.1498-3.403.0067-6.156 2.771-6.1496 6.1738M8 12.0077a4 4 0 1 1 4.008 3.9921A3.9996 3.9996 0 0 1 8 12.0077" />
+              </svg>
+            </div>
+          </a>
+          <a href="https://www.tiktok.com/@kato.8_studios" target="_blank" rel="noopener" class="w-inline-block">
+            <div class="w-embed">
+              <svg role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" width="20" height="20"
+                fill="white">
+                <title>TikTok</title>
+                <path
+                  d="M12.525.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.05-2.89-.35-4.2-.97-.57-.26-1.1-.59-1.62-.93-.01 2.92.01 5.84-.02 8.75-.08 1.4-.54 2.79-1.35 3.94-1.31 1.92-3.58 3.17-5.91 3.21-1.43.08-2.86-.31-4.08-1.03-2.02-1.19-3.44-3.37-3.65-5.71-.02-.5-.03-1-.01-1.49.18-1.9 1.12-3.72 2.58-4.96 1.66-1.44 3.98-2.13 6.15-1.72.02 1.48-.04 2.96-.04 4.44-.99-.32-2.15-.23-3.02.37-.63.41-1.11 1.04-1.36 1.75-.21.51-.15 1.07-.14 1.61.24 1.64 1.82 3.02 3.5 2.87 1.12-.01 2.19-.66 2.77-1.61.19-.33.4-.67.41-1.06.1-1.79.06-3.57.07-5.36.01-4.03-.01-8.05.02-12.07z" />
+              </svg>
+            </div>
+          </a>
+          <a href="https://x.com/Kato8_Studios" target="_blank" rel="noopener" class="w-inline-block">
+            <div class="w-embed">
+              <svg role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" width="20" height="20"
+                fill="white">
+                <title>X</title>
+                <path
+                  d="M14.234 10.162 22.977 0h-2.072l-7.591 8.824L7.251 0H.258l9.168 13.343L.258 24H2.33l8.016-9.318L16.749 24h6.993zm-2.837 3.299-.929-1.329L3.076 1.56h3.182l5.965 8.532.929 1.329 7.754 11.09h-3.182z" />
+              </svg>
+            </div>
+          </a>
+          <a href="https://bsky.app/profile/kato-8.bsky.social" target="_blank" rel="noopener" class="w-inline-block">
+            <div class="w-embed">
+              <svg role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" width="20" height="20"
+                fill="white">
+                <title>Bluesky</title>
+                <path
+                  d="M5.202 2.857C7.954 4.922 10.913 9.11 12 11.358c1.087-2.247 4.046-6.436 6.798-8.501C20.783 1.366 24 .213 24 3.883c0 .732-.42 6.156-.667 7.037-.856 3.061-3.978 3.842-6.755 3.37 4.854.826 6.089 3.562 3.422 6.299-5.065 5.196-7.28-1.304-7.847-2.97-.104-.305-.152-.448-.153-.327 0-.121-.05.022-.153.327-.568 1.666-2.782 8.166-7.847 2.97-2.667-2.737-1.432-5.473 3.422-6.3-2.777.473-5.899-.308-6.755-3.369C.42 10.04 0 4.615 0 3.883c0-3.67 3.217-2.517 5.202-1.026" />
+              </svg>
+            </div>
+          </a>
+          <a href="https://www.linkedin.com/company/kato-8-studios/" target="_blank" rel="noopener"
+            class="w-inline-block">
+            <div class="w-embed">
+              <svg role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" width="20" height="20"
+                fill="white">
+                <title>LinkedIn</title>
+                <path
+                  d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 0 1-2.063-2.065 2.064 2.064 0 1 1 2.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z" />
+              </svg>
+            </div>
+          </a>
+        </div>
+      </div>
+
+      <!-- Mobile hamburger -->
+      <div class="nav_mobile-menu-button w-nav-button">
+        <div class="icon">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" aria-label="Open menu">
+            <g stroke-linecap="square" stroke-linejoin="miter" stroke-width="1.5" fill="none" stroke="currentColor"
+              stroke-miterlimit="10">
+              <line x1="1" y1="12" x2="23" y2="12"></line>
+              <line x1="1" y1="5" x2="23" y2="5"></line>
+              <line x1="1" y1="19" x2="23" y2="19"></line>
+            </g>
+          </svg>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ========== MAIN CONTENT ========== -->
+  <section class="game-page-main">
+
+    <!-- Hero background layers (desktop) -->
+    <div class="game-hero-bg-wrapper">
+      <div class="game-hero-bg-layer">
+        <img src="../../Assets/img/corebound-hero-background.svg" loading="lazy" alt="" class="game-hero-bg-image" />
+      </div>
+      <div class="game-hero-bg-wireframe">
+        <img src="../../Assets/img/wire-layer.webp" loading="lazy" sizes="100vw" srcset="../../Assets/img/wire-layer-500.webp 500w,
+                  ../../Assets/img/wire-layer-800.webp 800w,
+                  ../../Assets/img/wire-layer-1080.webp 1080w,
+                  ../../Assets/img/wire-layer-1600.webp 1600w,
+                  ../../Assets/img/wire-layer.webp 1920w" alt="" class="game-hero-bg-image" />
+      </div>
+    </div>
+
+    <!-- Hero background (mobile) -->
+    <div class="game-hero-bg-mobile-wrapper">
+      <div class="game-hero-bg-mobile-image">
+        <img src="../../Assets/img/mobile-bg.svg" loading="lazy" alt="" class="game-hero-bg-mobile" />
+      </div>
+    </div>
+
+    <!-- Hero: title + art -->
+    <section class="games_hero-section">
+
+      <!-- Left: title, tags, framed art -->
+      <div class="games_hero-section_left">
+        <div class="games_title-wrapper">
+          <div class="games_title-text">
+            <h1 class="games_h1">Corebound</h1>
+          </div>
+          <div class="title-tags_wrapper">
+            <div class="title-tag coming-soon">
+              <div class="title-tag_tag-text">Coming soon</div>
+            </div>
+            <div class="title-tag category">
+              <div class="title-tag_tag-text">2D Side-Scroller</div>
+            </div>
+            <div class="title-tag category">
+              <div class="title-tag_tag-text">Action/Adventure</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="games_contest-wrapper">
+          <!-- Desktop framed art -->
+          <div class="game-hero-art-wrapper">
+            <div class="game-framed-art">
+              <img src="../../Assets/img/game-framed-art.svg" loading="lazy" alt=""
+                class="game-hero-art-frame-desktop" />
+            </div>
+          </div>
+          <!-- Mobile framed art -->
+          <div class="game-hero-art-mobile">
+            <div class="game-framed-art">
+              <img src="../../Assets/img/game-framed-art-mobile.svg" loading="lazy" alt=""
+                class="game-hero-art-frame-mobile" />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right: gameplay info -->
+      <div class="games_hero-section_right">
+        <div class="game-info-panel">
+
+          <!-- Gameplay — desktop layout -->
+          <div class="game-gameplay-desktop">
+            <div class="game-gameplay-inner">
+              <div class="game-gameplay-heading-wrapper">
+                <h3 class="game-section-heading">Gameplay</h3>
+              </div>
+              <div class="game-gameplay-text-wrapper">
+                <div class="game-richtext w-richtext">
+                  <p>Corebound isn&#x27;t just a nostalgic callback to side-scrolling action games of the 90s and 00s,
+                    it&#x27;s an evolution of the formula. Combat is fast and fluid, allowing any player to unlock the
+                    full power of their creativity with a customizable move-set and a highly flexible combo system.
+                    Players will fight challenging bosses, meet colorful characters, combo tens of enemies at a time,
+                    and unlock new powers as they fight their way through the AI Apocalypse to save humanity from their
+                    tragic fate.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Gameplay — mobile layout -->
+          <div class="game-gameplay-mobile">
+            <h3 class="game-section-heading">Gameplay</h3>
+            <div class="game-richtext w-richtext">
+              <p>Corebound isn&#x27;t just a nostalgic callback to side-scrolling action games of the 90s and 00s,
+                it&#x27;s an evolution of the formula. Combat is fast and fluid, allowing any player to unlock the
+                full power of their creativity with a customizable move-set and a highly flexible combo system.
+                Players will fight challenging bosses, meet colorful characters, combo tens of enemies at a time,
+                and unlock new powers as they fight their way through the AI Apocalypse to save humanity from their
+                tragic fate.</p>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- Showcase: Story + Concept Art -->
+    <section class="games_showcase-section">
+
+      <!-- Story section -->
+      <section class="game-story-section">
+        <div class="game-story-layout">
+
+          <!-- Story text — desktop layout -->
+          <div class="game-story-desktop">
+            <div class="game-story-inner">
+              <div>
+                <h3 class="game-section-heading">Story</h3>
+              </div>
+              <div class="game-story-inner">
+                <div class="game-richtext story w-richtext">
+                  <p>In the end, humanity handed over their freedom willingly. &#x27;Convenience,&#x27; for most, was
+                    enough. For others, it was the promise of Utopia, gifted by Gods we would build — Gods who would
+                    build the world we never could. What we got instead was a slow death.</p>
+                  <p>Lance, our protagonist, was born into a cult worshipping an AI &#x27;God&#x27; they, at one
+                    point, helped birth. It runs their lives, optimizes their existence, and harshly punishes the ones
+                    who fall behind. Lance bristled at the life he was prescribed and eventually found himself in the
+                    crosshairs of the Cult&#x27;s enforcer units. Fearing for his life, he fled, only to now find
+                    himself alone and without allies. Along his journey he&#x27;ll meet shady &#x27;Info
+                    Brokers,&#x27; a human resistance fighting against the machine god&#x27;s rule, and other strange
+                    characters wandering the post-AI wasteland.</p>
+                  <p>But Lance can never rest so long as the Cult knows he lives. One way or another, he&#x27;ll have
+                    to break away from his past to help chart a new course for humanity&#x27;s future.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Story text — mobile layout -->
+          <div class="game-story-mobile">
+            <h3 class="game-section-heading">Story</h3>
+            <div class="game-richtext story w-richtext">
+              <p>In the end, humanity handed over their freedom willingly. &#x27;Convenience,&#x27; for most, was
+                enough. For others, it was the promise of Utopia, gifted by Gods we would build — Gods who would
+                build the world we never could. What we got instead was a slow death.</p>
+              <p>Lance, our protagonist, was born into a cult worshipping an AI &#x27;God&#x27; they, at one point,
+                helped birth. It runs their lives, optimizes their existence, and harshly punishes the ones who fall
+                behind. Lance bristled at the life he was prescribed and eventually found himself in the crosshairs of
+                the Cult&#x27;s enforcer units. Fearing for his life, he fled, only to now find himself alone and
+                without allies. Along his journey he&#x27;ll meet shady &#x27;Info Brokers,&#x27; a human resistance
+                fighting against the machine god&#x27;s rule, and other strange characters wandering the post-AI
+                wasteland.</p>
+              <p>But Lance can never rest so long as the Cult knows he lives. One way or another, he&#x27;ll have to
+                break away from his past to help chart a new course for humanity&#x27;s future.</p>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Story image -->
+        <div class="game-story-image-wrapper">
+          <img src="../../Assets/img/enemy-idea-2-3200.png" loading="lazy" alt="Corebound enemy concept art"
+            class="game-story-image" />
+        </div>
+      </section>
+
+      <!-- Concept Art gallery -->
+      <section class="games_concept-art-section">
+        <div class="games_concept-art-section_title-wrapper">
+          <h3 class="games_h3">Concept Art</h3>
+        </div>
+        <div class="game-concept-art-gallery">
+          <div role="list" class="game-concept-art-list w-dyn-items">
+            <div role="listitem" class="game-concept-art-list-item w-dyn-item w-dyn-repeater-item">
+              <div class="game-concept-art-item">
+                <img src="../../Assets/img/boss-design.jpg" loading="lazy" alt="Boss design concept" sizes="100vw"
+                  srcset="../../Assets/img/boss-design-500.jpg 500w,
+                          ../../Assets/img/boss-design-800.jpg 800w,
+                          ../../Assets/img/boss-design-1080.jpg 1080w,
+                          ../../Assets/img/boss-design-1600.jpg 1600w,
+                          ../../Assets/img/boss-design.jpg 9000w" class="image-35" />
+              </div>
+            </div>
+            <div role="listitem" class="game-concept-art-list-item w-dyn-item w-dyn-repeater-item">
+              <div class="game-concept-art-item">
+                <img src="../../Assets/img/corebound-desert-concept.jpg" loading="lazy" alt="Desert environment concept"
+                  class="image-35" />
+              </div>
+            </div>
+            <div role="listitem" class="game-concept-art-list-item w-dyn-item w-dyn-repeater-item">
+              <div class="game-concept-art-item">
+                <img src="../../Assets/img/corebound-main-character-design.png" loading="lazy"
+                  alt="Main character design" class="image-35" />
+              </div>
+            </div>
+            <div role="listitem" class="game-concept-art-list-item w-dyn-item w-dyn-repeater-item">
+              <div class="game-concept-art-item">
+                <img src="../../Assets/img/enemy-idea-1.jpg" loading="lazy" alt="Enemy concept 1" class="image-35" />
+              </div>
+            </div>
+            <div role="listitem" class="game-concept-art-list-item w-dyn-item w-dyn-repeater-item">
+              <div class="game-concept-art-item">
+                <img src="../../Assets/img/enemy-idea-2.jpg" loading="lazy" alt="Enemy concept 2" sizes="100vw" srcset="../../Assets/img/enemy-idea-2-500.jpg 500w,
+                          ../../Assets/img/enemy-idea-2-800.jpg 800w,
+                          ../../Assets/img/enemy-idea-2-1080.jpg 1080w,
+                          ../../Assets/img/enemy-idea-2-1600.jpg 1600w,
+                          ../../Assets/img/enemy-idea-2.jpg 9000w" class="image-35" />
+              </div>
+            </div>
+            <div role="listitem" class="game-concept-art-list-item w-dyn-item w-dyn-repeater-item">
+              <div class="game-concept-art-item">
+                <img src="../../Assets/img/protag-exp.png" loading="lazy" alt="Protagonist expression sheet"
+                  sizes="100vw" srcset="../../Assets/img/protag-exp-500.png 500w,
+                          ../../Assets/img/protag-exp-800.png 800w,
+                          ../../Assets/img/protag-exp-1080.png 1080w,
+                          ../../Assets/img/protag-exp.png 2238w" class="image-35" />
+              </div>
+            </div>
+            <div role="listitem" class="game-concept-art-list-item w-dyn-item w-dyn-repeater-item">
+              <div class="game-concept-art-item">
+                <img src="../../Assets/img/safe-room-concept.png" loading="lazy" alt="Safe room concept" sizes="100vw"
+                  srcset="../../Assets/img/safe-room-concept-500.png 500w,
+                          ../../Assets/img/safe-room-concept-800.png 800w,
+                          ../../Assets/img/safe-room-concept-1080.png 1080w,
+                          ../../Assets/img/safe-room-concept.png 1899w" class="image-35" />
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </section>
+  </section>
+
+  <!-- ========== FOOTER ========== -->
+  <footer class="footer is-secondary section-2">
+    <div class="container">
+      <div class="w-layout-grid grid_6-col gap-small">
+
+        <!-- Brand column -->
+        <div id="w-node-ba754bcf-a106-170a-b9c4-aae9473d13cc-8da92796"
+          class="footer-brand-block w-node-ff2ab401-9d47-4bdb-0c6f-407fba1e68a9-d43b4b13">
+          <img src="../../Assets/img/anime-type.png" loading="lazy" sizes="(max-width: 624px) 100vw, 624px" srcset="../../Assets/img/anime-type-500.png 500w,
+                    ../../Assets/img/anime-type.png 624w" alt="Kato.8 Studios" class="footer-brand-logo" />
+          <p class="text-color_secondary paragraph_small">Kato.8 Studios is an emerging indie game studio focused on
+            creating modern games with retro-inspired aesthetics, mechanics, and emotional engagement.</p>
+        </div>
+
+        <!-- Games links -->
+        <div>
+          <ul role="list" class="w-list-unstyled">
+            <li>
+              <h2 class="heading_xxsmall">GAMES</h2>
+            </li>
+          </ul>
+          <div class="nav-games-list-wrapper w-dyn-list">
+            <div role="list" class="nav-games-list w-dyn-items">
+              <div role="listitem" class="nav-games-item w-dyn-item">
+                <a href="/games/corebound" aria-current="page" class="link footer-link w--current">Corebound</a>
+              </div>
+              <div role="listitem" class="nav-games-item w-dyn-item">
+                <a href="/games/last-light" class="link footer-link">Last Light</a>
+              </div>
+              <div role="listitem" class="nav-games-item w-dyn-item">
+                <a href="/games/big-boss-cleanup" class="link footer-link">Big Boss Cleanup</a>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Studio links -->
+        <ul role="list" class="w-list-unstyled">
+          <li>
+            <h2 class="heading_xxsmall">STUDIO</h2>
+          </li>
+          <li>
+            <a href="/about-us" class="footer_link w-inline-block">
+              <div>About Us</div>
+            </a>
+          </li>
+        </ul>
+
+        <!-- Community / Social links -->
+        <ul role="list" aria-label="Social media links" class="w-list-unstyled">
+          <li>
+            <h2 class="heading_xxsmall">COMMUNITY</h2>
+          </li>
+          <li>
+            <a href="https://www.instagram.com/kato.8_studios/" target="_blank" rel="noopener"
+              class="footer_link w-inline-block">
+              <div class="footer_icon">
+                <svg width="100%" height="100%" viewBox="0 0 16 16" aria-hidden="true">
+                  <path
+                    d="M8,1.441c2.136,0,2.389.009,3.233.047a4.419,4.419,0,0,1,1.485.276,2.472,2.472,0,0,1,.92.6,2.472,2.472,0,0,1,.6.92,4.419,4.419,0,0,1,.276,1.485c.038.844.047,1.1.047,3.233s-.009,2.389-.047,3.233a4.419,4.419,0,0,1-.276,1.485,2.644,2.644,0,0,1-1.518,1.518,4.419,4.419,0,0,1-1.485.276c-.844.038-1.1.047-3.233.047s-2.389-.009-3.233-.047a4.419,4.419,0,0,1-1.485-.276,2.472,2.472,0,0,1-.92-.6,2.472,2.472,0,0,1-.6-.92,4.419,4.419,0,0,1-.276-1.485c-.038-.844-.047-1.1-.047-3.233s.009-2.389.047-3.233a4.419,4.419,0,0,1,.276-1.485,2.472,2.472,0,0,1,.6-.92,2.472,2.472,0,0,1,.92-.6,4.419,4.419,0,0,1,1.485-.276c.844-.038,1.1-.047,3.233-.047M8,0C5.827,0,5.555.009,4.7.048A5.868,5.868,0,0,0,2.76.42a3.908,3.908,0,0,0-1.417.923A3.908,3.908,0,0,0,.42,2.76,5.868,5.868,0,0,0,.048,4.7C.009,5.555,0,5.827,0,8s.009,2.445.048,3.3A5.868,5.868,0,0,0,.42,13.24a3.908,3.908,0,0,0,.923,1.417,3.908,3.908,0,0,0,1.417.923,5.868,5.868,0,0,0,1.942.372C5.555,15.991,5.827,16,8,16s2.445-.009,3.3-.048a5.868,5.868,0,0,0,1.942-.372,4.094,4.094,0,0,0,2.34-2.34,5.868,5.868,0,0,0,.372-1.942c.039-.853.048-1.125.048-3.3s-.009-2.445-.048-3.3A5.868,5.868,0,0,0,15.58,2.76a3.908,3.908,0,0,0-.923-1.417A3.908,3.908,0,0,0,13.24.42,5.868,5.868,0,0,0,11.3.048C10.445.009,10.173,0,8,0Z"
+                    fill="currentColor"></path>
+                  <path
+                    d="M8,3.892A4.108,4.108,0,1,0,12.108,8,4.108,4.108,0,0,0,8,3.892Zm0,6.775A2.667,2.667,0,1,1,10.667,8,2.667,2.667,0,0,1,8,10.667Z"
+                    fill="currentColor"></path>
+                  <circle cx="12.27" cy="3.73" r="0.96" fill="currentColor"></circle>
+                </svg>
+              </div>
+              <div>Instagram</div>
+            </a>
+          </li>
+          <li>
+            <a href="https://www.tiktok.com/@kato.8_studios" target="_blank" rel="noopener"
+              class="footer_link w-inline-block">
+              <div class="footer_icon">
+                <svg width="100%" height="100%" viewBox="0 0 16 16" aria-hidden="true">
+                  <path
+                    d="M16.6 5.82s.51.5 0 0A4.28 4.28 0 0 1 15.54 3h-3.09v12.4a2.59 2.59 0 0 1-2.59 2.5c-1.42 0-2.6-1.16-2.6-2.6c0-1.72 1.66-3.01 3.37-2.48V9.66c-3.45-.46-6.47 2.22-6.47 5.64c0 3.33 2.76 5.7 5.69 5.7c3.14 0 5.69-2.55 5.69-5.7V9.01a7.35 7.35 0 0 0 4.3 1.38V7.3s-1.88.09-3.24-1.48"
+                    fill="currentColor"></path>
+                </svg>
+              </div>
+              <div>TikTok</div>
+            </a>
+          </li>
+          <li>
+            <a href="https://x.com/Kato8_Studios" target="_blank" rel="noopener" class="footer_link w-inline-block">
+              <div class="footer_icon">
+                <svg width="100%" height="100%" viewBox="0 0 16 16" aria-hidden="true">
+                  <path
+                    d="M12.3723 1.16992H14.6895L9.6272 6.95576L15.5825 14.829H10.9196L7.26734 10.0539L3.08837 14.829H0.769833L6.18442 8.64037L0.471436 1.16992H5.2528L8.55409 5.53451L12.3723 1.16992ZM11.5591 13.4421H12.843L4.55514 2.48399H3.17733L11.5591 13.4421Z"
+                    fill="currentColor"></path>
+                </svg>
+              </div>
+              <div>Twitter</div>
+            </a>
+          </li>
+          <li>
+            <a href="https://bsky.app/profile/kato-8.bsky.social" target="_blank" rel="noopener"
+              class="footer_link w-inline-block">
+              <div class="footer_icon">
+                <svg width="100%" height="100%" viewBox="0 0 16 16" aria-hidden="true">
+                  <path
+                    d="M9.2 6.9c2.7 2.1 5.7 6.3 6.8 8.5c1.1-2.2 4-6.4 6.8-8.5c2-1.5 5.2-2.6 5.2 1s-.4 6.2-.7 7c-.9 3.1-4 3.8-6.8 3.4c4.8.8 6.1 3.6 3.4 6.3c-5.1 5.2-7.3-1.3-7.8-3c0-.3-.1-.5-.1-.3c0-.1 0 0-.1.3c-.6 1.7-2.8 8.2-7.8 3c-2.7-2.7-1.4-5.5 3.4-6.3c-2.8.5-5.9-.3-6.8-3.4c-.2-.9-.7-6.3-.7-7c0-3.7 3.2-2.5 5.2-1"
+                    fill="currentColor"></path>
+                </svg>
+              </div>
+              <div>Bluesky</div>
+            </a>
+          </li>
+          <li>
+            <a href="https://www.linkedin.com/company/kato-8-studios/" target="_blank" rel="noopener"
+              class="footer_link w-inline-block">
+              <div class="footer_icon">
+                <svg width="100%" height="100%" viewBox="0 0 16 16" aria-hidden="true">
+                  <path
+                    d="M15.3,0H0.7C0.3,0,0,0.3,0,0.7v14.7C0,15.7,0.3,16,0.7,16h14.7c0.4,0,0.7-0.3,0.7-0.7V0.7C16,0.3,15.7,0,15.3,0z M4.7,13.6H2.4V6h2.4V13.6z M3.6,5C2.8,5,2.2,4.3,2.2,3.6c0-0.8,0.6-1.4,1.4-1.4c0.8,0,1.4,0.6,1.4,1.4C4.9,4.3,4.3,5,3.6,5z M13.6,13.6h-2.4V9.9c0-0.9,0-2-1.2-2c-1.2,0-1.4,1-1.4,2v3.8H6.2V6h2.3v1h0c0.3-0.6,1.1-1.2,2.2-1.2c2.4,0,2.8,1.6,2.8,3.6V13.6z"
+                    fill="currentColor"></path>
+                </svg>
+              </div>
+              <div>LinkedIn</div>
+            </a>
+          </li>
+        </ul>
+
+      </div>
+
+      <div class="divider margin-top_xsmall margin-bottom_xsmall"></div>
+
+      <div class="footer_bottom">
+        <ul role="list" class="button-group gap-xsmall margin-top_none w-list-unstyled">
+          <li class="margin-bottom_none"><a href="#" class="footer_link w-inline-block">
+              <div>Terms</div>
+            </a></li>
+          <li class="margin-bottom_none"><a href="#" class="footer_link w-inline-block">
+              <div>Cookies</div>
+            </a></li>
+          <li class="margin-bottom_none"><a href="#" class="footer_link w-inline-block">
+              <div>Legal</div>
+            </a></li>
+        </ul>
+        <div class="text-color_secondary">© 2026 Kato.8. All rights reserved.</div>
+      </div>
+
+    </div>
+  </footer>
+
+  <!-- Webflow JS (nav dropdown / mobile menu behavior) -->
+  <script src="https://d3e54v103j8qbb.cloudfront.net/js/jquery-3.5.1.min.dc5e7f18c8.js?site=698c011e3b27f3bde0b4b604"
+    type="text/javascript" integrity="sha256-9/aliU8dGd2tb6OSsuzixeV4y/faTqgFtohetphbbj0="
+    crossorigin="anonymous"></script>
+  <script src="/js/webflow-chunk.js" type="text/javascript"></script>
+  <script src="/js/webflow.js" type="text/javascript"></script>
+
+</body>
+
+</html>

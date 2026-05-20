@@ -1,0 +1,31 @@
+.category {
+  grid-column-gap: 0px;
+  grid-row-gap: 0px;
+  text-align: center;
+  white-space: nowrap;
+  border-style: solid;
+  border-width: 1px;
+  border-radius: 128px;
+  flex-flow: row;
+  justify-content: center;
+  align-items: center;
+  padding-inline: 2%;
+  font-family: Reem Kufi, sans-serif;
+  display: flex;
+}
+
+.category.category-number {
+  background-color: #fecc862e;
+  border-color: #fecc8647;
+}
+
+.category-text {
+  text-align: center;
+  text-transform: uppercase;
+  font-family: Reem Kufi, sans-serif;
+  font-weight: 400;
+}
+
+.category-text.category-number {
+  color: #fecc86;
+}
