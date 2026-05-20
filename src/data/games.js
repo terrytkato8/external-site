@@ -1,4 +1,6 @@
-export const games = [
+import { asset } from '../utils/asset.js'
+
+const rawGames = [
   {
     slug: 'corebound',
     title: 'Corebound',
@@ -6,7 +8,7 @@ export const games = [
     description: 'Upgrade your body. Discover the truth.',
     categories: ['2D Side-Scroller', 'Action/Adventure'],
     bgColor: '#ff9183',
-    bgImage: '/Assets/img/corebound-outside-city-concept.jpg',
+    bgImage: '/assets/img/corebound-outside-city-concept.jpg',
     comingSoon: true,
     framedArt: true,
     gameplay: [
@@ -18,40 +20,40 @@ export const games = [
       "But Lance can never rest so long as the Cult knows he lives. One way or another, he'll have to break away from his past to help chart a new course for humanity's future.",
     ],
     storyImage: {
-      src: '/Assets/img/enemy-idea-2-3200.png',
+      src: '/assets/img/enemy-idea-2-3200.png',
       alt: 'Corebound enemy concept art',
     },
     conceptArt: [
       {
-        src: '/Assets/img/boss-design.jpg',
+        src: '/assets/img/boss-design.jpg',
         alt: 'Boss design concept',
         sizes: '100vw',
         srcSet:
-          '/Assets/img/boss-design-500.jpg 500w, /Assets/img/boss-design-800.jpg 800w, /Assets/img/boss-design-1080.jpg 1080w, /Assets/img/boss-design-1600.jpg 1600w, /Assets/img/boss-design.jpg 9000w',
+          '/assets/img/boss-design-500.jpg 500w, /assets/img/boss-design-800.jpg 800w, /assets/img/boss-design-1080.jpg 1080w, /assets/img/boss-design-1600.jpg 1600w, /assets/img/boss-design.jpg 9000w',
       },
-      { src: '/Assets/img/corebound-desert-concept.jpg', alt: 'Desert environment concept' },
-      { src: '/Assets/img/corebound-main-character-design.png', alt: 'Main character design' },
-      { src: '/Assets/img/enemy-idea-1.jpg', alt: 'Enemy concept 1' },
+      { src: '/assets/img/corebound-desert-concept.jpg', alt: 'Desert environment concept' },
+      { src: '/assets/img/corebound-main-character-design.png', alt: 'Main character design' },
+      { src: '/assets/img/enemy-idea-1.jpg', alt: 'Enemy concept 1' },
       {
-        src: '/Assets/img/enemy-idea-2.jpg',
+        src: '/assets/img/enemy-idea-2.jpg',
         alt: 'Enemy concept 2',
         sizes: '100vw',
         srcSet:
-          '/Assets/img/enemy-idea-2-500.jpg 500w, /Assets/img/enemy-idea-2-800.jpg 800w, /Assets/img/enemy-idea-2-1080.jpg 1080w, /Assets/img/enemy-idea-2-1600.jpg 1600w, /Assets/img/enemy-idea-2.jpg 9000w',
+          '/assets/img/enemy-idea-2-500.jpg 500w, /assets/img/enemy-idea-2-800.jpg 800w, /assets/img/enemy-idea-2-1080.jpg 1080w, /assets/img/enemy-idea-2-1600.jpg 1600w, /assets/img/enemy-idea-2.jpg 9000w',
       },
       {
-        src: '/Assets/img/protag-exp.png',
+        src: '/assets/img/protag-exp.png',
         alt: 'Protagonist expression sheet',
         sizes: '100vw',
         srcSet:
-          '/Assets/img/protag-exp-500.png 500w, /Assets/img/protag-exp-800.png 800w, /Assets/img/protag-exp-1080.png 1080w, /Assets/img/protag-exp.png 2238w',
+          '/assets/img/protag-exp-500.png 500w, /assets/img/protag-exp-800.png 800w, /assets/img/protag-exp-1080.png 1080w, /assets/img/protag-exp.png 2238w',
       },
       {
-        src: '/Assets/img/safe-room-concept.png',
+        src: '/assets/img/safe-room-concept.png',
         alt: 'Safe room concept',
         sizes: '100vw',
         srcSet:
-          '/Assets/img/safe-room-concept-500.png 500w, /Assets/img/safe-room-concept-800.png 800w, /Assets/img/safe-room-concept-1080.png 1080w, /Assets/img/safe-room-concept.png 1899w',
+          '/assets/img/safe-room-concept-500.png 500w, /assets/img/safe-room-concept-800.png 800w, /assets/img/safe-room-concept-1080.png 1080w, /assets/img/safe-room-concept.png 1899w',
       },
     ],
   },
@@ -78,7 +80,7 @@ export const games = [
       'Scavenge. Build. Survive the night.',
     ],
     storyImage: {
-      src: '/Assets/img/enemy-idea-2-3200.png',
+      src: '/assets/img/enemy-idea-2-3200.png',
       alt: 'Last Light concept art',
     },
     conceptArt: [],
@@ -108,11 +110,21 @@ export const games = [
       "Someone has to clean up the heroes' mess.",
     ],
     storyImage: {
-      src: '/Assets/img/enemy-idea-2-3200.png',
+      src: '/assets/img/enemy-idea-2-3200.png',
       alt: 'Big Boss Cleanup concept art',
     },
     conceptArt: [],
   },
 ]
 
+const transformAssets = (val) => {
+  if (typeof val === 'string') return asset(val)
+  if (Array.isArray(val)) return val.map(transformAssets)
+  if (val && typeof val === 'object') {
+    return Object.fromEntries(Object.entries(val).map(([k, v]) => [k, transformAssets(v)]))
+  }
+  return val
+}
+
+export const games = rawGames.map(transformAssets)
 export const getGameBySlug = (slug) => games.find((g) => g.slug === slug)
