@@ -2,6 +2,7 @@ import { Routes, Route, useLocation } from 'react-router-dom'
 import Nav from './components/Nav'
 import Footer from './components/Footer'
 import ScrollToTop from './components/ScrollToTop'
+import Analytics from './components/Analytics'
 import HomePage from './pages/HomePage'
 import GamePage from './pages/GamePage'
 import AboutPage from './pages/AboutPage'
@@ -15,6 +16,7 @@ export default function App() {
   return (
     <div className={bodyClass}>
       <ScrollToTop />
+      <Analytics />
       <Nav />
       <Routes>
         <Route path="/" element={<HomePage />} />
