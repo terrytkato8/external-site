@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Kato.8 Studios | Indie Games with Retro-Inspired Heart</title>
+    <meta name="description" content="Kato.8 Studios crafts modern indie games with retro-inspired aesthetics and emotional storytelling. Explore our upcoming titles: Corebound, Last Light, and Big Boss Cleanup." />
+    <meta property="og:title" content="Welcome to Kato.8 - Where Indie Games Thrive" />
+    <meta property="og:description" content="Join us at Kato.8 as we passionately develop captivating indie games. Be inspired and become part of our creative journey!" />
+    <meta property="og:type" content="website" />
+    <meta name="twitter:card" content="summary_large_image" />
+
+    <link rel="shortcut icon" type="image/x-icon" href="/Assets/img/kato-favicon.png" />
+    <link rel="apple-touch-icon" href="/Assets/img/kato-webclip.png" />
+
+    <link href="https://fonts.googleapis.com" rel="preconnect" />
+    <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin="anonymous" />
+
+    <script>
+      // SPA fallback decoder for GitHub Pages.
+      // Pairs with public/404.html — converts /?/games/corebound back into /games/corebound
+      // before React Router reads window.location, so direct visits and refreshes work.
+      ;(function (l) {
+        if (l.search[1] === '/') {
+          var decoded = l.search
+            .slice(1)
+            .split('&')
+            .map(function (s) {
+              return s.replace(/~and~/g, '&')
+            })
+            .join('?')
+          window.history.replaceState(null, null, l.pathname.slice(0, -1) + decoded + l.hash)
+        }
+      })(window.location)
+    </script>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/webfont/1.6.26/webfont.js"></script>
+    <script>
+      WebFont.load({
+        google: {
+          families: [
+            'Manrope:300,400,500,600,700',
+            'Montserrat Alternates:300,400,500,600,700',
+            'Reem Kufi:300,400,500,600,700',
+            'RocknRoll One:300,400,500,600,700',
+          ],
+        },
+      })
+    </script>
+    <script type="module" crossorigin src="/assets/index-BcNN1caX.js"></script>
+    <link rel="stylesheet" crossorigin href="/assets/index-Dd8dqPfs.css">
+  </head>
+  <body>
+    <div id="root"></div>
+  </body>
+</html>
