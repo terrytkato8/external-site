@@ -1,11 +1,12 @@
 import GoFundMeWidget from '../components/GoFundMeWidget'
+import { asset } from '../utils/asset.js'
 
 export default function AboutPage() {
   return (
     <>
       <section>
         <div className="about-us-section">
-          <img src="/Assets/img/logo-no-mouth.png" loading="lazy" width="203" alt="Kato.8 Studios mascot" className="image-4" />
+          <img src={asset('/assets/img/logo-no-mouth.png')} loading="lazy" width="203" alt="Kato.8 Studios mascot" className="image-4" />
           <div className="about-us-text">
             <div className="text-14">About Us</div>
             <div className="text-15">
@@ -30,10 +31,10 @@ export default function AboutPage() {
             </div>
           </div>
           <img
-            src="/Assets/img/kato-dog.jpg"
+            src={asset('/assets/img/kato-dog.jpg')}
             loading="lazy"
             sizes="100vw"
-            srcSet="/Assets/img/kato-dog-500.jpg 500w, /Assets/img/kato-dog-800.jpg 800w, /Assets/img/kato-dog-1080.jpg 1080w, /Assets/img/kato-dog.jpg 1132w"
+            srcSet={asset('/assets/img/kato-dog-500.jpg 500w, /assets/img/kato-dog-800.jpg 800w, /assets/img/kato-dog-1080.jpg 1080w, /assets/img/kato-dog.jpg 1132w')}
             alt="Kato, the dog the studio is named after"
             className="image-3"
           />
