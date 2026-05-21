@@ -65,7 +65,6 @@ h2 {
   flex-flow: column;
   justify-content: flex-start;
   align-items: stretch;
-  max-width: 1533px;
   display: flex;
 }
 
