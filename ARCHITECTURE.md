@@ -75,37 +75,32 @@ Pages reads the custom domain (`kato8studios.com`) from the prod repo's Settings
 
 The committed `docs/` folder in this repo is legacy. Before we moved to Actions-based Pages, `docs/` was the deployment artifact. It's still there for now; it could be deleted in a follow-up cleanup.
 
-## Version sync
+## Versioning
 
-Both repos share one CalVer tag stream (`vYYYY.MM.DD.N`). Prod is the only writer.
+Each repo runs its own `release.yml` and tags independently. There is no cross-repo coordination — version numbers between prod and staging are unrelated.
 
 [`prod release.yml`](./.github/workflows/release.yml) runs on every push to prod `main`:
 
-1. Add `staging` as a git remote and fetch its tags, so both repos' tag histories are visible locally.
-2. Compute next CalVer:
+1. Compute next CalVer:
    - `DATE = today (UTC)`
-   - `LAST_PATCH = max patch number of any vDATE.* tag across both repos`
+   - `LAST_PATCH = max patch number of any vDATE.* tag on this repo`
    - `NEXT_PATCH = LAST_PATCH + 1` (or `0` if no tag exists for today)
-3. Build, tag prod, push tag to prod's `origin`.
-4. Create a GitHub Release with build tarball.
-5. Clone `aeiti/kato8-staging` using the `STAGING_TAG_TOKEN` PAT secret (fine-grained, `contents: write` on the staging repo) and push the same tag to staging's `main` HEAD.
+2. Build, tag, push tag to this repo's `origin`.
+3. Create a GitHub Release with build tarball.
 
-The mirror step skips with a warning (not a failure) if the `STAGING_TAG_TOKEN` secret is missing. Prod still tags itself in that case.
-
-Staging's `release.yml` was removed — staging no longer auto-tags. If you ever need to restore independent tagging for some reason, do it carefully: prod's union-fetch will skip past any tag the staging side creates, so version numbers will jump.
+Staging has the same workflow shape but builds with `VITE_DEPLOY_TARGET=staging` and runs on its own `main`. Its tags share the same `vYYYY.MM.DD.N` format but are computed independently from staging's own tag history.
 
 ### How tag scenarios resolve
 
-For today (`2026-05-21`):
+For today (`2026-05-22`) on the prod repo, looking only at prod's tags:
 
-| Prod's highest | Staging's highest | Next prod release |
-|---|---|---|
-| `v2026.05.21.5` | `v2026.05.21.5` | `v2026.05.21.6` |
-| `v2026.05.21.5` | `v2026.05.21.9` | `v2026.05.21.10` (skips past staging) |
-| `v2026.05.21.5` | `v2026.05.20.4` (yesterday) | `v2026.05.21.6` (yesterday ignored) |
-| no tags today | no tags today | `v2026.05.21.0` |
+| Prod's highest today | Next prod release |
+|---|---|
+| (none) | `v2026.05.22.0` |
+| `v2026.05.22.0` | `v2026.05.22.1` |
+| `v2026.05.21.5` (yesterday only) | `v2026.05.22.0` (yesterday ignored) |
 
-UTC dates. Patch numbers reset to `0` each day.
+UTC dates. Patch numbers reset to `0` each day. Staging's tag history is irrelevant to prod's computation, and vice versa.
 
 ## SEO data
 

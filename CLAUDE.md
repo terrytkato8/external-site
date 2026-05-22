@@ -33,7 +33,9 @@ A staging mirror lives at `aeiti/kato8-staging` and serves <https://aeiti.github
 Pushes to `main` trigger:
 
 - `.github/workflows/deploy.yml` — builds and publishes to Pages (Actions source, not "Deploy from a branch").
-- `.github/workflows/release.yml` — cuts a CalVer tag and mirrors it to `aeiti/kato8-staging`. Staging never auto-tags.
+- `.github/workflows/release.yml` — cuts a CalVer tag on this repo only.
+
+Staging has its own copy of both workflows and tags independently. The two repos no longer coordinate version numbers.
 
 If a change is visually meaningful, port to the staging repo first, merge there, verify on the staging URL, then merge here.
 
@@ -41,5 +43,4 @@ If a change is visually meaningful, port to the staging repo first, merge there,
 
 - `BrowserRouter` must have `basename={import.meta.env.BASE_URL}` — required for staging routing.
 - `vite.config.js` `base` must remain env-aware; never hard-code `/kato8-staging/`.
-- `release.yml` must keep the "Fetch staging tags" step before computing CalVer; otherwise version numbers collide.
 - `scripts/write-cname.mjs` runs after `vite build` and before `scripts/prerender.mjs` in `package.json`. Order matters — write-cname depends on `docs/` existing.
