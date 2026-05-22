@@ -1,5 +1,26 @@
-// Single source of truth for per-route SEO metadata.
-// Pure JS (no Vite/React imports) so the prerender script can import it from Node.
+/**
+ * Single source of truth for per-route SEO metadata. Consumed by:
+ *   - the `<Seo>` component at runtime (each page passes its own entry).
+ *   - `scripts/prerender.mjs` at build time, which iterates
+ *     `listPrerenderRoutes()` and bakes the right meta tags into each
+ *     route's static HTML file.
+ *
+ * Pure JS (no Vite/React imports) so it's safely importable from Node.
+ *
+ * Structure:
+ *   SITE              — site-wide constants: canonical URL, default OG image, etc.
+ *   staticRoutes      — keyed by pathname for non-dynamic routes ('/', '/about-us').
+ *   gameRoutes        — keyed by game slug. Each value spreads into <Seo />.
+ *   NOT_FOUND_META    — used by NotFoundPage; emits noindex.
+ *   getRouteMeta()    — resolve meta for any pathname.
+ *   listPrerenderRoutes() — flat list of routes for the prerender script.
+ *
+ * To add a new route: add an entry here AND a matching route in App.jsx
+ * (and, for games, a matching entry in `src/data/games.js`). Without an
+ * entry here, the prerender script won't generate a static HTML file and
+ * crawlers will only see the SPA fallback (no route-specific tags on
+ * first byte).
+ */
 
 export const SITE = {
   url: 'https://kato8studios.com',

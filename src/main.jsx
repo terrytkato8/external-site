@@ -1,3 +1,19 @@
+/**
+ * Vite entry point. Mounts `<App>` into `#root` (declared in `index.html`).
+ *
+ * Three wrappers, in order from outside in:
+ *   - React.StrictMode    — extra dev-only checks; no production effect.
+ *   - HelmetProvider      — context for `<Seo>` / react-helmet-async meta
+ *                           tags managed across all pages.
+ *   - BrowserRouter       — HTML5 client-side routing. `basename` is set
+ *                           from `import.meta.env.BASE_URL` so routes
+ *                           resolve correctly on both prod (base `/`)
+ *                           and staging (base `/kato8-staging/`). Without
+ *                           this prop, staging would 404 on every route.
+ *
+ * The long list of CSS imports below is the entire stylesheet for the
+ * site; Vite bundles them into one CSS file per build.
+ */
 import React from 'react'
 import ReactDOM from 'react-dom/client'
 import { BrowserRouter } from 'react-router-dom'

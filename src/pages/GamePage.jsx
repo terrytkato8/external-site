@@ -5,6 +5,12 @@ import NotFoundPage from './NotFoundPage'
 import Seo from '../components/Seo'
 import { asset } from '../utils/asset.js'
 
+/**
+ * Internal helper. Renders an array of strings as `<p>` paragraphs inside
+ * a `.game-richtext` (and `.w-richtext`) wrapper, matching the legacy
+ * Webflow rich-text styling. `extraClass` lets a caller add modifiers
+ * like 'story'.
+ */
 function RichText({ paragraphs, extraClass = '' }) {
   return (
     <div className={`game-richtext${extraClass ? ` ${extraClass}` : ''} w-richtext`}>
@@ -15,6 +21,28 @@ function RichText({ paragraphs, extraClass = '' }) {
   )
 }
 
+/**
+ * Route: `/games/:slug`.
+ *
+ * Reads `:slug` from the URL, looks up the game in `src/data/games.js`
+ * (via `getGameBySlug`), and renders its detail page. If no matching game
+ * exists, falls back to `<NotFoundPage>` (so a wrong slug 404s in-app
+ * rather than showing a broken layout).
+ *
+ * Layout:
+ *   - Background art: layered desktop background SVG + wireframe overlay
+ *     (with responsive srcSet), and a separate mobile background. Note:
+ *     desktop bg image is hard-coded to corebound's SVG for now — every
+ *     game page uses the same hero background regardless of slug. If you
+ *     want per-game backgrounds, move the URL into the game's data entry.
+ *   - Hero section: title, tags (incl. "Coming soon" if `game.comingSoon`),
+ *     optional framed art (`game.framedArt`), and gameplay copy.
+ *   - Story section: long-form story paragraphs + optional `game.storyImage`.
+ *   - Concept Art gallery: rendered only if `game.conceptArt` is non-empty.
+ *
+ * SEO meta comes from `gameRoutes[slug]` in `src/data/seo-config.js`.
+ * Skipped silently if no entry exists for the slug.
+ */
 export default function GamePage() {
   const { slug } = useParams()
   const game = getGameBySlug(slug)

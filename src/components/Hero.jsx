@@ -1,5 +1,11 @@
 import { asset } from '../utils/asset.js'
 
+/**
+ * Home page hero block: studio logo + mission tagline.
+ *
+ * Rendered by `HomePage` only. No props. Logo image uses srcSet for
+ * responsive sizing (500w / 624w variants in `public/assets/img/`).
+ */
 export default function Hero() {
   return (
     <section className="home-hero-intro">

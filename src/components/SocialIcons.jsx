@@ -1,3 +1,16 @@
+/**
+ * Shared social-media link list + icon renderer.
+ *
+ * `socialLinks`: array of { name, href, src } where `src` points to an SVG
+ *   under `public/assets/img/social/`. To add or reorder, edit this array.
+ *   To swap an icon, drop a new SVG into `public/assets/img/social/` and
+ *   update the `src` field. Used by both `Nav` (desktop + via MobileMenu)
+ *   and could be used elsewhere; the footer keeps its own list for now
+ *   because its layout includes text labels alongside icons.
+ *
+ * `<SocialIcon>`: renders one entry as a 20×20 `<img>` link that opens in
+ *   a new tab. Used by `Nav` and `MobileMenu`.
+ */
 import { asset } from '../utils/asset.js'
 
 export const socialLinks = [

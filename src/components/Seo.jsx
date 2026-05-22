@@ -1,3 +1,25 @@
+/**
+ * Per-route SEO meta tags. Wraps `react-helmet-async` and injects:
+ * `<title>`, description, canonical URL, OpenGraph tags, Twitter card.
+ *
+ * Rendered by each page (HomePage, AboutPage, GamePage, NotFoundPage)
+ * with values from `src/data/seo-config.js`. Crawlers without JS see the
+ * prerendered HTML written by `scripts/prerender.mjs`; this component
+ * keeps the tags accurate during client-side navigation after hydration.
+ *
+ * Props:
+ *   path           — pathname (e.g. '/about-us'). Used to build the
+ *                    canonical URL and OG URL.
+ *   title          — `<title>` and default OG/Twitter title.
+ *   description    — `<meta name="description">` and default OG/Twitter
+ *                    description.
+ *   ogTitle        — override OG/Twitter title (optional).
+ *   ogDescription  — override OG/Twitter description (optional).
+ *   ogImage        — absolute or `/assets/...` path. Falls back to
+ *                    `SITE.defaultImage` from seo-config.
+ *   noindex        — when true, emits `<meta name="robots" content="noindex">`.
+ *                    Used by NotFoundPage.
+ */
 import { Helmet } from 'react-helmet-async'
 import { SITE } from '../data/seo-config'
 

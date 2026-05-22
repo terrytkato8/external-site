@@ -2,6 +2,16 @@ import { Link, useLocation } from 'react-router-dom'
 import Seo from '../components/Seo'
 import { NOT_FOUND_META } from '../data/seo-config'
 
+/**
+ * Catch-all route (`<Route path="*" />` in App.jsx) and also rendered by
+ * `GamePage` when a slug doesn't match any known game.
+ *
+ * Shows a "404 / This page doesn't exist." block with a link home.
+ * Inline styles instead of CSS classes — small enough to keep self-contained.
+ *
+ * SEO meta comes from `NOT_FOUND_META` in `src/data/seo-config.js`, which
+ * sets `noindex: true` so the page isn't surfaced in search results.
+ */
 export default function NotFoundPage() {
   const location = useLocation()
   return (

@@ -1,3 +1,19 @@
+/**
+ * Site-wide footer.
+ *
+ * Rendered once at the app root in App.jsx (appears on every page).
+ *
+ * Sections:
+ *   - Brand: studio logo + tagline blurb.
+ *   - Games: links to each game page, sourced from `src/data/games.js`.
+ *   - Studio: link to About.
+ *   - Community: social media links. Uses its own `footerSocials` array
+ *     (separate from nav's `socialLinks`) because the footer renders each
+ *     link as icon + name text, while the nav is icon-only. `.footer_icon`
+ *     is currently hidden via CSS (`display: none`) — only the labels show.
+ *
+ * Bottom bar: Terms/Cookies/Legal placeholder links and copyright.
+ */
 import { Link } from 'react-router-dom'
 import { games } from '../data/games'
 import { asset } from '../utils/asset.js'

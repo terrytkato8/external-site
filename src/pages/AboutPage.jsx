@@ -3,6 +3,18 @@ import Seo from '../components/Seo'
 import { staticRoutes } from '../data/seo-config'
 import { asset } from '../utils/asset.js'
 
+/**
+ * Route: `/about-us`.
+ *
+ * Three sections, each statically authored (no data file):
+ *   1. About Us — mascot image + studio mission blurb.
+ *   2. Why Kato.8? — the story behind the studio name + Kato dog photo
+ *      (responsive srcSet).
+ *   3. Support Kato.8 — pitch + GoFundMe widget.
+ *
+ * Edit the copy directly in this file. SEO meta comes from
+ * `staticRoutes['/about-us']` in `src/data/seo-config.js`.
+ */
 export default function AboutPage() {
   return (
     <>
