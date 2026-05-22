@@ -1,5 +1,20 @@
 import { Link } from 'react-router-dom'
 
+/**
+ * A single game tile on the home page grid.
+ *
+ * Rendered by `GameGrid` once per entry in `src/data/games.js`.
+ *
+ * Visual: full-bleed background image (or fallback color) + dark overlay,
+ * with category tags, title, tagline, and a "Learn More" pill that links
+ * to `/games/:slug`.
+ *
+ * Props:
+ *   game — game entry from `src/data/games.js`. Uses:
+ *     - slug, title, tagline, categories[]
+ *     - bgImage (URL, optional; falls back to bgColor)
+ *     - bgColor (hex string)
+ */
 export default function GameCard({ game }) {
   const style = {
     backgroundColor: game.bgColor,

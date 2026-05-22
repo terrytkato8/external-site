@@ -1,3 +1,10 @@
+/**
+ * Fires a Google Analytics `page_view` event on every client-side route change.
+ *
+ * Mounted once at the app root in App.jsx so it sees all React Router
+ * navigations. Renders nothing. No-ops if `window.gtag` isn't loaded
+ * (e.g., when analytics is blocked or in local dev without the script).
+ */
 import { useEffect } from 'react'
 import { useLocation } from 'react-router-dom'
 

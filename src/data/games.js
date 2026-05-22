@@ -1,3 +1,38 @@
+/**
+ * Single source of truth for the games shown on the home page and routed
+ * to via `/games/:slug`. Consumed by `GameCard`, `GameGrid`, `GamePage`,
+ * `Nav`, `MobileMenu`, and `Footer`.
+ *
+ * To add a game: append an entry to `rawGames` with the shape below. Also
+ * add a matching `gameRoutes[slug]` entry in `src/data/seo-config.js` so
+ * the prerender script generates a static HTML file for it.
+ *
+ * Shape (all fields optional unless noted):
+ *   slug        — REQUIRED. URL slug for `/games/:slug` and React key.
+ *   title       — REQUIRED. Display title.
+ *   tagline     — short line shown on GameCard.
+ *   description — fallback longer description.
+ *   categories  — string[]. Rendered as pill tags.
+ *   bgColor     — hex string. GameCard background fallback.
+ *   bgImage     — URL or `/assets/...` path. GameCard background image.
+ *   comingSoon  — boolean. Shows a "Coming soon" tag on the GamePage.
+ *   framedArt   — boolean. If true, GamePage renders the framed-art block.
+ *   gameplay    — string[]. Paragraphs shown in the Gameplay block.
+ *   story       — string[]. Paragraphs shown in the Story block.
+ *   storyImage  — { src, alt } | undefined.
+ *   conceptArt  — Array<{ src, alt, sizes?, srcSet? }>. Empty array hides
+ *                 the Concept Art gallery.
+ *
+ * Asset paths: write them as `/assets/...` here. `transformAssets` at the
+ * bottom of this file walks the data and pipes every path through the
+ * `asset()` helper, which prefixes them with `import.meta.env.BASE_URL`
+ * so they resolve correctly on both prod (`/`) and staging
+ * (`/kato8-staging/`).
+ *
+ * Exports:
+ *   games           — the resolved array (with asset paths prefixed).
+ *   getGameBySlug() — convenience lookup used by GamePage.
+ */
 import { asset } from '../utils/asset.js'
 
 const rawGames = [

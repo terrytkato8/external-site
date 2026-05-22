@@ -3,6 +3,27 @@ import { Link, useLocation } from 'react-router-dom'
 import { games } from '../data/games'
 import { socialLinks, SocialIcon } from './SocialIcons'
 
+/**
+ * Slide-in hamburger menu for narrow viewports.
+ *
+ * Rendered by `Nav`. Owns the backdrop + side panel; `Nav` owns the
+ * hamburger button and the open/close state.
+ *
+ * Sections (mirror the desktop nav): Games (from `games.js`), Studio
+ * (About link), Community (social icons from `SocialIcons`).
+ *
+ * Behavior:
+ *   - Closes automatically when the route changes (so tapping a link
+ *     dismisses it).
+ *   - Closes on the Escape key while open.
+ *   - Toggles a `mobile-menu-open` class on `document.body` while open
+ *     (used by CSS to lock scroll, etc.).
+ *
+ * Props:
+ *   open    — boolean. Whether the panel is visible.
+ *   onClose — () => void. Called when the user dismisses (backdrop click,
+ *             Escape, or route change).
+ */
 export default function MobileMenu({ open, onClose }) {
   const location = useLocation()
 

@@ -1,5 +1,14 @@
 import GoFundMeWidget from './GoFundMeWidget'
 
+/**
+ * Home page "Help Us Build Something Special" block: heading + paragraph
+ * pitch + GoFundMe widget (large size).
+ *
+ * Rendered by `HomePage`. No props.
+ *
+ * Note: the `<p id="suppo">` id is a partial anchor target from the
+ * legacy site; safe to remove if no inbound link uses it.
+ */
 export default function SupportSection() {
   return (
     <section className="support-section">

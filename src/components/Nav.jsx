@@ -4,6 +4,28 @@ import { games } from '../data/games'
 import { socialLinks, SocialIcon } from './SocialIcons'
 import MobileMenu from './MobileMenu'
 
+/**
+ * Top navigation bar.
+ *
+ * Rendered once at the app root in App.jsx (appears on every page).
+ *
+ * Desktop layout: logo (links home) on the left; Games dropdown, About
+ * link, and social icons on the right. The Games dropdown lists every
+ * entry in `src/data/games.js`.
+ *
+ * Mobile layout: hamburger button instead of the right-side controls.
+ * Tapping it toggles a `MobileMenu` overlay (which Nav owns the open
+ * state for).
+ *
+ * Behavior:
+ *   - Games dropdown closes on outside click or Escape.
+ *   - Games dropdown closes when a link inside is clicked (handled by
+ *     `closeDropdown`, not React Router automatically).
+ *   - Mobile menu state lives here; MobileMenu is dumb and receives it
+ *     via props.
+ *
+ * No props.
+ */
 export default function Nav() {
   const [dropdownOpen, setDropdownOpen] = useState(false)
   const [mobileOpen, setMobileOpen] = useState(false)

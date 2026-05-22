@@ -1,3 +1,18 @@
+/**
+ * Embeds the studio's GoFundMe campaign as a lazy-loaded iframe.
+ *
+ * Rendered by `SupportSection` (home page) and `AboutPage`.
+ *
+ * Props:
+ *   size      — 'large' | 'medium' | 'small'. Picks iframe dimensions from
+ *               the `SIZES` map; defaults to 'large'. Width is always 298px;
+ *               only height changes.
+ *   className — optional extra class appended after the default
+ *               `gofundme-widget gofundme-widget--{size}` classes.
+ *
+ * The CAMPAIGN_URL and ATTRIBUTION_ID constants below are the studio's
+ * campaign and the attribution ID GoFundMe issued for embed tracking.
+ */
 const CAMPAIGN_URL = 'https://www.gofundme.com/f/help-launch-my-retro-game-studio'
 const ATTRIBUTION_ID = 'sl:0d310464-c723-4851-a424-bfe2bc8ec0a1'
 
