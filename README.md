@@ -86,11 +86,10 @@ Pushes to `main` on either repo trigger that repo's deploy workflow. You don't h
 
 Every push to `main` on this repo triggers `.github/workflows/release.yml`, which:
 
-1. Computes the next CalVer tag (`vYYYY.MM.DD.N`) using the union of tags from both repos.
+1. Computes the next CalVer tag (`vYYYY.MM.DD.N`) from this repo's own tag history.
 2. Tags this repo and creates a GitHub Release with a build tarball.
-3. Mirrors the same tag onto `aeiti/kato8-staging` via the `STAGING_TAG_TOKEN` secret.
 
-Staging never auto-tags. Both repos share one CalVer stream. See [ARCHITECTURE.md → Version sync](./ARCHITECTURE.md#version-sync) for details.
+Staging has its own copy of the workflow and tags independently — the two repos' version numbers are unrelated. See [ARCHITECTURE.md → Versioning](./ARCHITECTURE.md#versioning) for details.
 
 ## Typical workflow
 

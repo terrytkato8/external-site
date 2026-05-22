@@ -23,15 +23,6 @@ jobs:
           # Use a token that can push tags back.
           token: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Fetch staging tags
-        # Union prod + staging tags so the next CalVer doesn't collide with
-        # tags staging may have created independently or that this workflow
-        # has previously mirrored over.
-        run: |
-          set -euo pipefail
-          git remote add staging https://github.com/aeiti/kato8-staging.git
-          git fetch staging 'refs/tags/*:refs/tags/*' --quiet || true
-
       - name: Compute next CalVer version
         id: version
         run: |
@@ -86,28 +77,6 @@ jobs:
           git config user.name 'github-actions[bot]'
           git config user.email 'github-actions[bot]@users.noreply.github.com'
           git tag -a "$TAG" -m "Release $TAG"
-          git push origin "$TAG"
-
-      - name: Mirror tag to staging repo
-        # Apply the same version tag to staging's main HEAD so both repos
-        # share one CalVer stream. Skipped (with a warning) if the
-        # STAGING_TAG_TOKEN secret is not configured.
-        env:
-          TAG: ${{ steps.version.outputs.tag }}
-          STAGING_TOKEN: ${{ secrets.STAGING_TAG_TOKEN }}
-        run: |
-          set -euo pipefail
-          if [ -z "${STAGING_TOKEN:-}" ]; then
-            echo "::warning::STAGING_TAG_TOKEN secret not set; skipping staging tag mirror"
-            exit 0
-          fi
-          git clone --depth 1 \
-            "https://x-access-token:${STAGING_TOKEN}@github.com/aeiti/kato8-staging.git" \
-            staging-repo
-          cd staging-repo
-          git config user.name 'github-actions[bot]'
-          git config user.email 'github-actions[bot]@users.noreply.github.com'
-          git tag -a "$TAG" -m "Release $TAG (mirrored from terrytkato8/external-site)"
           git push origin "$TAG"
 
       - name: Create GitHub Release
