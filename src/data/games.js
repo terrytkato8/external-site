@@ -37,17 +37,17 @@ import { asset } from '../utils/asset.js'
 
 const rawGames = [
   {
-    slug: 'corebound',
-    title: 'Corebound',
+    slug: 'universal-serial-blade',
+    title: 'Universal Serial Blade',
     tagline: 'Upgrade your body. Discover the truth.',
     description: 'Upgrade your body. Discover the truth.',
     categories: ['2D Side-Scroller', 'Action/Adventure'],
     bgColor: '#ff9183',
-    bgImage: '/assets/img/corebound-outside-city-concept.jpg',
+    bgImage: '/assets/img/universal-serial-blade-outside-city-concept.jpg',
     comingSoon: true,
     framedArt: true,
     gameplay: [
-      "Corebound isn't just a nostalgic callback to side-scrolling action games of the 90s and 00s, it's an evolution of the formula. Combat is fast and fluid, allowing any player to unlock the full power of their creativity with a customizable move-set and a highly flexible combo system. Players will fight challenging bosses, meet colorful characters, combo tens of enemies at a time, and unlock new powers as they fight their way through the AI Apocalypse to save humanity from their tragic fate.",
+      "Universal Serial Blade isn't just a nostalgic callback to side-scrolling action games of the 90s and 00s, it's an evolution of the formula. Combat is fast and fluid, allowing any player to unlock the full power of their creativity with a customizable move-set and a highly flexible combo system. Players will fight challenging bosses, meet colorful characters, combo tens of enemies at a time, and unlock new powers as they fight their way through the AI Apocalypse to save humanity from their tragic fate.",
     ],
     story: [
       "In the end, humanity handed over their freedom willingly. 'Convenience,' for most, was enough. For others, it was the promise of Utopia, gifted by Gods we would build — Gods who would build the world we never could. What we got instead was a slow death.",
@@ -56,7 +56,7 @@ const rawGames = [
     ],
     storyImage: {
       src: '/assets/img/enemy-idea-2-3200.png',
-      alt: 'Corebound enemy concept art',
+      alt: 'Universal Serial Blade enemy concept art',
     },
     conceptArt: [
       {
@@ -66,8 +66,8 @@ const rawGames = [
         srcSet:
           '/assets/img/boss-design-500.jpg 500w, /assets/img/boss-design-800.jpg 800w, /assets/img/boss-design-1080.jpg 1080w, /assets/img/boss-design-1600.jpg 1600w, /assets/img/boss-design.jpg 9000w',
       },
-      { src: '/assets/img/corebound-desert-concept.jpg', alt: 'Desert environment concept' },
-      { src: '/assets/img/corebound-main-character-design.png', alt: 'Main character design' },
+      { src: '/assets/img/universal-serial-blade-desert-concept.jpg', alt: 'Desert environment concept' },
+      { src: '/assets/img/universal-serial-blade-main-character-design.png', alt: 'Main character design' },
       { src: '/assets/img/enemy-idea-1.jpg', alt: 'Enemy concept 1' },
       {
         src: '/assets/img/enemy-idea-2.jpg',

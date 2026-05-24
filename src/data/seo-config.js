@@ -35,7 +35,7 @@ export const staticRoutes = {
   '/': {
     title: HOME_TITLE,
     description:
-      'Kato.8 Studios crafts modern indie games with retro-inspired aesthetics and emotional storytelling. Explore our upcoming titles: Corebound, Last Light, and Big Boss Cleanup.',
+      'Kato.8 Studios crafts modern indie games with retro-inspired aesthetics and emotional storytelling. Explore our upcoming titles: Universal Serial Blade, Last Light, and Big Boss Cleanup.',
     ogTitle: 'Welcome to Kato.8 — Where Indie Games Thrive',
     ogDescription:
       'Join us at Kato.8 as we passionately develop captivating indie games. Be inspired and become part of our creative journey!',
@@ -51,14 +51,14 @@ export const staticRoutes = {
 }
 
 export const gameRoutes = {
-  corebound: {
-    title: 'Corebound | Kato.8 Studios',
+  'universal-serial-blade': {
+    title: 'Universal Serial Blade | Kato.8 Studios',
     description:
-      'Corebound is a 2D side-scrolling action-adventure set in a post-AI wasteland. Upgrade your body, fight challenging bosses, and discover the truth.',
-    ogTitle: 'Corebound — Upgrade your body. Discover the truth.',
+      'Universal Serial Blade is a 2D side-scrolling action-adventure set in a post-AI wasteland. Upgrade your body, fight challenging bosses, and discover the truth.',
+    ogTitle: 'Universal Serial Blade — Upgrade your body. Discover the truth.',
     ogDescription:
       'A fast, fluid 2D action-adventure from Kato.8 Studios. Customize your move-set, combo through hordes, and uncover the truth of the AI Apocalypse.',
-    ogImage: '/assets/img/corebound-outside-city-concept.jpg',
+    ogImage: '/assets/img/universal-serial-blade-outside-city-concept.jpg',
   },
   'last-light': {
     title: 'Last Light | Kato.8 Studios',
