@@ -32,7 +32,7 @@ function RichText({ paragraphs, extraClass = '' }) {
  * Layout:
  *   - Background art: layered desktop background SVG + wireframe overlay
  *     (with responsive srcSet), and a separate mobile background. Note:
- *     desktop bg image is hard-coded to corebound's SVG for now — every
+ *     desktop bg image is hard-coded to Universal Serial Blade's SVG for now — every
  *     game page uses the same hero background regardless of slug. If you
  *     want per-game backgrounds, move the URL into the game's data entry.
  *   - Hero section: title, tags (incl. "Coming soon" if `game.comingSoon`),
@@ -56,7 +56,7 @@ export default function GamePage() {
       {seo && <Seo path={`/games/${slug}`} {...seo} />}
       <div className="game-hero-bg-wrapper">
         <div className="game-hero-bg-layer">
-          <img src={asset('/assets/img/corebound-hero-background.svg')} loading="lazy" alt="" className="game-hero-bg-image" />
+          <img src={asset('/assets/img/universal-serial-blade-hero-background.svg')} loading="lazy" alt="" className="game-hero-bg-image" />
         </div>
         <div className="game-hero-bg-wireframe">
           <img
