@@ -6,15 +6,44 @@ import { asset } from '../utils/asset.js'
 /**
  * Route: `/about-us`.
  *
- * Three sections, each statically authored (no data file):
+ * Four sections, each statically authored (no data file):
  *   1. About Us — mascot image + studio mission blurb.
  *   2. Why Kato.8? — the story behind the studio name + Kato dog photo
  *      (responsive srcSet).
  *   3. Support Kato.8 — pitch + GoFundMe widget.
+ *   4. Our Story — milestone timeline. Edit the `milestones` array below
+ *      to add, remove, or reorder entries; cards alternate left/right.
  *
  * Edit the copy directly in this file. SEO meta comes from
  * `staticRoutes['/about-us']` in `src/data/seo-config.js`.
  */
+const milestones = [
+  {
+    date: 'December 2025',
+    title: 'Milestone Title Here',
+    description:
+      'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Lorem ipsum dolor sit amet.',
+  },
+  {
+    date: 'January 2026',
+    title: 'Milestone Title Here',
+    description:
+      'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Lorem ipsum dolor sit amet.',
+  },
+  {
+    date: 'January 2026',
+    title: 'Milestone Title Here',
+    description:
+      'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Lorem ipsum dolor sit amet.',
+  },
+  {
+    date: 'January 2026',
+    title: 'Milestone Title Here',
+    description:
+      'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Lorem ipsum dolor sit amet.',
+  },
+]
+
 export default function AboutPage() {
   return (
     <>
@@ -66,6 +95,25 @@ export default function AboutPage() {
         </div>
         <GoFundMeWidget size="large" />
       </div>
+
+      <section className="our-story-section">
+        <h2 className="our-story-heading">Our Story</h2>
+        <ol className="timeline">
+          {milestones.map((milestone, index) => {
+            const side = index % 2 === 0 ? 'left' : 'right'
+            return (
+              <li key={index} className={`timeline-row timeline-row--${side}`}>
+                <div className="timeline-card">
+                  <span className="timeline-date-badge">{milestone.date}</span>
+                  <div className="timeline-card-title">{milestone.title}</div>
+                  <p className="timeline-card-description">{milestone.description}</p>
+                </div>
+                <span className="timeline-dot" aria-hidden="true" />
+              </li>
+            )
+          })}
+        </ol>
+      </section>
     </>
   )
 }
