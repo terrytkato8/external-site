@@ -42,7 +42,7 @@ Always go through `asset()` when referencing static assets. If you embed a bare 
 <BrowserRouter basename={import.meta.env.BASE_URL}>
 ```
 
-Without this, React Router on staging would see paths like `/kato8-staging/games/corebound`, fail to match any route, and render `NotFoundPage`. With it, the prefix is stripped before route matching, so `<Route path="/" />` matches the staging root.
+Without this, React Router on staging would see paths like `/kato8-staging/games/universal-serial-blade`, fail to match any route, and render `NotFoundPage`. With it, the prefix is stripped before route matching, so `<Route path="/" />` matches the staging root.
 
 On prod, `BASE_URL` is `/` and the `basename` prop is a no-op.
 
@@ -59,8 +59,8 @@ The site is a single-page React app, but each route also has a prerendered HTML 
 
 **SPA fallback for deep-link refreshes:**
 
-- A user lands on `/games/corebound` and refreshes → GitHub Pages serves `docs/games/corebound/index.html` directly (because we prerendered it). Works.
-- A user lands on a route we *didn't* prerender → GitHub Pages serves `public/404.html`, which redirects to `index.html?/games/corebound`. The inline script in `index.html` (the "SPA fallback decoder") converts that back into a real `/games/corebound` path before React Router reads `window.location`. Works.
+- A user lands on `/games/universal-serial-blade` and refreshes → GitHub Pages serves `docs/games/universal-serial-blade/index.html` directly (because we prerendered it). Works.
+- A user lands on a route we *didn't* prerender → GitHub Pages serves `public/404.html`, which redirects to `index.html?/games/universal-serial-blade`. The inline script in `index.html` (the "SPA fallback decoder") converts that back into a real `/games/universal-serial-blade` path before React Router reads `window.location`. Works.
 
 If you add a new top-level route, **also add it to `src/data/seo-config.js`** so the prerender step generates a static HTML file for it. Otherwise crawlers fall into the 404-redirect fallback and won't get the right meta tags on first byte.
 
@@ -92,13 +92,13 @@ Staging has the same workflow shape but builds with `VITE_DEPLOY_TARGET=staging`
 
 ### How tag scenarios resolve
 
-For today (`2026-05-22`) on the prod repo, looking only at prod's tags:
+For today (`2026-05-27`) on the prod repo, looking only at prod's tags:
 
 | Prod's highest today | Next prod release |
 |---|---|
-| (none) | `v2026.05.22.0` |
-| `v2026.05.22.0` | `v2026.05.22.1` |
-| `v2026.05.21.5` (yesterday only) | `v2026.05.22.0` (yesterday ignored) |
+| (none) | `v2026.05.27.0` |
+| `v2026.05.27.0` | `v2026.05.27.1` |
+| `v2026.05.26.5` (yesterday only) | `v2026.05.27.0` (yesterday ignored) |
 
 UTC dates. Patch numbers reset to `0` each day. Staging's tag history is irrelevant to prod's computation, and vice versa.
 
