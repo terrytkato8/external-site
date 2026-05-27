@@ -113,4 +113,3 @@ Cherry-picks or hand-applied diffs between repos work cleanly because the source
 
 - [COMPONENTS.md](./COMPONENTS.md) — render-tree map and per-file pointers for the website code.
 - [ARCHITECTURE.md](./ARCHITECTURE.md) — env-aware build, prerender + SPA hybrid, deployment topology, versioning.
-- [CLAUDE.md](./CLAUDE.md) — short pointer file for AI assistants working in this repo.
