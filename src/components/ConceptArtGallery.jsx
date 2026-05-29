@@ -1,3 +1,5 @@
+import { useEffect, useRef, useState } from 'react'
+
 /**
  * `<ConceptArtGallery gameSlug="..." />` — categorized, horizontally
  * scrollable concept-art rows for a game.
@@ -19,11 +21,11 @@
  *     ordered alphabetically by folder name.
  *   - Alt text is derived from the filename (dashes → spaces, sentence
  *     case). Override by renaming the file.
+ *   - A chevron button appears at the right edge of each strip when the
+ *     row has more content than fits; clicking scrolls forward.
  *
  * Renders nothing if no source images exist for the slug.
  */
-
-const WIDTHS = [500, 800, 1080, 1600]
 
 // Eagerly enumerate everything up front. Vite resolves these to hashed
 // URLs at build time and tree-shakes nothing — the gallery's "drop a
@@ -86,6 +88,77 @@ function categoryLabel(category) {
   return category.replace(/[-_]+/g, ' ').toUpperCase()
 }
 
+/**
+ * One category row. Owns its scroll strip + chevron button.
+ */
+function ConceptArtRow({ category, items }) {
+  const stripRef = useRef(null)
+  const [showNext, setShowNext] = useState(false)
+  const label = categoryLabel(category)
+
+  useEffect(() => {
+    const strip = stripRef.current
+    if (!strip) return undefined
+    const update = () => {
+      const overflows = strip.scrollWidth > strip.clientWidth + 1
+      const atEnd = strip.scrollLeft + strip.clientWidth >= strip.scrollWidth - 1
+      setShowNext(overflows && !atEnd)
+    }
+    update()
+    strip.addEventListener('scroll', update, { passive: true })
+    const ro = new ResizeObserver(update)
+    ro.observe(strip)
+    // Images load asynchronously and change scrollWidth — re-check on each load.
+    const imgs = strip.querySelectorAll('img')
+    imgs.forEach((img) => img.addEventListener('load', update))
+    return () => {
+      strip.removeEventListener('scroll', update)
+      ro.disconnect()
+      imgs.forEach((img) => img.removeEventListener('load', update))
+    }
+  }, [items])
+
+  const scrollForward = () => {
+    const strip = stripRef.current
+    if (!strip) return
+    strip.scrollBy({ left: Math.round(strip.clientWidth * 0.8), behavior: 'smooth' })
+  }
+
+  return (
+    <div className="concept-art-row">
+      <div className="concept-art-row-label-wrapper">
+        <span className="concept-art-row-label">{label}</span>
+        <span className="concept-art-row-divider" aria-hidden="true" />
+      </div>
+      <div ref={stripRef} className="concept-art-strip">
+        {items.map((item) => (
+          <figure key={item.filename} className="concept-art-tile">
+            <img
+              src={item.src}
+              srcSet={item.srcSet}
+              sizes="(max-width: 767px) 70vw, (max-width: 1199px) 40vw, 28vw"
+              loading="lazy"
+              alt={item.alt}
+              className="concept-art-image"
+            />
+          </figure>
+        ))}
+      </div>
+      <button
+        type="button"
+        className="concept-art-strip-next"
+        onClick={scrollForward}
+        hidden={!showNext}
+        aria-label={`Scroll ${label.toLowerCase()} concept art forward`}
+      >
+        <svg viewBox="0 0 18 18" aria-hidden="true">
+          <path d="M6 3l6 6-6 6" stroke="currentColor" strokeWidth="2.5" fill="none" strokeLinecap="round" strokeLinejoin="round" />
+        </svg>
+      </button>
+    </div>
+  )
+}
+
 export default function ConceptArtGallery({ gameSlug }) {
   const categories = galleryIndex.get(gameSlug)
   if (!categories || categories.size === 0) return null
@@ -94,32 +167,13 @@ export default function ConceptArtGallery({ gameSlug }) {
 
   return (
     <section className="concept-art-section">
-      <h3 className="concept-art-heading">Concept Art</h3>
+      <div className="concept-art-heading-wrapper">
+        <h3 className="concept-art-heading">Concept Art</h3>
+      </div>
       {orderedCategories.map((category) => {
         const items = categories.get(category)
         if (!items || items.length === 0) return null
-        return (
-          <div key={category} className="concept-art-row">
-            <div className="concept-art-row-label-wrapper">
-              <span className="concept-art-row-label">{categoryLabel(category)}</span>
-              <span className="concept-art-row-divider" aria-hidden="true" />
-            </div>
-            <div className="concept-art-strip">
-              {items.map((item) => (
-                <figure key={item.filename} className="concept-art-tile">
-                  <img
-                    src={item.src}
-                    srcSet={item.srcSet}
-                    sizes="(max-width: 767px) 70vw, (max-width: 1199px) 40vw, 28vw"
-                    loading="lazy"
-                    alt={item.alt}
-                    className="concept-art-image"
-                  />
-                </figure>
-              ))}
-            </div>
-          </div>
-        )
+        return <ConceptArtRow key={category} category={category} items={items} />
       })}
     </section>
   )
