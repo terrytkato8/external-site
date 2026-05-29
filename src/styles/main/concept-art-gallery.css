@@ -1,0 +1,202 @@
+/*
+ * <ConceptArtGallery> styles. Spec from Figma.
+ *
+ * Layout:
+ *   .concept-art-section
+ *   ├─ .concept-art-heading-wrapper      ← padded 120px each side
+ *   │  └─ .concept-art-heading           ← "Concept Art"
+ *   └─ .concept-art-row (one per category) ← padded 120px each side
+ *      ├─ .concept-art-row-label-wrapper
+ *      │  ├─ .concept-art-row-label      ← "CHARACTERS"
+ *      │  └─ .concept-art-row-divider    ← 7px solid bar trailing the label
+ *      ├─ .concept-art-strip             ← horizontal-scroll image row
+ *      │  └─ .concept-art-tile           ← one per image
+ *      │     └─ .concept-art-image
+ *      └─ .concept-art-strip-next        ← chevron scroll-forward button
+ *                                          (only when strip overflows)
+ */
+
+.concept-art-section {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 36px;
+}
+
+.concept-art-heading-wrapper {
+  padding-inline: 120px;
+}
+
+.concept-art-heading {
+  margin: 0;
+  color: #1b1b26;
+  font-family: RocknRoll One, sans-serif;
+  font-size: 28px;
+  font-weight: 400;
+  line-height: 30px;
+}
+
+.concept-art-row {
+  position: relative;
+  width: 100%;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  padding-inline: 120px;
+}
+
+.concept-art-row-label-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+}
+
+.concept-art-row-label {
+  flex: 0 0 auto;
+  color: #884c9c;
+  font-family: Reem Kufi, sans-serif;
+  font-size: 20px;
+  font-weight: 400;
+  line-height: 30px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.concept-art-row-divider {
+  flex: 1 1 auto;
+  height: 7px;
+  background-color: #9d7fb9;
+  border-radius: 3.5px;
+}
+
+.concept-art-strip {
+  position: relative;
+  width: 100%;
+  min-width: 0;
+  display: flex;
+  gap: 24px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding-bottom: 12px;
+  scroll-behavior: smooth;
+  scroll-snap-type: x proximity;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(157, 127, 185, 0.6) transparent;
+  -webkit-overflow-scrolling: touch;
+}
+
+.concept-art-strip::-webkit-scrollbar {
+  height: 6px;
+}
+
+.concept-art-strip::-webkit-scrollbar-thumb {
+  background-color: rgba(157, 127, 185, 0.6);
+  border-radius: 3px;
+}
+
+.concept-art-strip::-webkit-scrollbar-track {
+  background-color: transparent;
+}
+
+.concept-art-tile {
+  flex: 0 0 auto;
+  margin: 0;
+  scroll-snap-align: start;
+  background-color: #1b1b26;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.concept-art-image {
+  display: block;
+  height: 200px;
+  width: auto;
+  max-width: none;
+  object-fit: cover;
+}
+
+.concept-art-strip-next {
+  position: absolute;
+  top: 50%;
+  right: calc(120px + 16px);
+  transform: translateY(calc(-50% + 12px)); /* offset for scrollbar gutter */
+  width: 48px;
+  height: 48px;
+  border: none;
+  border-radius: 9999px;
+  background-color: rgba(0, 0, 0, 0.5);
+  color: #fff;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  transition: background-color 120ms ease, opacity 120ms ease;
+}
+
+.concept-art-strip-next:hover {
+  background-color: rgba(0, 0, 0, 0.7);
+}
+
+.concept-art-strip-next:focus-visible {
+  outline: 2px solid #fff;
+  outline-offset: 2px;
+}
+
+.concept-art-strip-next[hidden] {
+  display: none;
+}
+
+.concept-art-strip-next svg {
+  width: 18px;
+  height: 18px;
+  display: block;
+}
+
+@media screen and (max-width: 1199px) {
+  .concept-art-heading-wrapper,
+  .concept-art-row {
+          padding-inline: 80px;
+        }
+
+  .concept-art-strip-next {
+          right: calc(80px + 16px);
+        }
+}
+
+@media screen and (max-width: 767px) {
+  .concept-art-section {
+          gap: 28px;
+        }
+
+  .concept-art-heading-wrapper,
+  .concept-art-row {
+          padding-inline: 24px;
+        }
+
+  .concept-art-row-label {
+          font-size: 16px;
+        }
+
+  .concept-art-image {
+          height: 170px;
+        }
+
+  .concept-art-strip-next {
+          right: calc(24px + 8px);
+          width: 40px;
+          height: 40px;
+        }
+
+  .concept-art-strip-next svg {
+          width: 14px;
+          height: 14px;
+        }
+}
+
+@media screen and (max-width: 479px) {
+  .concept-art-image {
+          height: 150px;
+        }
+}

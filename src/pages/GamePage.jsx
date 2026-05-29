@@ -3,6 +3,7 @@ import { getGameBySlug } from '../data/games'
 import { gameRoutes } from '../data/seo-config'
 import NotFoundPage from './NotFoundPage'
 import Seo from '../components/Seo'
+import ConceptArtGallery from '../components/ConceptArtGallery'
 import { asset } from '../utils/asset.js'
 
 /**
@@ -38,7 +39,10 @@ function RichText({ paragraphs, extraClass = '' }) {
  *   - Hero section: title, tags (incl. "Coming soon" if `game.comingSoon`),
  *     optional framed art (`game.framedArt`), and gameplay copy.
  *   - Story section: long-form story paragraphs + optional `game.storyImage`.
- *   - Concept Art gallery: rendered only if `game.conceptArt` is non-empty.
+ *   - Concept Art gallery: `<ConceptArtGallery>` reads images from
+ *     `src/assets/games/<slug>/concept/<category>/`. Renders nothing if
+ *     no images exist for the slug. See the component for the authoring
+ *     model ("drop a file in, commit, ship").
  *
  * SEO meta comes from `gameRoutes[slug]` in `src/data/seo-config.js`.
  * Skipped silently if no entry exists for the slug.
@@ -159,33 +163,9 @@ export default function GamePage() {
             </div>
           )}
         </section>
-
-        {game.conceptArt && game.conceptArt.length > 0 && (
-          <section className="games_concept-art-section">
-            <div className="games_concept-art-section_title-wrapper">
-              <h3 className="games_h3">Concept Art</h3>
-            </div>
-            <div className="game-concept-art-gallery">
-              <div role="list" className="game-concept-art-list w-dyn-items">
-                {game.conceptArt.map((art) => (
-                  <div key={art.src} role="listitem" className="game-concept-art-list-item w-dyn-item w-dyn-repeater-item">
-                    <div className="game-concept-art-item">
-                      <img
-                        src={art.src}
-                        loading="lazy"
-                        alt={art.alt}
-                        sizes={art.sizes}
-                        srcSet={art.srcSet}
-                        className="image-35"
-                      />
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </section>
-        )}
       </section>
+
+      <ConceptArtGallery gameSlug={game.slug} />
     </section>
   )
 }

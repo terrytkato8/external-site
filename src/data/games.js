@@ -58,39 +58,9 @@ const rawGames = [
       src: '/assets/img/enemy-idea-2-3200.png',
       alt: 'Universal Serial Blade enemy concept art',
     },
-    conceptArt: [
-      {
-        src: '/assets/img/boss-design.jpg',
-        alt: 'Boss design concept',
-        sizes: '100vw',
-        srcSet:
-          '/assets/img/boss-design-500.jpg 500w, /assets/img/boss-design-800.jpg 800w, /assets/img/boss-design-1080.jpg 1080w, /assets/img/boss-design-1600.jpg 1600w, /assets/img/boss-design.jpg 9000w',
-      },
-      { src: '/assets/img/universal-serial-blade-desert-concept.jpg', alt: 'Desert environment concept' },
-      { src: '/assets/img/universal-serial-blade-main-character-design.png', alt: 'Main character design' },
-      { src: '/assets/img/enemy-idea-1.jpg', alt: 'Enemy concept 1' },
-      {
-        src: '/assets/img/enemy-idea-2.jpg',
-        alt: 'Enemy concept 2',
-        sizes: '100vw',
-        srcSet:
-          '/assets/img/enemy-idea-2-500.jpg 500w, /assets/img/enemy-idea-2-800.jpg 800w, /assets/img/enemy-idea-2-1080.jpg 1080w, /assets/img/enemy-idea-2-1600.jpg 1600w, /assets/img/enemy-idea-2.jpg 9000w',
-      },
-      {
-        src: '/assets/img/protag-exp.png',
-        alt: 'Protagonist expression sheet',
-        sizes: '100vw',
-        srcSet:
-          '/assets/img/protag-exp-500.png 500w, /assets/img/protag-exp-800.png 800w, /assets/img/protag-exp-1080.png 1080w, /assets/img/protag-exp.png 2238w',
-      },
-      {
-        src: '/assets/img/safe-room-concept.png',
-        alt: 'Safe room concept',
-        sizes: '100vw',
-        srcSet:
-          '/assets/img/safe-room-concept-500.png 500w, /assets/img/safe-room-concept-800.png 800w, /assets/img/safe-room-concept-1080.png 1080w, /assets/img/safe-room-concept.png 1899w',
-      },
-    ],
+    // Concept art is auto-discovered by <ConceptArtGallery> from
+    // src/assets/games/universal-serial-blade/concept/<category>/.
+    // Drop files in, commit, ship — no edit here needed.
   },
   {
     slug: 'last-light',
