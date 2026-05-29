@@ -1,0 +1,128 @@
+/*
+ * <ConceptArtGallery> styles.
+ *
+ * Layout:
+ *   .concept-art-section
+ *   ├─ .concept-art-heading              ← "Concept Art"
+ *   └─ .concept-art-row (one per category)
+ *      ├─ .concept-art-row-label-wrapper
+ *      │  ├─ .concept-art-row-label      ← "CHARACTERS"
+ *      │  └─ .concept-art-row-divider    ← decorative line trailing the label
+ *      └─ .concept-art-strip             ← horizontal-scroll image row
+ *         └─ .concept-art-tile           ← one per image
+ *            └─ .concept-art-image
+ */
+
+.concept-art-section {
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+}
+
+.concept-art-heading {
+  margin: 0;
+  color: #000;
+  font-family: RocknRoll One, sans-serif;
+  font-size: clamp(1.75rem, 3vw, 2.25rem);
+  font-weight: 400;
+  line-height: 1.1;
+}
+
+.concept-art-row {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.concept-art-row-label-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.concept-art-row-label {
+  color: #5a3a73;
+  font-family: Reem Kufi, sans-serif;
+  font-size: 1rem;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  flex: 0 0 auto;
+}
+
+.concept-art-row-divider {
+  flex: 1 1 auto;
+  height: 6px;
+  background-image: linear-gradient(90deg, rgba(174, 138, 222, 0.85) 0%, rgba(174, 138, 222, 0) 100%);
+  border-radius: 3px;
+}
+
+.concept-art-strip {
+  position: relative;
+  display: flex;
+  gap: 16px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding-bottom: 12px;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(174, 138, 222, 0.6) transparent;
+  -webkit-overflow-scrolling: touch;
+}
+
+.concept-art-strip::-webkit-scrollbar {
+  height: 6px;
+}
+
+.concept-art-strip::-webkit-scrollbar-thumb {
+  background-color: rgba(174, 138, 222, 0.6);
+  border-radius: 3px;
+}
+
+.concept-art-strip::-webkit-scrollbar-track {
+  background-color: transparent;
+}
+
+.concept-art-tile {
+  flex: 0 0 auto;
+  margin: 0;
+  scroll-snap-align: start;
+  background-color: #1b1b26;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.concept-art-image {
+  display: block;
+  height: 240px;
+  width: auto;
+  max-width: none;
+  object-fit: cover;
+}
+
+@media screen and (max-width: 1199px) {
+  .concept-art-image {
+          height: 200px;
+        }
+}
+
+@media screen and (max-width: 767px) {
+  .concept-art-section {
+          gap: 28px;
+        }
+
+  .concept-art-row-label {
+          font-size: 0.875rem;
+          letter-spacing: 0.14em;
+        }
+
+  .concept-art-image {
+          height: 170px;
+        }
+}
+
+@media screen and (max-width: 479px) {
+  .concept-art-image {
+          height: 150px;
+        }
+}
