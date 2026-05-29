@@ -163,9 +163,9 @@ export default function GamePage() {
             </div>
           )}
         </section>
-
-        <ConceptArtGallery gameSlug={game.slug} />
       </section>
+
+      <ConceptArtGallery gameSlug={game.slug} />
     </section>
   )
 }
