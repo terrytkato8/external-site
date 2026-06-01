@@ -185,18 +185,17 @@
 
 @media screen and (max-width: 767px) {
   /* Mobile: drop the horizontal-scroll strip + arrows in favor of a
-   * wrap-grid where tiles flow into the next row when full. Per the
-   * Figma spec — paddingInline 24px, heading 26px, label 20px,
-   * tile heights ~120px (characters) / 100px (enemies) / 82px
-   * (environment). We use one uniform tile height; the visual
-   * variation in the mock comes from per-image aspect ratios. */
+   * wrap-grid where every row holds two tiles, side by side. Padding
+   * is reduced from desktop's 120px to 16px to maximize image area.
+   * Each tile is locked to half the strip width (minus half the gap),
+   * which forces 2-up regardless of source image aspect ratio. */
   .concept-art-section {
           gap: 28px;
         }
 
   .concept-art-heading-wrapper,
   .concept-art-row {
-          padding-inline: 24px;
+          padding-inline: 16px;
         }
 
   .concept-art-heading {
@@ -209,9 +208,8 @@
 
   .concept-art-strip {
           flex-wrap: wrap;
-          justify-content: space-between;
-          align-items: center;
-          align-content: center;
+          align-items: stretch;
+          align-content: flex-start;
           gap: 12px;
           overflow: visible;
           padding-bottom: 0;
@@ -219,11 +217,19 @@
           scroll-behavior: auto;
         }
 
-  /* Tiles size by their natural aspect at a fixed height. Cap width
-   * so a single landscape image doesn't blow out the row. */
+  /* 2-up grid: each tile takes exactly half the strip width minus
+   * half the gap. */
+  .concept-art-tile {
+          flex: 0 0 calc(50% - 6px);
+          max-width: calc(50% - 6px);
+        }
+
+  /* Image fills its tile horizontally; `contain` keeps the whole
+   * artwork visible, letterboxed against the tile's dark background. */
   .concept-art-image {
+          width: 100%;
           height: 110px;
-          max-width: 100%;
+          object-fit: contain;
         }
 
   /* Wrap-grid means no horizontal scroll; hide the chevron buttons. */
