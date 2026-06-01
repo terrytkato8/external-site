@@ -12,8 +12,10 @@
  *      ├─ .concept-art-strip             ← horizontal-scroll image row
  *      │  └─ .concept-art-tile           ← one per image
  *      │     └─ .concept-art-image
+ *      ├─ .concept-art-strip-prev        ← chevron scroll-backward button
+ *      │                                   (only when strip is scrollable left)
  *      └─ .concept-art-strip-next        ← chevron scroll-forward button
- *                                          (only when strip overflows)
+ *                                          (only when strip is scrollable right)
  */
 
 .concept-art-section {
@@ -116,10 +118,10 @@
   object-fit: cover;
 }
 
+.concept-art-strip-prev,
 .concept-art-strip-next {
   position: absolute;
   top: 50%;
-  right: calc(120px + 16px);
   transform: translateY(calc(-50% + 12px)); /* offset for scrollbar gutter */
   width: 48px;
   height: 48px;
@@ -135,19 +137,31 @@
   transition: background-color 120ms ease, opacity 120ms ease;
 }
 
+.concept-art-strip-prev {
+  left: calc(120px + 16px);
+}
+
+.concept-art-strip-next {
+  right: calc(120px + 16px);
+}
+
+.concept-art-strip-prev:hover,
 .concept-art-strip-next:hover {
   background-color: rgba(0, 0, 0, 0.7);
 }
 
+.concept-art-strip-prev:focus-visible,
 .concept-art-strip-next:focus-visible {
   outline: 2px solid #fff;
   outline-offset: 2px;
 }
 
+.concept-art-strip-prev[hidden],
 .concept-art-strip-next[hidden] {
   display: none;
 }
 
+.concept-art-strip-prev svg,
 .concept-art-strip-next svg {
   width: 18px;
   height: 18px;
@@ -158,6 +172,10 @@
   .concept-art-heading-wrapper,
   .concept-art-row {
           padding-inline: 80px;
+        }
+
+  .concept-art-strip-prev {
+          left: calc(80px + 16px);
         }
 
   .concept-art-strip-next {
@@ -183,12 +201,21 @@
           height: 170px;
         }
 
+  .concept-art-strip-prev,
   .concept-art-strip-next {
-          right: calc(24px + 8px);
           width: 40px;
           height: 40px;
         }
 
+  .concept-art-strip-prev {
+          left: calc(24px + 8px);
+        }
+
+  .concept-art-strip-next {
+          right: calc(24px + 8px);
+        }
+
+  .concept-art-strip-prev svg,
   .concept-art-strip-next svg {
           width: 14px;
           height: 14px;

@@ -21,8 +21,8 @@ import { useEffect, useRef, useState } from 'react'
  *     ordered alphabetically by folder name.
  *   - Alt text is derived from the filename (dashes → spaces, sentence
  *     case). Override by renaming the file.
- *   - A chevron button appears at the right edge of each strip when the
- *     row has more content than fits; clicking scrolls forward.
+ *   - Chevron buttons appear at the left and right edges of each strip
+ *     when there's more content in that direction; clicking scrolls.
  *
  * Renders nothing if no source images exist for the slug.
  */
@@ -93,6 +93,7 @@ function categoryLabel(category) {
  */
 function ConceptArtRow({ category, items }) {
   const stripRef = useRef(null)
+  const [showPrev, setShowPrev] = useState(false)
   const [showNext, setShowNext] = useState(false)
   const label = categoryLabel(category)
 
@@ -101,7 +102,9 @@ function ConceptArtRow({ category, items }) {
     if (!strip) return undefined
     const update = () => {
       const overflows = strip.scrollWidth > strip.clientWidth + 1
+      const atStart = strip.scrollLeft <= 1
       const atEnd = strip.scrollLeft + strip.clientWidth >= strip.scrollWidth - 1
+      setShowPrev(overflows && !atStart)
       setShowNext(overflows && !atEnd)
     }
     update()
@@ -118,10 +121,11 @@ function ConceptArtRow({ category, items }) {
     }
   }, [items])
 
-  const scrollForward = () => {
+  const scrollBy = (direction) => {
     const strip = stripRef.current
     if (!strip) return
-    strip.scrollBy({ left: Math.round(strip.clientWidth * 0.8), behavior: 'smooth' })
+    const delta = Math.round(strip.clientWidth * 0.8) * direction
+    strip.scrollBy({ left: delta, behavior: 'smooth' })
   }
 
   return (
@@ -146,8 +150,19 @@ function ConceptArtRow({ category, items }) {
       </div>
       <button
         type="button"
+        className="concept-art-strip-prev"
+        onClick={() => scrollBy(-1)}
+        hidden={!showPrev}
+        aria-label={`Scroll ${label.toLowerCase()} concept art backward`}
+      >
+        <svg viewBox="0 0 18 18" aria-hidden="true">
+          <path d="M12 3l-6 6 6 6" stroke="currentColor" strokeWidth="2.5" fill="none" strokeLinecap="round" strokeLinejoin="round" />
+        </svg>
+      </button>
+      <button
+        type="button"
         className="concept-art-strip-next"
-        onClick={scrollForward}
+        onClick={() => scrollBy(1)}
         hidden={!showNext}
         aria-label={`Scroll ${label.toLowerCase()} concept art forward`}
       >
