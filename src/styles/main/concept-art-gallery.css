@@ -184,6 +184,12 @@
 }
 
 @media screen and (max-width: 767px) {
+  /* Mobile: drop the horizontal-scroll strip + arrows in favor of a
+   * wrap-grid where tiles flow into the next row when full. Per the
+   * Figma spec — paddingInline 24px, heading 26px, label 20px,
+   * tile heights ~120px (characters) / 100px (enemies) / 82px
+   * (environment). We use one uniform tile height; the visual
+   * variation in the mock comes from per-image aspect ratios. */
   .concept-art-section {
           gap: 28px;
         }
@@ -193,37 +199,44 @@
           padding-inline: 24px;
         }
 
+  .concept-art-heading {
+          font-size: 26px;
+        }
+
   .concept-art-row-label {
-          font-size: 16px;
+          font-size: 20px;
         }
 
+  .concept-art-strip {
+          flex-wrap: wrap;
+          justify-content: space-between;
+          align-items: center;
+          align-content: center;
+          gap: 12px;
+          overflow: visible;
+          padding-bottom: 0;
+          scroll-snap-type: none;
+          scroll-behavior: auto;
+        }
+
+  /* Tiles size by their natural aspect at a fixed height. Cap width
+   * so a single landscape image doesn't blow out the row. */
   .concept-art-image {
-          height: 170px;
+          height: 110px;
+          max-width: 100%;
         }
 
+  /* Wrap-grid means no horizontal scroll; hide the chevron buttons. */
   .concept-art-strip-prev,
   .concept-art-strip-next {
-          width: 40px;
-          height: 40px;
-        }
-
-  .concept-art-strip-prev {
-          left: calc(24px + 8px);
-        }
-
-  .concept-art-strip-next {
-          right: calc(24px + 8px);
-        }
-
-  .concept-art-strip-prev svg,
-  .concept-art-strip-next svg {
-          width: 14px;
-          height: 14px;
+          display: none;
         }
 }
 
 @media screen and (max-width: 479px) {
+  /* Tighter viewport — shrink tiles a bit so 2+ still fit per row
+   * after the 24px outer padding + 12px gap. */
   .concept-art-image {
-          height: 150px;
+          height: 90px;
         }
 }
