@@ -55,8 +55,8 @@ const rawGames = [
       "But Lance can never rest so long as the Cult knows he lives. One way or another, he'll have to break away from his past to help chart a new course for humanity's future.",
     ],
     storyImage: {
-      src: '/assets/img/enemy-idea-2-3200.png',
-      alt: 'Universal Serial Blade enemy concept art',
+      src: '/assets/img/universal-serial-blade-logo.png',
+      alt: 'Universal Serial Blade logo',
     },
     conceptArt: [
       {
