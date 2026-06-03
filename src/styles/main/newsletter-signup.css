@@ -5,9 +5,19 @@
   align-items: center;
   width: 100%;
   max-width: 32rem;
-  margin-inline: auto;
-  padding: 2rem 1rem;
+  /* Tight against whatever sits above. The pull-up cancels half of the
+     support-kato8-section's 96px desktop bottom margin so the form sits
+     ~48px below the GoFundMe widget. Scaled down at narrower widths
+     where the support section's own block margin is already 48px. */
+  margin: -3rem auto 0;
+  padding: 0 1rem 2rem;
   display: flex;
+}
+
+@media screen and (max-width: 991px) {
+  .newsletter-signup {
+          margin-top: -1rem;
+        }
 }
 
 .newsletter-signup__heading {
