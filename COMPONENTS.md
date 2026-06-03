@@ -71,6 +71,7 @@ Composed into pages.
 | `<GameCard>` | [`src/components/GameCard.jsx`](./src/components/GameCard.jsx) | GameGrid | One tile. Background image, title, tagline, "Learn More" link. |
 | `<SupportSection>` | [`src/components/SupportSection.jsx`](./src/components/SupportSection.jsx) | HomePage | "Help Us Build Something Special" block + GoFundMe widget. |
 | `<GoFundMeWidget>` | [`src/components/GoFundMeWidget.jsx`](./src/components/GoFundMeWidget.jsx) | SupportSection, AboutPage | Embeds the GoFundMe campaign iframe. |
+| `<ConceptArtGallery>` | [`src/components/ConceptArtGallery.jsx`](./src/components/ConceptArtGallery.jsx) | GamePage | Auto-discovers concept-art images from `src/assets/games/<slug>/concept/<category>/` and renders one horizontal-scroll row per category. See [Concept-art authoring](#concept-art-authoring) below. |
 
 ## Shared utilities
 
@@ -102,6 +103,46 @@ These define the content the components render. Editing them is usually how you 
 | Change home page hero text | `src/components/Hero.jsx` |
 | Change About copy | `src/pages/AboutPage.jsx` (hand-authored, no data file) |
 | Add a new route | New `<Route>` in `App.jsx`, new file in `src/pages/`, new entry in `src/data/seo-config.js` |
+| Update concept art for a game | Drop / rename / `git rm` files under `src/assets/games/<game-slug>/concept/<category>/`. No code change. See [Concept-art authoring](#concept-art-authoring). |
+
+## Concept-art authoring
+
+`<ConceptArtGallery>` reads images directly from the filesystem — no `src/data/games.js` edits, no manual srcSet.
+
+**Folder schema** (must match exactly):
+
+```
+src/assets/games/<game-slug>/concept/<category>/<filename>.<ext>
+```
+
+| Segment | Rule | Effect on the page |
+|---|---|---|
+| `<game-slug>` | Matches the `slug` in `src/data/games.js` (e.g. `universal-serial-blade`). | Determines which game page the row appears on. |
+| `<category>` | Lowercase folder name. Use dashes for spaces (e.g. `characters`, `enemies`, `key-art`). | Becomes the uppercased row label (`KEY ART`). |
+| `<filename>` | Lowercase. Dashes for spaces. Make it descriptive — it becomes the alt text. | `boss-final-design.jpg` → alt `"Boss final design"`. |
+| `<ext>` | Lowercase `.jpg`, `.jpeg`, or `.png`. **Not** `.JPG`. | Source format. WebP variants auto-generated. |
+
+**Ordering, additions, moves:**
+
+- **Display order within a row** = alphabetical by filename. Prefix `01-`, `02-`, `03-` to force order.
+- **Row order** = alphabetical by category folder name. Use the same prefix trick if you need a specific order.
+- **Add a new row** = create a new `<category>/` subfolder and drop images in. The row appears automatically.
+- **Move image between rows** = `git mv` between subfolders. No code change.
+
+**Image-size guidance:**
+
+Drop the **full-resolution original** (ideally ≥1600 px wide). At build time [`scripts/generate-image-variants.mjs`](./scripts/generate-image-variants.mjs) uses `sharp` to produce 500/800/1080/1600w WebP variants alongside the source. The component builds an automatic `srcSet` from them. Variants are gitignored — regenerated every build — so the repo only carries the originals. A small source means no variants and a single low-res `<img>`.
+
+**Workflow:**
+
+```bash
+# Drop / rename / git rm under src/assets/games/<slug>/concept/<category>/
+git add src/assets/games/<slug>/concept/
+git commit -m "Update <game> concept art"
+git push
+```
+
+CI rebuilds (including variants) and redeploys on push to `main`.
 
 ## File-level docs
 

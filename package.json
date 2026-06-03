@@ -4,9 +4,10 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite",
-    "build": "vite build && node scripts/write-cname.mjs && node scripts/prerender.mjs",
-    "preview": "vite preview"
+    "dev": "node scripts/generate-image-variants.mjs && vite",
+    "build": "node scripts/generate-image-variants.mjs && vite build && node scripts/write-cname.mjs && node scripts/prerender.mjs",
+    "preview": "vite preview",
+    "variants": "node scripts/generate-image-variants.mjs"
   },
   "dependencies": {
     "react": "^18.3.1",
@@ -16,6 +17,7 @@
   },
   "devDependencies": {
     "@vitejs/plugin-react": "^4.3.1",
+    "sharp": "^0.33.5",
     "vite": "^5.4.8"
   }
 }
