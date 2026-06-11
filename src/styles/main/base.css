@@ -57,6 +57,10 @@ h2 {
   padding-left: 0;
 }
 
+.link.footer-link:hover {
+  text-decoration: underline;
+}
+
 .section-5 {
   margin: 48px 120px;
 }
