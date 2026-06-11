@@ -130,6 +130,10 @@
   margin: 0 0 12px;
 }
 
+.nav-games-item .link:hover {
+  color: var(--light-pearl);
+}
+
 .nav-games-dropdown {
   background-color: #424065;
 }
