@@ -68,8 +68,9 @@
 .concept-art-row-divider {
   flex: 1 1 auto;
   height: 7px;
-  background-color: #9d7fb9;
-  border-radius: 3.5px;
+  background-image: url('../../assets/img/gallery-line.svg');
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
 }
 
 .concept-art-strip {
