@@ -106,7 +106,7 @@
   flex: 0 0 auto;
   margin: 0;
   scroll-snap-align: start;
-  border-radius: 8px;
+  border-radius: 20px;
   overflow: hidden;
 }
 
