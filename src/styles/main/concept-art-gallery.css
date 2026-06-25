@@ -116,6 +116,7 @@
   width: auto;
   max-width: none;
   object-fit: cover;
+  border-radius: 8px;
 }
 
 .concept-art-strip-prev,
