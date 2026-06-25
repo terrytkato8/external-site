@@ -106,7 +106,7 @@
   flex: 0 0 auto;
   margin: 0;
   scroll-snap-align: start;
-  border-radius: 20px;
+  border-radius: 8px;
   overflow: hidden;
 }
 
@@ -116,7 +116,6 @@
   width: auto;
   max-width: none;
   object-fit: cover;
-  border-radius: 8px;
 }
 
 .concept-art-strip-prev,
