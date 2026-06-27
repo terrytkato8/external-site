@@ -69,6 +69,46 @@
   display: flex;
 }
 
+.documentary-section {
+  margin: 48px 120px;
+  display: flex;
+  justify-content: center;
+}
+
+.documentary-content {
+  grid-row-gap: 24px;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  display: flex;
+}
+
+.documentary-heading {
+  color: #000;
+  width: 100%;
+  text-align: center;
+  margin-block: 0;
+  font-family: RocknRoll One, sans-serif;
+  font-size: 36px;
+  font-weight: 400;
+  line-height: 1.15;
+  text-decoration: none;
+}
+
+.documentary-video {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  border-radius: 18px;
+  overflow: hidden;
+}
+
+.documentary-video iframe {
+  width: 100%;
+  height: 100%;
+  display: block;
+  border: 0;
+}
+
 @media screen and (max-width: 991px) {
   .image-3 {
           margin-top: 24px;
@@ -76,6 +116,14 @@
 
   .about-us-section {
           padding-inline: 80px;
+        }
+
+  .documentary-section {
+          margin-inline: 80px;
+        }
+
+  .documentary-heading {
+          font-size: 28px;
         }
 }
 
@@ -100,5 +148,9 @@
 
   .text-14 {
           font-size: 28px;
+        }
+
+  .documentary-section {
+          margin-inline: 24px;
         }
 }
