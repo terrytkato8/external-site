@@ -56,6 +56,23 @@ export default function AboutPage() {
         </div>
       </section>
 
+      <section className="documentary-section">
+        <div className="documentary-content">
+          <div className="documentary-heading">Kato.8 Studios | Making the studio - Episode 1 (Pre-Production)</div>
+          <div className="documentary-video">
+            <iframe
+              src="https://www.youtube.com/embed/ofTrhSSZ4DY?si=8Y-tiZnOalba4uFA"
+              title="Kato.8 Studios | Making the studio - Episode 1 (Pre-Production)"
+              loading="lazy"
+              frameBorder="0"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+              referrerPolicy="strict-origin-when-cross-origin"
+              allowFullScreen
+            />
+          </div>
+        </div>
+      </section>
+
       <div className="support-kato8-section">
         <div className="frame-122">
           <div className="support-section_heading">Support Kato.8</div>
