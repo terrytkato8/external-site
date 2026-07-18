@@ -1,9 +1,11 @@
 import { useParams } from 'react-router-dom'
 import { getGameBySlug } from '../data/games'
 import { gameRoutes } from '../data/seo-config'
+import { playtestEndpoints } from '../data/playtestEndpoints'
 import NotFoundPage from './NotFoundPage'
 import Seo from '../components/Seo'
 import ConceptArtGallery from '../components/ConceptArtGallery'
+import PlaytestSignupForm from '../components/PlaytestSignupForm'
 import { asset } from '../utils/asset.js'
 
 /**
@@ -166,6 +168,13 @@ export default function GamePage() {
       </section>
 
       <ConceptArtGallery gameSlug={game.slug} />
+
+      <PlaytestSignupForm
+        key={game.slug}
+        source={`${game.slug}-page`}
+        gameTitle={game.title}
+        endpoint={playtestEndpoints[game.slug]}
+      />
     </section>
   )
 }
