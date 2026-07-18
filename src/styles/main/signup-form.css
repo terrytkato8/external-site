@@ -1,8 +1,8 @@
 /*
  * Shared base styles for multi-field sign-up forms (PlaytestSignupForm,
- * DiscordApplicationForm). Modeled on newsletter-signup.css but wider
- * (up to 36rem) and with support for select, textarea, and checkbox
- * fields. The newsletter form keeps its own stylesheet for now.
+ * DiscordSignupForm). Modeled on newsletter-signup.css but wider (up to
+ * 36rem) and with support for select, textarea, and checkbox fields.
+ * The newsletter form keeps its own stylesheet for now.
  */
 
 .signup-form {
