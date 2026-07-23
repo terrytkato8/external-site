@@ -5,7 +5,7 @@ import { useState } from 'react'
  * submission, idle / submitting / success / error states, honeypot for
  * basic bot filtering.
  *
- * Posts `{ name, email, discordHandle, platform, availability, source }`
+ * Posts `{ name, email, discordHandle, availability, source }`
  * to the `endpoint` URL (typically a Formspree form; the caller resolves
  * a per-game env var and passes the value in — see
  * `src/data/playtestEndpoints.js`). If `endpoint` is unset, submit
@@ -46,7 +46,6 @@ export default function PlaytestSignupForm({
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
   const [discordHandle, setDiscordHandle] = useState('')
-  const [platform, setPlatform] = useState('')
   const [availability, setAvailability] = useState('')
   const [consented, setConsented] = useState(false)
   const [website, setWebsite] = useState('') // honeypot
@@ -93,7 +92,6 @@ export default function PlaytestSignupForm({
             name: name.trim(),
             email: trimmedEmail,
             discordHandle: discordHandle.trim(),
-            platform,
             availability: availability.trim(),
             source,
           }),
@@ -106,7 +104,6 @@ export default function PlaytestSignupForm({
       setName('')
       setEmail('')
       setDiscordHandle('')
-      setPlatform('')
       setAvailability('')
       setConsented(false)
     } catch (error) {
@@ -184,22 +181,6 @@ export default function PlaytestSignupForm({
             onChange={(event) => setDiscordHandle(event.target.value)}
             disabled={status === 'submitting'}
           />
-        </label>
-
-        <label className="signup-form__field">
-          <span className="signup-form__label">Preferred platform</span>
-          <select
-            name="platform"
-            value={platform}
-            onChange={(event) => setPlatform(event.target.value)}
-            disabled={status === 'submitting'}
-          >
-            <option value="">No preference</option>
-            <option value="pc-windows">PC (Windows)</option>
-            <option value="pc-mac">PC (macOS)</option>
-            <option value="pc-linux">PC (Linux)</option>
-            <option value="console">Console</option>
-          </select>
         </label>
 
         <label className="signup-form__field">
