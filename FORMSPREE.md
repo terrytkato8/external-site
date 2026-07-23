@@ -4,7 +4,9 @@ Submission endpoints for forms on the marketing site. Keeping the IDs in one pla
 
 | Form | Endpoint |
 |---|---|
-| Kato8 Discord Signup | <https://formspree.io/f/xrenpjrq> |
+| Big Boss Cleanup Discord | <https://formspree.io/f/xrenpjrq> |
+| Last Light Discord | <https://formspree.io/f/mpqvyqwl> |
+| USB Discord | <https://formspree.io/f/mkodqogv> |
 | Big Boss Cleanup Playtest | <https://formspree.io/f/mojgerpg> |
 | Last Light Playtest | <https://formspree.io/f/xykreobv> |
 | USB Playtest | <https://formspree.io/f/xqerpngw> |
