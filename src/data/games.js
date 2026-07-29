@@ -15,6 +15,8 @@
  *   categories  — string[]. Rendered as pill tags.
  *   bgColor     — hex string. GameCard background fallback.
  *   bgImage     — URL or `/assets/...` path. GameCard background image.
+ *   kickstarterUrl — URL. If set, GamePage renders a "Back on Kickstarter"
+ *                    CTA under the title/tags.
  *   comingSoon  — boolean. Shows a "Coming soon" tag on the GamePage.
  *   framedArt   — boolean. If true, GamePage renders the framed-art block.
  *   gameplay    — string[]. Paragraphs shown in the Gameplay block.
@@ -44,6 +46,7 @@ const rawGames = [
     categories: ['2D Side-Scroller', 'Action/Adventure'],
     bgColor: '#ff9183',
     bgImage: '/assets/img/universal-serial-blade-outside-city-concept.jpg',
+    kickstarterUrl: 'https://www.kickstarter.com/projects/kato8-lastlight/universal-serial-blade-usb',
     comingSoon: true,
     framedArt: true,
     gameplay: [
@@ -70,6 +73,7 @@ const rawGames = [
     categories: [],
     bgColor: '#e772bc',
     bgImage: null,
+    kickstarterUrl: 'https://www.kickstarter.com/projects/kato8-lastlight/last-light-0',
     comingSoon: false,
     framedArt: false,
     gameplay: [

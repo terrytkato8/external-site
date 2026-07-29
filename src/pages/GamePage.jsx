@@ -8,6 +8,7 @@ import Seo from '../components/Seo'
 import ConceptArtGallery from '../components/ConceptArtGallery'
 import PlaytestSignupForm from '../components/PlaytestSignupForm'
 import DiscordSignupForm from '../components/DiscordSignupForm'
+import KickstarterButton from '../components/KickstarterButton'
 import { asset } from '../utils/asset.js'
 
 /**
@@ -103,6 +104,12 @@ export default function GamePage() {
               ))}
             </div>
           </div>
+
+          {game.kickstarterUrl && (
+            <div className="game-hero-kickstarter">
+              <KickstarterButton href={game.kickstarterUrl} />
+            </div>
+          )}
 
           {game.framedArt && (
             <div className="games_contest-wrapper">
