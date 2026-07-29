@@ -26,7 +26,10 @@ main.jsx
     │   │                       └── <GoFundMeWidget>
     │   ├── /games/:slug → <GamePage>
     │   │                   ├── <Seo>
-    │   │                   └── (hand-authored layout consuming game data)
+    │   │                   ├── <KickstarterButton>          (if game.kickstarterUrl)
+    │   │                   ├── <ConceptArtGallery>
+    │   │                   ├── <PlaytestSignupForm>
+    │   │                   └── <DiscordSignupForm>
     │   ├── /about-us    → <AboutPage>
     │   │                   ├── <Seo>
     │   │                   └── <GoFundMeWidget>
@@ -42,8 +45,8 @@ Routes are declared in [`src/App.jsx`](./src/App.jsx).
 | Path | File | Purpose |
 |---|---|---|
 | `/` | [`src/pages/HomePage.jsx`](./src/pages/HomePage.jsx) | Landing page. Composes Hero + GameGrid + SupportSection. |
-| `/games/:slug` | [`src/pages/GamePage.jsx`](./src/pages/GamePage.jsx) | Per-game detail page. Reads slug from URL, looks up the game in `src/data/games.js`, renders hero + story + concept art. Unknown slug falls back to `NotFoundPage`. |
-| `/about-us` | [`src/pages/AboutPage.jsx`](./src/pages/AboutPage.jsx) | Studio mission, story behind the name, GoFundMe pitch. Copy is hand-authored in the file. |
+| `/games/:slug` | [`src/pages/GamePage.jsx`](./src/pages/GamePage.jsx) | Per-game detail page. Reads slug from URL, looks up the game in `src/data/games.js`, renders hero + optional Kickstarter CTA + story + concept-art gallery + per-game playtest and Discord sign-up forms. Unknown slug falls back to `NotFoundPage`. |
+| `/about-us` | [`src/pages/AboutPage.jsx`](./src/pages/AboutPage.jsx) | Studio mission, story behind the name, embedded documentary episode, GoFundMe pitch. Copy is hand-authored in the file. |
 | `*` | [`src/pages/NotFoundPage.jsx`](./src/pages/NotFoundPage.jsx) | Catch-all 404 page. Also rendered by `GamePage` for unknown slugs. |
 
 To add a route: add a `<Route>` in `App.jsx`, a page component under `src/pages/`, and an entry in `src/data/seo-config.js` so the prerender step generates static HTML for it.
@@ -72,6 +75,10 @@ Composed into pages.
 | `<SupportSection>` | [`src/components/SupportSection.jsx`](./src/components/SupportSection.jsx) | HomePage | "Help Us Build Something Special" block + GoFundMe widget. |
 | `<GoFundMeWidget>` | [`src/components/GoFundMeWidget.jsx`](./src/components/GoFundMeWidget.jsx) | SupportSection, AboutPage | Embeds the GoFundMe campaign iframe. |
 | `<ConceptArtGallery>` | [`src/components/ConceptArtGallery.jsx`](./src/components/ConceptArtGallery.jsx) | GamePage | Auto-discovers concept-art images from `src/assets/games/<slug>/concept/<category>/` and renders one horizontal-scroll row per category. See [Concept-art authoring](#concept-art-authoring) below. |
+| `<KickstarterButton>` | [`src/components/KickstarterButton.jsx`](./src/components/KickstarterButton.jsx) | GamePage | "Back on Kickstarter" CTA. Rendered only when the game entry in `src/data/games.js` has a `kickstarterUrl`. Opens in a new tab. |
+| `<PlaytestSignupForm>` | [`src/components/PlaytestSignupForm.jsx`](./src/components/PlaytestSignupForm.jsx) | GamePage | Per-game playtest sign-up. Posts to the game's Formspree endpoint from `src/data/playtestEndpoints.js`. Missing endpoint = form still works locally, no network call. |
+| `<DiscordSignupForm>` | [`src/components/DiscordSignupForm.jsx`](./src/components/DiscordSignupForm.jsx) | GamePage | Per-game Discord community sign-up. Same shape as the playtest form; endpoints in `src/data/discordEndpoints.js`. |
+| `<NewsletterSignup>` | [`src/components/NewsletterSignup.jsx`](./src/components/NewsletterSignup.jsx) | (not currently mounted) | General newsletter sign-up form. Posts to `VITE_NEWSLETTER_ENDPOINT`. Kept around for future placement — drop into any page as `<NewsletterSignup source="..." />`. |
 
 ## Shared utilities
 
@@ -87,8 +94,10 @@ These define the content the components render. Editing them is usually how you 
 
 | Module | File | Purpose |
 |---|---|---|
-| Games | [`src/data/games.js`](./src/data/games.js) | One entry per game: slug, title, tagline, categories, story/gameplay paragraphs, asset paths. Consumed by Nav, MobileMenu, Footer, GameGrid, GamePage. |
+| Games | [`src/data/games.js`](./src/data/games.js) | One entry per game: slug, title, tagline, categories, story/gameplay paragraphs, asset paths, optional `kickstarterUrl`. Consumed by Nav, MobileMenu, Footer, GameGrid, GamePage. |
 | SEO config | [`src/data/seo-config.js`](./src/data/seo-config.js) | Per-route SEO metadata. Used by `<Seo>` at runtime and by `scripts/prerender.mjs` at build time. |
+| Playtest endpoints | [`src/data/playtestEndpoints.js`](./src/data/playtestEndpoints.js) | Per-game Formspree endpoint for `<PlaytestSignupForm>`, keyed by slug. Mirror any change in [FORMSPREE.md](./FORMSPREE.md). |
+| Discord endpoints | [`src/data/discordEndpoints.js`](./src/data/discordEndpoints.js) | Per-game Formspree endpoint for `<DiscordSignupForm>`, keyed by slug. Mirror any change in [FORMSPREE.md](./FORMSPREE.md). |
 
 ## Common tasks
 
@@ -104,6 +113,8 @@ These define the content the components render. Editing them is usually how you 
 | Change About copy | `src/pages/AboutPage.jsx` (hand-authored, no data file) |
 | Add a new route | New `<Route>` in `App.jsx`, new file in `src/pages/`, new entry in `src/data/seo-config.js` |
 | Update concept art for a game | Drop / rename / `git rm` files under `src/assets/games/<game-slug>/concept/<category>/`. No code change. See [Concept-art authoring](#concept-art-authoring). |
+| Add a Kickstarter CTA to a game | Set `kickstarterUrl` on the game's entry in `src/data/games.js`. The button appears automatically. |
+| Wire a game to Formspree | Add the endpoint URL(s) to `src/data/playtestEndpoints.js` and/or `src/data/discordEndpoints.js` (keyed by slug) and mirror the change in `FORMSPREE.md`. |
 
 ## Concept-art authoring
 
