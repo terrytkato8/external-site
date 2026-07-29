@@ -36,6 +36,8 @@ The dev server hot-reloads on save. If HMR stops picking up changes (rare but ha
 | Change nav links | `src/components/Nav.jsx` (desktop) and `src/components/MobileMenu.jsx` (hamburger) |
 | Change footer | `src/components/Footer.jsx` |
 | Add a static asset | Drop into `public/assets/`, reference via `asset('/assets/...')` from `src/utils/asset.js` |
+| Wire a game to Formspree | Add per-game endpoints to `src/data/playtestEndpoints.js` and/or `src/data/discordEndpoints.js`, mirror in `FORMSPREE.md` |
+| Add a Kickstarter CTA to a game | Set `kickstarterUrl` on the game's entry in `src/data/games.js` |
 | Update styles | `src/styles/main/` (per-feature CSS) |
 
 **Important:** always reference asset URLs through the `asset()` helper. It prefixes `/assets/` with the Vite `BASE_URL`, which differs between prod (`/`) and staging (`/kato8-staging/`).
