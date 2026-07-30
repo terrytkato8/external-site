@@ -23,9 +23,6 @@ export default function KickstarterButton({
         className="kickstarter-button_logo"
       />
       <span className="kickstarter-button_text">{label}</span>
-      <span className="kickstarter-button_arrow" aria-hidden="true">
-        →
-      </span>
     </a>
   )
 }

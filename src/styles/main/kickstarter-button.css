@@ -2,10 +2,10 @@
  * Kickstarter CTA button. Rendered by <KickstarterButton> on game pages
  * whose data entry defines a `kickstarterUrl`.
  *
- * Base rule sets KS green background, Reem Kufi 400, white text, offset
- * shadow transitions. The `--top` variant is the reference design chosen
- * out of round-2 evaluation (dark-cobalt inset stroke + hard-offset shadow
- * that lifts on hover, arrow slides right).
+ * Base rule sets KS green background, Reem Kufi 400, white text. The
+ * `--top` variant is the v2 flat design (sandbox PR aeiti/kato8-sandbox#8):
+ * subtle drop shadow, hover just darkens the background — flatter,
+ * "official partner" look.
  */
 
 :root {
@@ -28,48 +28,23 @@
   text-decoration: none;
   border: 0;
   cursor: pointer;
-  transition:
-    background-color 0.2s ease,
-    box-shadow 0.2s cubic-bezier(0.165, 0.84, 0.44, 1),
-    transform 0.2s ease;
+  transition: background-color 0.2s ease;
 }
 
 .kickstarter-button_logo {
   width: 1.4em;
   height: 1.4em;
   flex-shrink: 0;
-  transition:
-    transform 0.2s ease,
-    filter 0.2s ease;
-}
-
-.kickstarter-button_arrow {
-  opacity: 0.85;
-  font-size: 1.05em;
-  line-height: 1;
-  display: inline-block;
-  transition: transform 0.2s ease;
 }
 
 .kickstarter-button--top {
-  box-shadow:
-    0 0 0 2px var(--dark-cobalt) inset,
-    4px 4px 0 var(--dark-cobalt);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.15);
 }
 .kickstarter-button--top:hover {
   background-color: var(--ks-green-hover);
-  box-shadow:
-    0 0 0 2px var(--dark-cobalt) inset,
-    7px 7px 0 var(--dark-cobalt);
   color: #fff;
 }
-.kickstarter-button--top:hover .kickstarter-button_arrow {
-  transform: translateX(4px);
-}
 
-/* Small breathing room between the title/tags block and the CTA on
- * the game hero. Extra bottom margin covers the offset shadow so it
- * doesn't visually collide with the framed-art block below. */
 .game-hero-kickstarter {
   margin-top: 0.75rem;
   margin-bottom: 0.5rem;
