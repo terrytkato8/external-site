@@ -72,7 +72,7 @@ const rawGames = [
     description: 'Scavenge. Build. Survive the night.',
     categories: [],
     bgColor: '#e772bc',
-    bgImage: null,
+    bgImage: '/assets/img/last-light-cover.jpg',
     kickstarterUrl: 'https://www.kickstarter.com/projects/kato8-lastlight/last-light-0',
     comingSoon: false,
     framedArt: false,
@@ -101,7 +101,7 @@ const rawGames = [
     description: 'The battle may be over… but the mess remains.',
     categories: [],
     bgColor: '#ffaf83',
-    bgImage: null,
+    bgImage: '/assets/img/big-boss-cleanup-cover.jpg',
     comingSoon: false,
     framedArt: false,
     gameplay: [
