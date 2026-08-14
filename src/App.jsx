@@ -1,5 +1,6 @@
 import { Routes, Route, useLocation } from 'react-router-dom'
 import Nav from './components/Nav'
+import ConventionBanner from './components/ConventionBanner'
 import Footer from './components/Footer'
 import ScrollToTop from './components/ScrollToTop'
 import Analytics from './components/Analytics'
@@ -36,6 +37,7 @@ export default function App() {
     <div className={bodyClass}>
       <ScrollToTop />
       <Analytics />
+      <ConventionBanner />
       <Nav />
       <Routes>
         <Route path="/" element={<HomePage />} />
