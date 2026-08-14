@@ -38,7 +38,7 @@
   grid-row-gap: 2.5%;
   flex-flow: wrap;
   justify-content: center;
-  align-items: center;
+  align-items: stretch;
   width: 100%;
   display: flex;
 }
