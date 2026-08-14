@@ -1,0 +1,44 @@
+/* Thin announcement strip above the nav. See src/components/ConventionBanner.jsx. */
+.convention-banner {
+  width: 100%;
+  background-color: var(--dark-cobalt);
+  color: var(--light-pearl);
+  font-family: "Reem Kufi", sans-serif;
+  text-align: center;
+}
+
+.convention-banner_text {
+  margin: 0;
+  padding: 0.5rem 1.25rem;
+  font-size: var(--text-sm-size);
+  line-height: 1.4;
+  letter-spacing: 0.01em;
+}
+
+.convention-banner_name,
+.convention-banner_link {
+  color: var(--squid-pink-hover);
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.convention-banner_link {
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  transition: color 0.15s ease;
+}
+
+.convention-banner_link:hover {
+  color: var(--light-pearl);
+}
+
+.convention-banner_dates {
+  color: color-mix(in srgb, var(--light-pearl) 75%, transparent);
+  white-space: nowrap;
+}
+
+@media screen and (max-width: 479px) {
+  .convention-banner_text {
+    padding-inline: 0.75rem;
+  }
+}
