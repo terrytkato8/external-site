@@ -13,6 +13,7 @@ main.jsx
 └── <App>                              src/App.jsx
     ├── <ScrollToTop>                  zero-render; scrolls to top on route change
     ├── <Analytics>                    zero-render; fires GA page_view on route change
+    ├── <ConventionBanner>             announcement strip above the nav (temporary)
     ├── <Nav>                          persistent top bar
     │   └── <MobileMenu>               hamburger overlay (narrow viewports)
     │       └── <SocialIcon>
@@ -62,6 +63,7 @@ These mount once at the app root (see `App.jsx`) and appear on every page.
 | `<MobileMenu>` | [`src/components/MobileMenu.jsx`](./src/components/MobileMenu.jsx) | Slide-in panel for narrow viewports. Rendered by `Nav`. |
 | `<Analytics>` | [`src/components/Analytics.jsx`](./src/components/Analytics.jsx) | Zero-render. Fires GA `page_view` on every route change. |
 | `<ScrollToTop>` | [`src/components/ScrollToTop.jsx`](./src/components/ScrollToTop.jsx) | Zero-render. Scrolls window to top on every route change. |
+| `<ConventionBanner>` | [`src/components/ConventionBanner.jsx`](./src/components/ConventionBanner.jsx) | Thin announcement strip above `Nav`. Lists upcoming in-person appearances from a `conventions` array at the top of the file; each entry's `href` is optional (null renders plain text). **Temporary** — unmount from `App.jsx` once the listed events have passed. |
 
 ## Page sections
 
@@ -111,6 +113,7 @@ These define the content the components render. Editing them is usually how you 
 | Add a static asset | Drop into `public/assets/`, reference via `asset('/assets/...')` |
 | Change home page hero text | `src/components/Hero.jsx` |
 | Change About copy | `src/pages/AboutPage.jsx` (hand-authored, no data file) |
+| Update or retire the convention banner | `src/components/ConventionBanner.jsx` (edit the `conventions` array); to retire it, remove the `<ConventionBanner />` mount in `App.jsx` |
 | Add a new route | New `<Route>` in `App.jsx`, new file in `src/pages/`, new entry in `src/data/seo-config.js` |
 | Update concept art for a game | Drop / rename / `git rm` files under `src/assets/games/<game-slug>/concept/<category>/`. No code change. See [Concept-art authoring](#concept-art-authoring). |
 | Add a Kickstarter CTA to a game | Set `kickstarterUrl` on the game's entry in `src/data/games.js`. The button appears automatically. |

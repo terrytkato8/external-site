@@ -38,6 +38,8 @@ The dev server hot-reloads on save. If HMR stops picking up changes (rare but ha
 | Add a static asset | Drop into `public/assets/`, reference via `asset('/assets/...')` from `src/utils/asset.js` |
 | Wire a game to Formspree | Add per-game endpoints to `src/data/playtestEndpoints.js` and/or `src/data/discordEndpoints.js`, mirror in `FORMSPREE.md` |
 | Add a Kickstarter CTA to a game | Set `kickstarterUrl` on the game's entry in `src/data/games.js` |
+| Add or reorder concept art | Drop files under `src/assets/games/<slug>/concept/<category>/` — no code change. See [COMPONENTS.md → Concept-art authoring](./COMPONENTS.md#concept-art-authoring) |
+| Update the convention banner | `src/components/ConventionBanner.jsx`; unmount it in `src/App.jsx` once the events pass |
 | Update styles | `src/styles/main/` (per-feature CSS) |
 
 **Important:** always reference asset URLs through the `asset()` helper. It prefixes `/assets/` with the Vite `BASE_URL`, which differs between prod (`/`) and staging (`/kato8-staging/`).
@@ -52,19 +54,21 @@ import { asset } from '../utils/asset.js'
 ```
 .
 ├── .github/workflows/    # CI: release + deploy
-├── docs/                 # Build output (kept committed for legacy; Pages now uses Actions)
+├── docs/                 # Build output. Committed but vestigial — CI rebuilds it (see note below)
 ├── public/               # Static assets copied verbatim into the build
 │   └── assets/
 │       └── img/
 │           └── social/   # Social media icons (SVG)
 ├── scripts/
+│   ├── generate-image-variants.mjs  # sharp: WebP srcSet variants for concept art
 │   ├── prerender.mjs     # Writes route-specific HTML with SEO meta tags
 │   └── write-cname.mjs   # Writes docs/CNAME only for prod builds
 ├── src/
+│   ├── assets/games/     # Concept art, imported by bundler (see COMPONENTS.md)
 │   ├── components/       # Nav, Footer, Hero, SocialIcons, etc.
-│   ├── data/             # games.js, seo-config.js (single source of truth)
+│   ├── data/             # games.js, seo-config.js, playtest/discordEndpoints.js
 │   ├── pages/            # HomePage, GamePage, AboutPage, NotFoundPage
-│   ├── styles/           # CSS, organized by feature
+│   ├── styles/           # CSS, organized by feature (main/, main/pages/)
 │   ├── utils/asset.js    # BASE_URL-aware /assets/ prefixer
 │   ├── App.jsx           # Routes + body class switching
 │   └── main.jsx          # ReactDOM root + Router setup
@@ -77,12 +81,21 @@ import { asset } from '../utils/asset.js'
 
 | Command | What it does |
 |---|---|
-| `npm run dev` | Vite dev server on :5173. No prerender. Default env = prod. |
-| `npm run build` | Production build into `docs/`. Writes `docs/CNAME`. Runs prerender. |
+| `npm run dev` | Generates concept-art image variants, then starts the Vite dev server. No prerender. Default env = prod. |
+| `npm run build` | Variants → `vite build` into `docs/` → writes `docs/CNAME` → prerenders routes. Order matters. |
 | `VITE_DEPLOY_TARGET=staging npm run build` | Staging-flavored build (`/kato8-staging/` base, no CNAME). |
 | `npm run preview` | Serve the built `docs/` locally to spot-check. |
+| `npm run variants` | Regenerate concept-art WebP variants only. Runs automatically as part of `dev` and `build`. |
 
-Pushes to `main` on either repo trigger that repo's deploy workflow. You don't have to (and shouldn't need to) commit the `docs/` folder anymore — it's still there for now but Pages reads from the workflow artifact.
+The dev server prints the URL it actually bound to. It aims for :5173 but falls back to the next free port (often :5174) when something else already holds it — read the startup output rather than assuming :5173.
+
+Pushes to `main` on either repo trigger that repo's deploy workflow, which builds from source and publishes the artifact. Pages does **not** read the committed `docs/` folder.
+
+**Don't commit `docs/` churn.** The folder is still tracked for historical reasons, so a local `npm run build` will dirty dozens of hashed asset files that have nothing to do with your change. PRs should be source-only. If a local build has touched it:
+
+```bash
+git checkout -- docs/ && git clean -fd docs/
+```
 
 ## Versioning
 
