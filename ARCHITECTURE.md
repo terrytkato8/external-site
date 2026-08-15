@@ -46,6 +46,25 @@ Without this, React Router on staging would see paths like `/kato8-staging/games
 
 On prod, `BASE_URL` is `/` and the `basename` prop is a no-op.
 
+## Build pipeline
+
+`npm run build` is four steps chained with `&&`, and the order is load-bearing:
+
+```
+generate-image-variants.mjs → vite build → write-cname.mjs → prerender.mjs
+```
+
+| Step | Why it sits there |
+|---|---|
+| [`scripts/generate-image-variants.mjs`](./scripts/generate-image-variants.mjs) | Must run **before** `vite build` — it writes the WebP variants that `ConceptArtGallery`'s `import.meta.glob` picks up at bundle time. Run late, the gallery ships without a `srcSet`. |
+| `vite build` | Produces `docs/`. |
+| [`scripts/write-cname.mjs`](./scripts/write-cname.mjs) | Needs `docs/` to exist. |
+| [`scripts/prerender.mjs`](./scripts/prerender.mjs) | Needs `docs/index.html` to exist so it has a template to copy. |
+
+`npm run dev` runs the variants step too, then hands off to Vite.
+
+The variants are gitignored (`src/assets/games/**/concept/**/*-[0-9]*w.webp`) — only the full-resolution source images are committed, and every build regenerates the derivatives from them.
+
 ## Prerender + SPA hybrid
 
 The site is a single-page React app, but each route also has a prerendered HTML file with the right SEO meta tags baked in. That gives crawlers what they need without giving up the SPA UX.
@@ -64,6 +83,14 @@ The site is a single-page React app, but each route also has a prerendered HTML 
 
 If you add a new top-level route, **also add it to `src/data/seo-config.js`** so the prerender step generates a static HTML file for it. Otherwise crawlers fall into the 404-redirect fallback and won't get the right meta tags on first byte.
 
+**Gotcha — the route resolver exists twice.** `seo-config.js` exports `getRouteMeta()` for the runtime `<Seo>` component, but `scripts/prerender.mjs` carries its *own* copy at [`routeMetaFor()`](./scripts/prerender.mjs). Adding a new **dynamic route family** (something like `/blog/:slug`, as opposed to another entry in an existing family) therefore takes three edits:
+
+1. `getRouteMeta()` in `src/data/seo-config.js` — so the runtime resolves it.
+2. `listPrerenderRoutes()` in the same file — so prerender knows to visit it.
+3. `routeMetaFor()` in `scripts/prerender.mjs` — so prerender can resolve it.
+
+Miss the third and the build dies with `No SEO config for route …`. Adding a game to the existing `gameRoutes` map needs none of this — the `/games/:slug` family is already wired in all three places.
+
 ## Deployment
 
 Both repos use the "GitHub Actions" Pages source.
@@ -74,6 +101,19 @@ Both repos use the "GitHub Actions" Pages source.
 Pages reads the custom domain (`kato8studios.com`) from the prod repo's Settings → Pages → Custom domain field, not from any `CNAME` file in the artifact. The `CNAME` file the build writes is now mostly belt-and-suspenders.
 
 The committed `docs/` folder in this repo is legacy. Before we moved to Actions-based Pages, `docs/` was the deployment artifact. It's still there for now; it could be deleted in a follow-up cleanup.
+
+Because it's still tracked, a local `npm run build` rewrites dozens of hashed files under `docs/` and leaves them staged for an unrelated commit. **PRs are source-only** — CI rebuilds `docs/` itself. Revert the churn before committing:
+
+```bash
+git checkout -- docs/ && git clean -fd docs/
+```
+
+**A merge to `main` occasionally fires no deploy at all** — a transient dropped GitHub event, not a workflow bug. After merging, confirm a run exists for the merge SHA; if not, kick it manually:
+
+```bash
+gh run list --workflow deploy.yml --limit 5
+gh workflow run deploy.yml --ref main
+```
 
 ## Versioning
 
@@ -116,7 +156,14 @@ When you add a game, add an entry here AND in `src/data/games.js`. The two files
 ## Known gotchas
 
 - **macOS case-collision**: the filesystem is case-insensitive but git is not. The staging repo at one point tracked files under both `Assets/` (capital) and `assets/` (lowercase). Always reference lowercase `/assets/...` in code. If you `git add` a new asset and it lands under capital-A on a Mac, use the explicit lowercase path: `git add public/assets/img/foo.svg`.
-- **Multiple clones**: keep a single canonical clone per repo. `~/GitHub/external-site` is the canonical prod clone on the author's machine. Running `npm run dev` from `~/Desktop/external-site` after editing in `~/GitHub/external-site` is a classic "why aren't my changes showing up" trap.
+- **Multiple clones and worktrees**: keep a single canonical clone per repo — `~/GitHub/external-site` is the canonical prod clone on the author's machine. Running `npm run dev` from a second clone after editing in the first is a classic "why aren't my changes showing up" trap. Git worktrees under `.claude/worktrees/` are fine, but each one is a separate checkout with its own `node_modules` and its own dev server: verify a change in the worktree you actually edited.
+- **Verifying a deploy landed**: right after a deploy the Pages CDN can still serve the *previous* hashed bundle for a minute or two, so a page that looks unchanged isn't proof the deploy failed. Check which bundle you're being served, and cache-bust before concluding anything:
+
+  ```bash
+  curl -s "https://kato8studios.com/?cb=$(date +%s)" | grep -o 'assets/index-[^"]*\.js'
+  ```
+
+  Prerendered HTML only carries the SEO meta tags — page *content* lives in the JS bundle. To confirm content shipped without opening a browser, grep the bundle itself rather than the route's HTML.
 - **Stale Vite HMR**: if HMR stops picking up CSS or JSX changes, kill `npm run dev` and restart. Usually triggered by branch switches or dependency changes mid-session.
 - **First request after a long quiet period**: GitHub Pages might be cold and take a few seconds to respond. Not a bug.
 - **Pages "Custom domain" field**: don't leave it blank in prod's Settings → Pages, or `kato8studios.com` stops resolving even though the build writes a `CNAME` file. The Settings field is authoritative when using Actions deployment.
