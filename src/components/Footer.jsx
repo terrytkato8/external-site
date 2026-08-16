@@ -19,12 +19,36 @@ import { games } from '../data/games'
 import { asset } from '../utils/asset.js'
 
 const footerSocials = [
-  { name: 'Instagram', href: 'https://www.instagram.com/kato.8_studios/', src: '/assets/img/social/instagram.svg' },
-  { name: 'TikTok', href: 'https://www.tiktok.com/@kato.8_studios', src: '/assets/img/social/tiktok.svg' },
-  { name: 'X', href: 'https://x.com/Kato8_Studios', src: '/assets/img/social/x.svg' },
-  { name: 'BlueSky', href: 'https://bsky.app/profile/kato-8.bsky.social', src: '/assets/img/social/bluesky.svg' },
-  { name: 'YouTube', href: 'https://www.youtube.com/@Kato.8Studios', src: '/assets/img/social/youtube.svg' },
-  { name: 'LinkedIn', href: 'https://www.linkedin.com/company/kato-8-studios/', src: '/assets/img/social/linkedin.svg' },
+  {
+    name: 'Instagram',
+    href: 'https://www.instagram.com/kato.8_studios/',
+    src: '/assets/img/social/instagram.svg',
+  },
+  {
+    name: 'TikTok',
+    href: 'https://www.tiktok.com/@kato.8_studios',
+    src: '/assets/img/social/tiktok.svg',
+  },
+  {
+    name: 'X',
+    href: 'https://x.com/Kato8_Studios',
+    src: '/assets/img/social/x.svg',
+  },
+  {
+    name: 'BlueSky',
+    href: 'https://bsky.app/profile/kato-8.bsky.social',
+    src: '/assets/img/social/bluesky.svg',
+  },
+  {
+    name: 'YouTube',
+    href: 'https://www.youtube.com/@Kato.8Studios',
+    src: '/assets/img/social/youtube.svg',
+  },
+  {
+    name: 'LinkedIn',
+    href: 'https://www.linkedin.com/company/kato-8-studios/',
+    src: '/assets/img/social/linkedin.svg',
+  },
 ]
 
 export default function Footer() {

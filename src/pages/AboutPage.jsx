@@ -6,16 +6,40 @@ import { asset } from '../utils/asset.js'
 /**
  * Route: `/about-us`.
  *
- * Four sections, each statically authored (no data file):
+ * Four sections:
  *   1. About Us — mascot image + studio mission blurb.
  *   2. Why Kato.8? — the story behind the studio name + Kato dog photo
  *      (responsive srcSet).
  *   3. Documentary — embedded YouTube episode about the studio.
  *   4. Support Kato.8 — pitch + GoFundMe widget.
  *
- * Edit the copy directly in this file. SEO meta comes from
- * `staticRoutes['/about-us']` in `src/data/seo-config.js`.
+ * Copy lives in `aboutContent` below — editable by hand or via the dev
+ * admin's Pages tab (`/__admin`), which machine-rewrites that block (don't
+ * put comments inside it). Images and layout stay in the JSX. SEO meta
+ * comes from `staticRoutes['/about-us']` in `src/data/seo-config.js`.
  */
+const aboutContent = {
+  about: {
+    heading: 'About Us',
+    body:
+      'Kato.8 Studios is dedicated to reviving the heart of gaming. We create games for gamers, by gamers; crafting meaningful, human-centered experiences inspired by the classics that shaped us. Our mission is to foster a studio culture where every developer is valued and heard, ensuring that creativity thrives. We are committed to delivering authentic worlds filled with genuine passion, while continually engaging with our community to evolve and innovate.',
+  },
+  whyKato8: {
+    heading: 'Why Kato.8?',
+    body:
+      'Kato.8 Studios is named after its founder Terry\'s dog, Kato, with the "8" inspired by a stuffed plush toy that was his favorite chew toy. The name is deeply personal and reflects the heart behind why this studio exists. Kato was a constant source of joy, playfulness, and inspiration in Terry\'s life, and that spirit is something the studio wants carried into the work we do. Kato.8 serves as a reminder to build something meaningful, playful, and heartfelt: both in the games we create and in the kind of creative culture we strive to foster.',
+  },
+  documentary: {
+    heading: 'Kato.8 Studios | Making the studio - Episode 1 (Pre-Production)',
+    youtubeEmbedUrl: 'https://www.youtube.com/embed/ofTrhSSZ4DY?si=8Y-tiZnOalba4uFA',
+  },
+  support: {
+    heading: 'Support Kato.8',
+    body:
+      "If you'd like to support the early stages of Kato.8's journey, you can learn more about our plans and contribute through our GoFundMe. Every bit of support helps move the studio one step closer to our first release.",
+  },
+}
+
 export default function AboutPage() {
   return (
     <>
@@ -24,13 +48,8 @@ export default function AboutPage() {
         <div className="about-us-section">
           <img src={asset('/assets/img/logo-no-mouth.png')} loading="lazy" width="203" alt="Kato.8 Studios mascot" className="image-4" />
           <div className="about-us-text">
-            <div className="text-14">About Us</div>
-            <div className="text-15">
-              Kato.8 Studios is dedicated to reviving the heart of gaming. We create games for gamers, by gamers; crafting meaningful, human-centered
-              experiences inspired by the classics that shaped us. Our mission is to foster a studio culture where every developer is valued and heard,
-              ensuring that creativity thrives. We are committed to delivering authentic worlds filled with genuine passion, while continually engaging with
-              our community to evolve and innovate.
-            </div>
+            <div className="text-14">{aboutContent.about.heading}</div>
+            <div className="text-15">{aboutContent.about.body}</div>
           </div>
         </div>
       </section>
@@ -38,13 +57,8 @@ export default function AboutPage() {
       <section className="section-5">
         <div className="group-why-kato8">
           <div className="why-kato8-content">
-            <div className="text-12">Why Kato.8?</div>
-            <div className="text-13">
-              Kato.8 Studios is named after its founder Terry's dog, Kato, with the "8" inspired by a stuffed plush toy that was his favorite chew toy. The
-              name is deeply personal and reflects the heart behind why this studio exists. Kato was a constant source of joy, playfulness, and inspiration
-              in Terry's life, and that spirit is something the studio wants carried into the work we do. Kato.8 serves as a reminder to build something
-              meaningful, playful, and heartfelt: both in the games we create and in the kind of creative culture we strive to foster.
-            </div>
+            <div className="text-12">{aboutContent.whyKato8.heading}</div>
+            <div className="text-13">{aboutContent.whyKato8.body}</div>
           </div>
           <img
             src={asset('/assets/img/kato-dog.jpg')}
@@ -59,11 +73,11 @@ export default function AboutPage() {
 
       <section className="documentary-section">
         <div className="documentary-content">
-          <div className="documentary-heading">Kato.8 Studios | Making the studio - Episode 1 (Pre-Production)</div>
+          <div className="documentary-heading">{aboutContent.documentary.heading}</div>
           <div className="documentary-video">
             <iframe
-              src="https://www.youtube.com/embed/ofTrhSSZ4DY?si=8Y-tiZnOalba4uFA"
-              title="Kato.8 Studios | Making the studio - Episode 1 (Pre-Production)"
+              src={aboutContent.documentary.youtubeEmbedUrl}
+              title={aboutContent.documentary.heading}
               loading="lazy"
               frameBorder="0"
               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
@@ -76,11 +90,8 @@ export default function AboutPage() {
 
       <div className="support-kato8-section">
         <div className="frame-122">
-          <div className="support-section_heading">Support Kato.8</div>
-          <div className="paragraph-2">
-            If you'd like to support the early stages of Kato.8's journey, you can learn more about our plans and contribute through our GoFundMe. Every bit
-            of support helps move the studio one step closer to our first release.
-          </div>
+          <div className="support-section_heading">{aboutContent.support.heading}</div>
+          <div className="paragraph-2">{aboutContent.support.body}</div>
         </div>
         <GoFundMeWidget size="large" />
       </div>

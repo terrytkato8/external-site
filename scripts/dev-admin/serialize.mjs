@@ -27,6 +27,12 @@ export const BLOCKS = {
   discordEndpoints: { file: 'src/data/discordEndpoints.js', anchor: 'export const discordEndpoints = ' },
   playtestEndpoints: { file: 'src/data/playtestEndpoints.js', anchor: 'export const playtestEndpoints = ' },
   crowdfundingGames: { file: 'src/data/crowdfundingGames.js', anchor: 'export const crowdfundingGames = ', optional: true },
+  // Content blocks that live inside components — the block editor works on
+  // any file, as long as the anchored literal is pure data.
+  socialLinks: { file: 'src/components/SocialIcons.jsx', anchor: 'export const socialLinks = ' },
+  footerSocials: { file: 'src/components/Footer.jsx', anchor: 'const footerSocials = ' },
+  aboutContent: { file: 'src/pages/AboutPage.jsx', anchor: 'const aboutContent = ' },
+  heroContent: { file: 'src/components/Hero.jsx', anchor: 'const heroContent = ' },
 }
 
 // The variable each block's anchor declares — excluded from const
