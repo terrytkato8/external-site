@@ -225,12 +225,23 @@
           max-width: calc(50% - 6px);
         }
 
-  /* Image fills its tile horizontally; `contain` keeps the whole
-   * artwork visible, letterboxed against the tile's dark background. */
+  /* Image fills its tile in both axes. `cover` crops the sides of wide
+   * artwork rather than letterboxing it: with `contain`, the artwork sat
+   * short of the tile's full height and its own square corners showed
+   * against the page — the tile's 8px radius only clips what actually
+   * reaches the edges. `border-radius: inherit` rounds the image itself
+   * too, so the corners hold even where the tile's overflow clip doesn't
+   * apply. */
+  /* Most sources are landscape and crop at the sides. The four portrait
+   * character pieces overflow vertically instead, so anchor to the top —
+   * that keeps heads in frame rather than centring on a mid-torso band.
+   * For the landscape ones there is no vertical overflow, so this is inert. */
   .concept-art-image {
           width: 100%;
           height: 110px;
-          object-fit: contain;
+          object-fit: cover;
+          object-position: center top;
+          border-radius: inherit;
         }
 
   /* Wrap-grid means no horizontal scroll; hide the chevron buttons. */
