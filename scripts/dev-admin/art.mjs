@@ -141,6 +141,33 @@ export async function uploadArt(root, game, category, filename, buffer) {
   return { file }
 }
 
+// Rename the descriptive part of a source's stem, keeping the NN- ordering
+// prefix and extension. The gallery derives alt text from the filename, so
+// this is also the alt-text editor. Variants ride along, no re-encode.
+export function renameArt(root, game, category, file, newDesc) {
+  const dir = safeDir(root, game, category)
+  const source = safeFile(root, game, category, file)
+  if (!fs.existsSync(source)) throw new Error(`${file} not found`)
+  const ext = path.extname(file)
+  const prefix = file.match(/^\d+-/)?.[0] ?? ''
+  const desc = String(newDesc ?? '')
+    .toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '')
+  if (!desc) throw new Error('name must contain letters or digits')
+  const newFile = `${prefix}${desc}${ext}`
+  if (newFile === file) return { file }
+  const target = safeFile(root, game, category, newFile)
+  if (fs.existsSync(target)) throw new Error(`${newFile} already exists`)
+  fs.renameSync(source, target)
+  const stem = path.basename(file, ext)
+  const newStem = path.basename(newFile, ext)
+  for (const f of fs.readdirSync(dir)) {
+    if (VARIANT_PATTERN.test(f) && f.replace(VARIANT_PATTERN, '') === stem) {
+      fs.renameSync(path.join(dir, f), path.join(dir, newStem + f.slice(stem.length)))
+    }
+  }
+  return { file: newFile }
+}
+
 export async function deleteArt(root, game, category, file) {
   const dir = safeDir(root, game, category)
   const target = safeFile(root, game, category, file)

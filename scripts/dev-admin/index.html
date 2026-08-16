@@ -67,7 +67,9 @@
   .art-card img { width: 96px; height: 64px; object-fit: cover; border-radius: 4px;
     background: var(--panel2); flex: none; }
   .art-card .meta { flex: 1; min-width: 0; }
-  .art-card .meta .name { font-size: 13px; word-break: break-all; }
+  .art-card .meta .name { font-size: 13px; word-break: break-all; cursor: text; }
+  .art-card .meta .name:hover { color: var(--accent); }
+  .art-card .meta input { font-size: 13px; padding: 3px 6px; }
   .art-card .meta small { color: var(--dim); display: block; margin-top: 2px; }
   .art-card .chips { display: flex; gap: 4px; flex-wrap: wrap; margin-top: 4px; }
   .art-card .chips span { font-size: 10px; padding: 1px 6px; border-radius: 8px;
@@ -556,7 +558,37 @@ async function renderArt() {
         el('button', { onclick: () => move(i, 1), disabled: i === artOrder.length - 1 ? '' : undefined }, '↓')),
       el('img', { src: url, alt: file, loading: 'lazy' }),
       el('div', { class: 'meta' },
-        el('div', { class: 'name' }, file),
+        // Click the name to rename its descriptive part (NN- prefix and
+        // extension are fixed). Filenames drive the gallery's alt text.
+        el('div', { class: 'name', title: 'click to rename', onclick(e) {
+          const prefix = file.match(/^\d+-/)?.[0] ?? ''
+          const ext = file.slice(file.lastIndexOf('.'))
+          const apply = async () => {
+            try {
+              const r = await api('POST', '/__admin/api/art/rename',
+                { game, category, file, name: input.value })
+              await reloadArt()
+              status(r.file === file ? 'name unchanged' : `renamed to ${r.file} ✓`, 'ok')
+            } catch (err) {
+              status(`rename failed: ${err.message}`, 'err')
+            }
+          }
+          const input = el('input', {
+            type: 'text', value: file.slice(prefix.length, file.length - ext.length),
+            style: 'min-width:140px',
+            onkeydown: (ev) => {
+              if (ev.key === 'Escape') renderArt()
+              else if (ev.key === 'Enter') apply()
+            },
+          })
+          e.currentTarget.replaceWith(el('div', { class: 'row' },
+            el('span', { style: 'flex:none;color:var(--dim)' }, prefix),
+            input,
+            el('span', { style: 'flex:none;color:var(--dim)' }, ext),
+            el('button', { class: 'ghost', style: 'color:var(--ok)', onclick: apply }, 'save'),
+            el('button', { class: 'ghost', style: 'color:var(--dim)', onclick: () => renderArt() }, 'cancel')))
+          input.focus()
+        } }, file),
         el('small', {}, `${kb(s.bytes)} · ${s.kind}`),
         el('div', { class: 'chips' },
           ...(s.kind === 'passthrough'

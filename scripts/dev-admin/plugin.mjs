@@ -16,7 +16,7 @@ import fs from 'node:fs'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { BLOCKS, blockAvailable, readBlock, writeBlock } from './serialize.mjs'
-import { listArt, reorderArt, uploadArt, deleteArt, generateAllVariants } from './art.mjs'
+import { listArt, reorderArt, uploadArt, deleteArt, renameArt, generateAllVariants } from './art.mjs'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
@@ -74,6 +74,10 @@ export function devAdmin() {
           if (url === '/api/art/reorder' && req.method === 'POST') {
             const { game, category, order } = await readBody(req)
             return sendJson(res, 200, reorderArt(root, game, category, order))
+          }
+          if (url === '/api/art/rename' && req.method === 'POST') {
+            const { game, category, file, name } = await readBody(req)
+            return sendJson(res, 200, renameArt(root, game, category, file, name))
           }
           if (url === '/api/art/delete' && req.method === 'POST') {
             const { game, category, file } = await readBody(req)
