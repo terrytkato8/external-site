@@ -23,7 +23,14 @@
  *   story       — string[]. Paragraphs shown in the Story block.
  *   storyImage  — { src, alt } | undefined.
  *   conceptArt  — Array<{ src, alt, sizes?, srcSet? }>. Empty array hides
- *                 the Concept Art gallery.
+ *                 the Concept Art gallery. Usually omitted: concept art is
+ *                 auto-discovered by <ConceptArtGallery> from
+ *                 src/assets/games/<slug>/concept/<category>/ — drop files
+ *                 in, commit, ship; no entry here needed.
+ *
+ * The `rawGames` array below is machine-edited by the dev admin page
+ * (`/__admin` on the dev server). Don't put comments inside the array —
+ * a save from the admin regenerates the block and would drop them.
  *
  * Asset paths: write them as `/assets/...` here. `transformAssets` at the
  * bottom of this file walks the data and pipes every path through the
@@ -61,9 +68,6 @@ const rawGames = [
       src: '/assets/img/universal-serial-blade-logo.png',
       alt: 'Universal Serial Blade logo',
     },
-    // Concept art is auto-discovered by <ConceptArtGallery> from
-    // src/assets/games/universal-serial-blade/concept/<category>/.
-    // Drop files in, commit, ship — no edit here needed.
   },
   {
     slug: 'last-light',
