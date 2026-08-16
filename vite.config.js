@@ -1,6 +1,7 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import { generateAllVariants } from './scripts/generate-image-variants.mjs'
+import { devAdmin } from './scripts/dev-admin/plugin.mjs'
 
 // ConceptArtGallery globs only the generated WebP variants, and those are
 // gitignored — so on a fresh clone the gallery is empty until the generator
@@ -26,7 +27,9 @@ const target = process.env.VITE_DEPLOY_TARGET || 'prod'
 const base = target === 'staging' ? '/kato8-staging/' : '/'
 
 export default defineConfig({
-  plugins: [generateImageVariants, react()],
+  // devAdmin is `apply: 'serve'` — the content admin at /__admin exists only
+  // on the dev server, never in build output.
+  plugins: [generateImageVariants, react(), devAdmin()],
   base,
   build: {
     outDir: 'docs',

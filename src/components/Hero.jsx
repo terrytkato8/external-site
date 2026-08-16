@@ -5,7 +5,15 @@ import { asset } from '../utils/asset.js'
  *
  * Rendered by `HomePage` only. No props. Logo image uses srcSet for
  * responsive sizing (500w / 624w variants in `public/assets/img/`).
+ *
+ * The tagline lives in `heroContent` — editable by hand or via the dev
+ * admin's Pages tab (`/__admin`), which machine-rewrites that block.
  */
+const heroContent = {
+  tagline:
+    'Kato.8 Studios is dedicated to reviving the heart of gaming. We create games for gamers, by gamers; crafting modern games with retro-inspired aesthetics, mechanics, and emotional engagement.',
+}
+
 export default function Hero() {
   return (
     <section className="home-hero-intro">
@@ -20,10 +28,7 @@ export default function Hero() {
         />
       </div>
       <div className="hero-tagline-wrapper">
-        <p className="hero-intro-paragraph">
-          Kato.8 Studios is dedicated to reviving the heart of gaming. We create games for gamers, by gamers; crafting modern games with retro-inspired
-          aesthetics, mechanics, and emotional engagement.
-        </p>
+        <p className="hero-intro-paragraph">{heroContent.tagline}</p>
       </div>
     </section>
   )

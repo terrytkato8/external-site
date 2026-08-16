@@ -1,0 +1,794 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Kato.8 dev admin</title>
+<style>
+  :root {
+    --bg: #14151a; --panel: #1d1f26; --panel2: #23262f; --line: #33363f;
+    --text: #e8e9ec; --dim: #9aa0ab; --accent: #ff9183; --ok: #7dd97d; --err: #ff7d7d;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--text);
+    font: 14px/1.5 ui-sans-serif, system-ui, -apple-system, sans-serif; }
+  header { display: flex; align-items: center; gap: 20px; padding: 10px 16px;
+    background: var(--panel); border-bottom: 1px solid var(--line); }
+  header h1 { font-size: 15px; margin: 0; color: var(--accent); }
+  header .hint { color: var(--dim); font-size: 12px; margin-left: auto; }
+  nav.tabs { display: flex; gap: 4px; }
+  nav.tabs button { background: none; border: 1px solid transparent; color: var(--dim);
+    padding: 5px 12px; border-radius: 6px; cursor: pointer; font-size: 13px; }
+  nav.tabs button.active { background: var(--panel2); color: var(--text); border-color: var(--line); }
+  main { display: grid; grid-template-columns: 210px minmax(380px, 1fr) minmax(320px, 1.1fr);
+    height: calc(100vh - 45px); }
+  #list { border-right: 1px solid var(--line); overflow-y: auto; padding: 8px; }
+  #list button.item { display: block; width: 100%; text-align: left; background: none;
+    border: none; color: var(--text); padding: 7px 10px; border-radius: 6px; cursor: pointer; }
+  #list button.item.active { background: var(--panel2); }
+  #list button.item small { display: block; color: var(--dim); }
+  #list .add { margin-top: 8px; width: 100%; background: var(--panel2); color: var(--dim);
+    border: 1px dashed var(--line); border-radius: 6px; padding: 6px; cursor: pointer; }
+  #form { overflow-y: auto; padding: 16px 20px; }
+  #form h2 { font-size: 13px; text-transform: uppercase; letter-spacing: .06em;
+    color: var(--dim); margin: 18px 0 6px; }
+  #form h2:first-child { margin-top: 0; }
+  label { display: block; margin: 10px 0 2px; color: var(--dim); font-size: 12px; }
+  input[type=text], textarea { width: 100%; background: var(--panel); color: var(--text);
+    border: 1px solid var(--line); border-radius: 6px; padding: 7px 9px; font: inherit; }
+  textarea { min-height: 90px; resize: vertical; }
+  input:focus, textarea:focus { outline: none; border-color: var(--accent); }
+  .row { display: flex; gap: 10px; align-items: center; }
+  .row > * { flex: 1; }
+  .row input[type=color] { flex: 0 0 34px; height: 34px; padding: 2px; background: var(--panel);
+    border: 1px solid var(--line); border-radius: 6px; }
+  .checks { display: flex; gap: 18px; margin-top: 10px; color: var(--dim); }
+  .checks label { display: flex; gap: 6px; align-items: center; margin: 0; cursor: pointer; }
+  .bar { position: sticky; bottom: 0; background: var(--bg); padding: 12px 0 4px;
+    display: flex; gap: 10px; align-items: center; border-top: 1px solid var(--line); margin-top: 18px; }
+  .bar button { background: var(--accent); color: #14151a; font-weight: 600; border: none;
+    border-radius: 6px; padding: 8px 16px; cursor: pointer; }
+  .bar button.ghost { background: var(--panel2); color: var(--err); font-weight: 400; }
+  #status { font-size: 12px; color: var(--dim); }
+  #status.ok { color: var(--ok); } #status.err { color: var(--err); }
+  #preview { border-left: 1px solid var(--line); display: flex; flex-direction: column; }
+  #preview .pbar { padding: 6px 10px; font-size: 12px; color: var(--dim);
+    border-bottom: 1px solid var(--line); display: flex; justify-content: space-between; }
+  #preview iframe { flex: 1; border: none; background: #fff; }
+  table.endpoints { width: 100%; border-collapse: collapse; }
+  table.endpoints th { text-align: left; color: var(--dim); font-size: 12px; font-weight: 400;
+    padding: 4px 6px; }
+  table.endpoints td { padding: 3px 6px 3px 0; }
+  .placeholder { color: var(--dim); padding: 40px; text-align: center; }
+  a { color: var(--accent); }
+  .art-grid { display: flex; flex-direction: column; gap: 10px; }
+  .art-card { display: flex; gap: 12px; background: var(--panel); border: 1px solid var(--line);
+    border-radius: 8px; padding: 10px; align-items: center; }
+  .art-card img { width: 96px; height: 64px; object-fit: cover; border-radius: 4px;
+    background: var(--panel2); flex: none; }
+  .art-card .meta { flex: 1; min-width: 0; }
+  .art-card .meta .name { font-size: 13px; word-break: break-all; cursor: text; }
+  .art-card .meta .name:hover { color: var(--accent); }
+  .art-card .meta input { font-size: 13px; padding: 3px 6px; }
+  .art-card .meta small { color: var(--dim); display: block; margin-top: 2px; }
+  .art-card .chips { display: flex; gap: 4px; flex-wrap: wrap; margin-top: 4px; }
+  .art-card .chips span { font-size: 10px; padding: 1px 6px; border-radius: 8px;
+    background: var(--panel2); color: var(--dim); border: 1px solid var(--line); }
+  .art-card .chips span.warn { color: var(--err); border-color: var(--err); }
+  .art-card .ctl { display: flex; flex-direction: column; gap: 2px; flex: none; }
+  .art-card .ctl button { background: var(--panel2); color: var(--dim); border: 1px solid var(--line);
+    border-radius: 4px; cursor: pointer; padding: 1px 8px; font-size: 12px; }
+  .art-card .ctl button:disabled { opacity: .3; cursor: default; }
+  .art-card button.ghost { background: none; border: none; color: var(--err); cursor: pointer;
+    font-size: 11px; flex: none; }
+</style>
+</head>
+<body>
+<header>
+  <h1>Kato.8 dev admin</h1>
+  <nav class="tabs" id="tabs"></nav>
+  <span class="hint">saves rewrite src/data/*.js — the live site hot-reloads</span>
+</header>
+<main>
+  <div id="list"></div>
+  <div id="form"></div>
+  <div id="preview">
+    <div class="pbar"><span id="purl"></span><a id="popen" target="_blank">open ↗</a></div>
+    <iframe id="pframe"></iframe>
+  </div>
+</main>
+<script>
+const $ = (sel, el = document) => el.querySelector(sel)
+const el = (tag, attrs = {}, ...kids) => {
+  const n = document.createElement(tag)
+  for (const [k, v] of Object.entries(attrs)) {
+    if (v === undefined) continue
+    if (k === 'class') n.className = v
+    else if (k.startsWith('on')) n.addEventListener(k.slice(2), v)
+    else if (k === 'checked' || k === 'value') n[k] = v
+    else n.setAttribute(k, v)
+  }
+  n.append(...kids)
+  return n
+}
+
+let data = null
+let tab = 'games'
+let selected = null
+let dirty = false
+
+// Crowdfunding appears only when the repo has src/data/crowdfundingGames.js
+// (staging today; prod whenever the feature merges).
+const TABS = () => ({
+  games: 'Games',
+  ...(data.crowdfundingGames ? { crowdfunding: 'Crowdfunding' } : {}),
+  pages: 'Pages',
+  social: 'Social',
+  seo: 'SEO',
+  endpoints: 'Endpoints',
+  art: 'Concept art',
+})
+
+function setDirty(v) { dirty = v; status(dirty ? 'unsaved changes' : '') }
+window.addEventListener('beforeunload', (e) => { if (dirty) e.preventDefault() })
+
+function status(msg, cls = '') {
+  const s = $('#status')
+  if (s) { s.textContent = msg; s.className = cls }
+}
+
+async function api(method, url, body) {
+  const res = await fetch(url, {
+    method,
+    headers: body ? { 'content-type': 'application/json' } : {},
+    body: body ? JSON.stringify(body) : undefined,
+  })
+  const json = await res.json()
+  if (!res.ok) throw new Error(json.error || res.statusText)
+  return json
+}
+
+async function save(name, value, label) {
+  try {
+    await api('PUT', `/__admin/api/block/${name}`, value)
+    setDirty(false)
+    status(`${label} saved ✓`, 'ok')
+  } catch (err) {
+    status(`save failed: ${err.message}`, 'err')
+    throw err
+  }
+}
+
+function preview(path) {
+  $('#purl').textContent = path
+  $('#popen').href = path
+  if ($('#pframe').getAttribute('src') !== path) $('#pframe').src = path
+}
+
+// ---- fields ---------------------------------------------------------------
+
+function textField(obj, key, label, opts = {}) {
+  const input = el('input', {
+    type: 'text', value: obj[key] ?? '',
+    oninput: () => {
+      if (input.value === '') delete obj[key]
+      else obj[key] = input.value
+      setDirty(true)
+    },
+  })
+  const wrap = el('div', {}, el('label', {}, label), input)
+  if (opts.color) {
+    const swatch = el('input', {
+      type: 'color', value: /^#[0-9a-fA-F]{6}$/.test(obj[key] ?? '') ? obj[key] : '#000000',
+      oninput: () => { obj[key] = swatch.value; input.value = swatch.value; setDirty(true) },
+    })
+    input.addEventListener('input', () => {
+      if (/^#[0-9a-fA-F]{6}$/.test(input.value)) swatch.value = input.value
+    })
+    wrap.replaceChildren(el('label', {}, label), el('div', { class: 'row' }, swatch, input))
+  }
+  return wrap
+}
+
+function paragraphsField(obj, key, label) {
+  const ta = el('textarea', {
+    value: (obj[key] ?? []).join('\n\n'),
+    oninput: () => {
+      const paras = ta.value.split(/\n\s*\n/).map((p) => p.trim()).filter(Boolean)
+      if (paras.length) obj[key] = paras
+      else delete obj[key]
+      setDirty(true)
+    },
+  })
+  return el('div', {}, el('label', {}, `${label} — blank line separates paragraphs`), ta)
+}
+
+function listField(obj, key, label) {
+  const input = el('input', {
+    type: 'text', value: (obj[key] ?? []).join(', '),
+    oninput: () => {
+      const items = input.value.split(',').map((s) => s.trim()).filter(Boolean)
+      obj[key] = items
+      setDirty(true)
+    },
+  })
+  return el('div', {}, el('label', {}, `${label} — comma separated`), input)
+}
+
+function checkField(obj, key, label) {
+  const input = el('input', {
+    type: 'checkbox', checked: !!obj[key],
+    onchange: () => { obj[key] = input.checked; setDirty(true) },
+  })
+  return el('label', {}, input, label)
+}
+
+function saveBar(onSave, extra = []) {
+  return el('div', { class: 'bar' },
+    el('button', { onclick: onSave }, 'Save'),
+    ...extra,
+    el('span', { id: 'status' }))
+}
+
+// No native dialogs anywhere — prompt()/confirm() are suppressed in embedded
+// browsers, which made the old add-game button appear dead.
+
+// "+ add" that swaps itself for an inline slug input with create/cancel.
+function addRow(onCreate, takenSlugs) {
+  const btn = el('button', { class: 'add', onclick: () => {
+    const input = el('input', { type: 'text', placeholder: 'new-slug-kebab-case',
+      onkeydown: (e) => { if (e.key === 'Enter') create(); if (e.key === 'Escape') cancel() } })
+    const create = () => {
+      const slug = input.value.trim()
+      if (!/^[a-z0-9-]+$/.test(slug)) return status('slug must be kebab-case: a-z, 0-9, dashes', 'err')
+      if (takenSlugs().includes(slug)) return status(`"${slug}" already exists`, 'err')
+      onCreate(slug)
+    }
+    const cancel = () => wrap.replaceWith(addRow(onCreate, takenSlugs))
+    const wrap = el('div', {},
+      input,
+      el('div', { class: 'row', style: 'margin-top:6px' },
+        el('button', { class: 'add', onclick: create }, 'create'),
+        el('button', { class: 'add', onclick: cancel }, 'cancel')))
+    btn.replaceWith(wrap)
+    input.focus()
+  } }, '+ add game')
+  return btn
+}
+
+// Delete button that arms on first click and fires on the second. The
+// two-click arm IS the confirmation, so callers save immediately — a
+// staged-but-unsaved delete looks done and then silently isn't.
+function armedDelete(label, onDelete) {
+  let armed = false
+  const btn = el('button', { class: 'ghost', onclick: () => {
+    if (!armed) {
+      armed = true
+      btn.textContent = 'click again to delete & save'
+      setTimeout(() => { armed = false; btn.textContent = label }, 3000)
+      return
+    }
+    onDelete()
+  } }, label)
+  return btn
+}
+
+// ---- games tab ------------------------------------------------------------
+
+function renderGames() {
+  const games = data.games
+  if (!games.some((g) => g.slug === selected)) selected = games[0]?.slug ?? null
+  const game = games.find((g) => g.slug === selected)
+
+  $('#list').replaceChildren(
+    ...games.map((g) => el('button', {
+      class: `item${g.slug === selected ? ' active' : ''}`,
+      onclick: () => { selected = g.slug; renderGames() },
+    }, g.title, el('small', {}, g.slug))),
+    addRow((slug) => {
+      games.push({ slug, title: slug, tagline: '', description: '', categories: [],
+        bgColor: '#888888', comingSoon: true, framedArt: false, gameplay: [], story: [] })
+      selected = slug
+      setDirty(true)
+      renderGames()
+    }, () => games.map((g) => g.slug)))
+
+  if (!game) { $('#form').replaceChildren(el('div', { class: 'placeholder' }, 'no games')); return }
+
+  const storyImage = game.storyImage ?? {}
+  const syncStoryImage = () => {
+    if (storyImage.src || storyImage.alt) game.storyImage = storyImage
+    else delete game.storyImage
+  }
+
+  $('#form').replaceChildren(
+    el('h2', {}, 'Card'),
+    textField(game, 'title', 'Title'),
+    textField(game, 'tagline', 'Tagline'),
+    textField(game, 'description', 'Description (fallback)'),
+    listField(game, 'categories', 'Categories'),
+    el('div', { class: 'row' },
+      textField(game, 'bgColor', 'Card background color', { color: true }),
+      textField(game, 'bgImage', 'Card background image (/assets/…)')),
+    el('h2', {}, 'Game page'),
+    textField(game, 'kickstarterUrl', 'Kickstarter URL (empty = no CTA)'),
+    el('div', { class: 'checks' },
+      checkField(game, 'comingSoon', 'coming soon tag'),
+      checkField(game, 'framedArt', 'framed art block')),
+    paragraphsField(game, 'gameplay', 'Gameplay'),
+    paragraphsField(game, 'story', 'Story'),
+    el('div', { class: 'row' },
+      el('div', {}, el('label', {}, 'Story image (/assets/…)'), el('input', {
+        type: 'text', value: storyImage.src ?? '',
+        oninput(e) { storyImage.src = e.target.value; syncStoryImage(); setDirty(true) },
+      })),
+      el('div', {}, el('label', {}, 'Story image alt text'), el('input', {
+        type: 'text', value: storyImage.alt ?? '',
+        oninput(e) { storyImage.alt = e.target.value; syncStoryImage(); setDirty(true) },
+      }))),
+    saveBar(async () => {
+      await save('games', games, 'games.js')
+      // A game without a gameRoutes entry breaks prerender — auto-create
+      // stubs (visible in the git diff, refine in the SEO tab).
+      const missing = games.filter((g) => !data.gameRoutes[g.slug])
+      if (missing.length) {
+        for (const g of missing) {
+          data.gameRoutes[g.slug] = {
+            title: `${g.title} | Kato.8 Studios`,
+            description: g.description || g.tagline || g.title,
+            ogTitle: `${g.title} — ${g.tagline || 'from Kato.8 Studios'}`,
+            ogDescription: g.description || g.tagline || g.title,
+          }
+        }
+        await save('gameRoutes', data.gameRoutes, 'seo-config.js')
+        status(`saved ✓ — created stub SEO entries for ${missing.map((g) => g.slug).join(', ')} (refine in SEO tab)`, 'ok')
+      }
+      const noEndpoints = games.filter((g) => !data.discordEndpoints[g.slug] || !data.playtestEndpoints[g.slug])
+      if (noEndpoints.length) {
+        status(`${$('#status').textContent || 'saved ✓'} — no Formspree endpoints for ${noEndpoints.map((g) => g.slug).join(', ')}`, 'ok')
+      }
+    }, [armedDelete('delete game', async () => {
+      games.splice(games.indexOf(game), 1)
+      selected = null
+      await save('games', games, 'games.js')
+      renderGames()
+      status(`"${game.title}" deleted and saved ✓ — SEO/endpoint entries were left alone`, 'ok')
+    })]))
+
+  preview(`/games/${game.slug}`)
+}
+
+// ---- crowdfunding tab ------------------------------------------------------
+// Staging-only data file (placeholder campaigns). SEO for these routes is
+// generated in seo-config.js from a hand-maintained slug list — the admin
+// can't edit that expression, so slug changes may need a seo-config touch-up.
+
+function renderCrowdfunding() {
+  const cfGames = data.crowdfundingGames
+  if (!cfGames.some((g) => g.slug === selected)) selected = cfGames[0]?.slug ?? null
+  const game = cfGames.find((g) => g.slug === selected)
+
+  $('#list').replaceChildren(
+    ...cfGames.map((g) => el('button', {
+      class: `item${g.slug === selected ? ' active' : ''}`,
+      onclick: () => { selected = g.slug; renderCrowdfunding() },
+    }, g.title, el('small', {}, g.slug))),
+    addRow((slug) => {
+      cfGames.push({ slug, title: slug, categories: [], comingSoon: true, description: '', body: [] })
+      selected = slug
+      setDirty(true)
+      renderCrowdfunding()
+    }, () => cfGames.map((g) => g.slug)))
+
+  if (!game) { $('#form').replaceChildren(el('div', { class: 'placeholder' }, 'no crowdfunding games')); return }
+
+  const coverImage = game.coverImage ?? {}
+  const syncCover = () => {
+    if (coverImage.src || coverImage.alt) game.coverImage = coverImage
+    else delete game.coverImage
+  }
+
+  $('#form').replaceChildren(
+    el('h2', {}, 'Card'),
+    textField(game, 'title', 'Title'),
+    listField(game, 'categories', 'Categories'),
+    el('div', {}, el('label', {}, 'Card description'), el('textarea', {
+      value: game.description ?? '',
+      oninput(e) { game.description = e.target.value; setDirty(true) },
+    })),
+    textField(game, 'image', 'Card image (/assets/…, empty = placeholder block)'),
+    el('h2', {}, 'Detail page'),
+    el('div', { class: 'checks' }, checkField(game, 'comingSoon', 'coming soon tag')),
+    paragraphsField(game, 'body', 'Body'),
+    el('div', { class: 'row' },
+      el('div', {}, el('label', {}, 'Cover image (/assets/…)'), el('input', {
+        type: 'text', value: coverImage.src ?? '',
+        oninput(e) { coverImage.src = e.target.value; syncCover(); setDirty(true) },
+      })),
+      el('div', {}, el('label', {}, 'Cover image alt text'), el('input', {
+        type: 'text', value: coverImage.alt ?? '',
+        oninput(e) { coverImage.alt = e.target.value; syncCover(); setDirty(true) },
+      }))),
+    saveBar(async () => {
+      await save('crowdfundingGames', cfGames, 'crowdfundingGames.js')
+      status('saved ✓ — if you added/renamed slugs, sync the slug list in seo-config.js', 'ok')
+    }, [armedDelete('delete game', async () => {
+      cfGames.splice(cfGames.indexOf(game), 1)
+      selected = null
+      await save('crowdfundingGames', cfGames, 'crowdfundingGames.js')
+      renderCrowdfunding()
+      status(`"${game.title}" deleted and saved ✓ — sync the slug list in seo-config.js if needed`, 'ok')
+    })]))
+
+  preview(`/crowdfunding-games/${game.slug}`)
+}
+
+// ---- pages tab -------------------------------------------------------------
+// Copy blocks extracted from hand-authored components: the home hero tagline
+// (Hero.jsx) and the About page's four sections (AboutPage.jsx). Layout and
+// images stay in the JSX; only the words are editable here.
+
+function renderPages() {
+  const pages = [
+    { id: '/', label: 'Home', sub: 'hero tagline' },
+    { id: '/about-us', label: 'About', sub: 'four sections' },
+  ]
+  if (!pages.some((p) => p.id === selected)) selected = pages[0].id
+
+  $('#list').replaceChildren(...pages.map((p) => el('button', {
+    class: `item${p.id === selected ? ' active' : ''}`,
+    onclick: () => { selected = p.id; renderPages() },
+  }, p.label, el('small', {}, p.sub))))
+
+  const area = (obj, key, label) => el('div', {},
+    el('label', {}, label),
+    el('textarea', { value: obj[key] ?? '', oninput(e) { obj[key] = e.target.value; setDirty(true) } }))
+
+  if (selected === '/') {
+    $('#form').replaceChildren(
+      el('h2', {}, 'Home — hero'),
+      area(data.heroContent, 'tagline', 'Tagline (under the logo)'),
+      saveBar(() => save('heroContent', data.heroContent, 'Hero.jsx')))
+  } else {
+    const c = data.aboutContent
+    $('#form').replaceChildren(
+      el('h2', {}, 'About Us section'),
+      textField(c.about, 'heading', 'Heading'),
+      area(c.about, 'body', 'Body'),
+      el('h2', {}, 'Why Kato.8? section'),
+      textField(c.whyKato8, 'heading', 'Heading'),
+      area(c.whyKato8, 'body', 'Body'),
+      el('h2', {}, 'Documentary section'),
+      textField(c.documentary, 'heading', 'Heading (also the iframe title)'),
+      textField(c.documentary, 'youtubeEmbedUrl', 'YouTube embed URL (https://www.youtube.com/embed/…)'),
+      el('h2', {}, 'Support section'),
+      textField(c.support, 'heading', 'Heading'),
+      area(c.support, 'body', 'Body'),
+      saveBar(() => save('aboutContent', data.aboutContent, 'AboutPage.jsx')))
+  }
+
+  preview(selected)
+}
+
+// ---- social tab ------------------------------------------------------------
+// One canonical list edited here, written to BOTH copies on save: the nav's
+// socialLinks (SocialIcons.jsx) and the footer's footerSocials (Footer.jsx)
+// — they were hand-duplicated before and drifted apart at your peril.
+
+let socialIcons = null
+
+async function renderSocial() {
+  socialIcons ??= (await api('GET', '/__admin/api/social-icons')).icons
+  const links = data.socialLinks
+
+  const differ = JSON.stringify(links) !== JSON.stringify(data.footerSocials)
+  $('#list').replaceChildren(el('div', { class: 'placeholder' },
+    'One list, two homes: saving writes both the nav (SocialIcons.jsx) and the footer (Footer.jsx). ' +
+    'Icons come from public/assets/img/social/.'))
+
+  const row = (link, i) => el('div', { class: 'art-card' },
+    el('div', { class: 'ctl' },
+      el('button', { onclick: () => { [links[i - 1], links[i]] = [links[i], links[i - 1]]; setDirty(true); renderSocial() },
+        disabled: i === 0 ? '' : undefined }, '↑'),
+      el('button', { onclick: () => { [links[i + 1], links[i]] = [links[i], links[i + 1]]; setDirty(true); renderSocial() },
+        disabled: i === links.length - 1 ? '' : undefined }, '↓')),
+    el('img', { src: link.src, alt: link.name, style: 'width:28px;height:28px;object-fit:contain;padding:4px' }),
+    el('div', { class: 'meta' },
+      el('div', { class: 'row' },
+        el('div', {}, el('label', {}, 'Name'), el('input', {
+          type: 'text', value: link.name, oninput(e) { link.name = e.target.value; setDirty(true) } })),
+        el('div', {}, el('label', {}, 'Icon'), el('select', {
+          onchange(e) { link.src = `/assets/img/social/${e.target.value}`; setDirty(true); renderSocial() },
+          style: 'width:100%;background:var(--panel);color:var(--text);border:1px solid var(--line);border-radius:6px;padding:7px',
+        }, ...socialIcons.map((icon) => {
+          const opt = el('option', { value: icon }, icon)
+          if (link.src.endsWith(`/${icon}`)) opt.selected = true
+          return opt
+        })))),
+      el('div', {}, el('label', {}, 'URL'), el('input', {
+        type: 'text', value: link.href, oninput(e) { link.href = e.target.value; setDirty(true) } }))),
+    armedDelete('remove', () => { links.splice(i, 1); setDirty(true); renderSocial() }))
+
+  $('#form').replaceChildren(
+    el('h2', {}, 'Social links — nav & footer'),
+    ...(differ ? [el('div', { class: 'placeholder', style: 'padding:10px;color:var(--err)' },
+      'Heads up: the nav and footer lists currently differ. Saving unifies both to what you see here (the nav list).')] : []),
+    el('div', { class: 'art-grid' }, ...links.map(row)),
+    el('div', { class: 'bar' },
+      el('button', { onclick: async () => {
+        await save('socialLinks', links, 'SocialIcons.jsx')
+        await save('footerSocials', links, 'Footer.jsx')
+        status('saved to nav + footer ✓', 'ok')
+      } }, 'Save'),
+      el('button', { class: 'ghost', style: 'color:var(--dim)', onclick: () => {
+        links.push({ name: '', href: '', src: `/assets/img/social/${socialIcons[0] ?? ''}` })
+        setDirty(true)
+        renderSocial()
+      } }, '+ add link'),
+      el('span', { id: 'status' })))
+
+  preview('/')
+}
+
+// ---- seo tab ---------------------------------------------------------------
+
+function renderSeo() {
+  const routes = [
+    ...Object.keys(data.staticRoutes).map((k) => ({ block: 'staticRoutes', key: k, path: k })),
+    ...Object.keys(data.gameRoutes).map((k) => ({ block: 'gameRoutes', key: k, path: `/games/${k}` })),
+  ]
+  if (!routes.some((r) => r.path === selected)) selected = routes[0]?.path
+  const route = routes.find((r) => r.path === selected)
+  const entry = data[route.block][route.key]
+
+  $('#list').replaceChildren(...routes.map((r) => el('button', {
+    class: `item${r.path === selected ? ' active' : ''}`,
+    onclick: () => { selected = r.path; renderSeo() },
+  }, r.path, el('small', {}, r.block === 'staticRoutes' ? 'static' : 'game'))))
+
+  $('#form').replaceChildren(
+    el('h2', {}, `SEO — ${route.path}`),
+    textField(entry, 'title', '<title>'),
+    el('div', {}, el('label', {}, 'Meta description'), el('textarea', {
+      value: entry.description ?? '',
+      oninput(e) { entry.description = e.target.value; setDirty(true) },
+    })),
+    textField(entry, 'ogTitle', 'OG title'),
+    el('div', {}, el('label', {}, 'OG description'), el('textarea', {
+      value: entry.ogDescription ?? '',
+      oninput(e) { entry.ogDescription = e.target.value; setDirty(true) },
+    })),
+    textField(entry, 'ogImage', 'OG image (/assets/…, empty = site default)'),
+    saveBar(() => save(route.block, data[route.block], 'seo-config.js'),
+      // Game routes can be deleted; static routes map to hardcoded pages,
+      // so removing their SEO would only silently un-prerender them.
+      route.block === 'gameRoutes' ? [armedDelete('delete route', async () => {
+        delete data.gameRoutes[route.key]
+        selected = null
+        await save('gameRoutes', data.gameRoutes, 'seo-config.js')
+        renderSeo()
+        const orphan = data.games.find((g) => g.slug === route.key)
+        status(orphan
+          ? `route deleted ✓ — but "${orphan.title}" is still in games.js, so a stub will be recreated on the next games save`
+          : 'route deleted and saved ✓', orphan ? 'err' : 'ok')
+      })] : []))
+
+  preview(route.path)
+}
+
+// ---- endpoints tab ---------------------------------------------------------
+
+function renderEndpoints() {
+  $('#list').replaceChildren(el('div', { class: 'placeholder' }, 'Formspree endpoints, keyed by game slug. Keep FORMSPREE.md in sync.'))
+  const slugs = [...new Set([
+    ...data.games.map((g) => g.slug),
+    ...Object.keys(data.discordEndpoints),
+    ...Object.keys(data.playtestEndpoints),
+  ])]
+
+  const cell = (map, slug) => el('td', {}, el('input', {
+    type: 'text', value: map[slug] ?? '', placeholder: '(none — form no-ops)',
+    oninput(e) {
+      if (e.target.value) map[slug] = e.target.value
+      else delete map[slug]
+      setDirty(true)
+    },
+  }))
+
+  $('#form').replaceChildren(
+    el('h2', {}, 'Sign-up form endpoints'),
+    el('table', { class: 'endpoints' },
+      el('tr', {}, el('th', {}, 'game'), el('th', {}, 'Discord form'), el('th', {}, 'Playtest form')),
+      ...slugs.map((slug) => el('tr', {},
+        el('td', {}, slug),
+        cell(data.discordEndpoints, slug),
+        cell(data.playtestEndpoints, slug)))),
+    saveBar(async () => {
+      await save('discordEndpoints', data.discordEndpoints, 'discordEndpoints.js')
+      await save('playtestEndpoints', data.playtestEndpoints, 'playtestEndpoints.js')
+      status('both endpoint files saved ✓ — remember FORMSPREE.md', 'ok')
+    }))
+
+  preview('/')
+}
+
+// ---- shell -----------------------------------------------------------------
+
+// ---- concept-art tab -------------------------------------------------------
+// Files under src/assets/games/<slug>/concept/<category>/. The gallery sorts
+// by filename, so ordering = the NN- prefixes; "save order" renumbers via the
+// server's two-pass rename (variants ride along, no re-encode). Uploads get
+// slugified + next-number-prefixed, and variants regenerate on the spot.
+
+let artData = null
+let artOrder = null // working copy of the selected category's file order
+
+async function renderArt() {
+  if (!artData) artData = await api('GET', '/__admin/api/art')
+  const pairs = artData.games.flatMap((g) =>
+    g.categories.map((c) => ({ id: `${g.slug}/${c.name}`, game: g.slug, category: c.name, sources: c.sources })))
+  if (!pairs.some((p) => p.id === selected)) selected = pairs[0]?.id ?? null
+  const pair = pairs.find((p) => p.id === selected)
+
+  $('#list').replaceChildren(
+    ...pairs.map((p) => el('button', {
+      class: `item${p.id === selected ? ' active' : ''}`,
+      onclick: () => { selected = p.id; artOrder = null; setDirty(false); renderArt() },
+    }, p.category, el('small', {}, `${p.game} · ${p.sources.length} file(s)`))))
+
+  if (!pair) {
+    $('#form').replaceChildren(el('div', { class: 'placeholder' },
+      'No concept art yet. Create src/assets/games/<slug>/concept/<category>/ by uploading below… once a game exists.'))
+    return
+  }
+
+  const { game, category } = pair
+  artOrder ??= pair.sources.map((s) => s.file)
+  const bySrc = Object.fromEntries(pair.sources.map((s) => [s.file, s]))
+  const kb = (b) => `${Math.max(1, Math.round(b / 1024))} KB`
+
+  const reloadArt = async () => { artData = null; artOrder = null; await renderArt() }
+
+  const move = (i, delta) => {
+    const j = i + delta
+    if (j < 0 || j >= artOrder.length) return
+    ;[artOrder[i], artOrder[j]] = [artOrder[j], artOrder[i]]
+    setDirty(true)
+    renderArt()
+  }
+
+  const card = (file, i) => {
+    const s = bySrc[file]
+    const thumb = s.variants.find((v) => v.width === 500) ?? s.variants[0]
+    const url = `/src/assets/games/${game}/concept/${category}/${thumb ? thumb.file : file}`
+    return el('div', { class: 'art-card' },
+      el('div', { class: 'ctl' },
+        el('button', { onclick: () => move(i, -1), disabled: i === 0 ? '' : undefined }, '↑'),
+        el('button', { onclick: () => move(i, 1), disabled: i === artOrder.length - 1 ? '' : undefined }, '↓')),
+      el('img', { src: url, alt: file, loading: 'lazy' }),
+      el('div', { class: 'meta' },
+        // Click the name to rename its descriptive part (NN- prefix and
+        // extension are fixed). Filenames drive the gallery's alt text.
+        el('div', { class: 'name', title: 'click to rename', onclick(e) {
+          const prefix = file.match(/^\d+-/)?.[0] ?? ''
+          const ext = file.slice(file.lastIndexOf('.'))
+          const apply = async () => {
+            try {
+              const r = await api('POST', '/__admin/api/art/rename',
+                { game, category, file, name: input.value })
+              await reloadArt()
+              status(r.file === file ? 'name unchanged' : `renamed to ${r.file} ✓`, 'ok')
+            } catch (err) {
+              status(`rename failed: ${err.message}`, 'err')
+            }
+          }
+          const input = el('input', {
+            type: 'text', value: file.slice(prefix.length, file.length - ext.length),
+            style: 'min-width:140px',
+            onkeydown: (ev) => {
+              if (ev.key === 'Escape') renderArt()
+              else if (ev.key === 'Enter') apply()
+            },
+          })
+          e.currentTarget.replaceWith(el('div', { class: 'row' },
+            el('span', { style: 'flex:none;color:var(--dim)' }, prefix),
+            input,
+            el('span', { style: 'flex:none;color:var(--dim)' }, ext),
+            el('button', { class: 'ghost', style: 'color:var(--ok)', onclick: apply }, 'save'),
+            el('button', { class: 'ghost', style: 'color:var(--dim)', onclick: () => renderArt() }, 'cancel')))
+          input.focus()
+        } }, file),
+        el('small', {}, `${kb(s.bytes)} · ${s.kind}`),
+        el('div', { class: 'chips' },
+          ...(s.kind === 'passthrough'
+            ? [el('span', {}, 'served as-is')]
+            : s.missingVariants
+              ? [el('span', { class: 'warn' }, 'no variants — invisible until regenerated')]
+              : s.variants.map((v) => el('span', { class: v.stale ? 'warn' : '' },
+                  `${v.width}w${v.stale ? ' stale' : ''}`))))),
+      armedDelete('delete', async () => {
+        try {
+          await api('POST', '/__admin/api/art/delete', { game, category, file })
+          await reloadArt()
+          status(`${file} and its variants deleted ✓`, 'ok')
+        } catch (err) {
+          status(`delete failed: ${err.message}`, 'err')
+        }
+      }))
+  }
+
+  const fileInput = el('input', { type: 'file', multiple: '', accept: '.jpg,.jpeg,.png,.svg,.gif',
+    style: 'display:none',
+    onchange: async () => {
+      for (const f of fileInput.files) {
+        try {
+          status(`uploading ${f.name}…`)
+          const res = await fetch(`/__admin/api/art/upload?${new URLSearchParams({ game, category, filename: f.name })}`,
+            { method: 'POST', body: await f.arrayBuffer() })
+          const json = await res.json()
+          if (!res.ok) throw new Error(json.error)
+          status(`added ${json.file} ✓ (variants generated)`, 'ok')
+        } catch (err) {
+          status(`upload failed: ${err.message}`, 'err')
+          break
+        }
+      }
+      await reloadArt()
+    } })
+
+  $('#form').replaceChildren(
+    el('h2', {}, `${game} — ${category}`),
+    el('div', { class: 'art-grid' }, ...artOrder.map(card)),
+    fileInput,
+    el('div', { class: 'bar' },
+      el('button', { onclick: async () => {
+        try {
+          const r = await api('POST', '/__admin/api/art/reorder', { game, category, order: artOrder })
+          setDirty(false)
+          await reloadArt()
+          status(r.renamed ? `order saved — ${r.renamed} file(s) renumbered ✓` : 'order unchanged', 'ok')
+        } catch (err) {
+          status(`reorder failed: ${err.message}`, 'err')
+        }
+      } }, 'Save order'),
+      el('button', { class: 'ghost', style: 'color:var(--dim)', onclick: () => fileInput.click() }, 'upload images'),
+      el('button', { class: 'ghost', style: 'color:var(--dim)', onclick: async () => {
+        status('regenerating variants…')
+        await api('POST', '/__admin/api/art/regen')
+        await reloadArt()
+        status('variants regenerated ✓', 'ok')
+      } }, 'regenerate variants'),
+      el('span', { id: 'status' })))
+
+  preview(`/games/${game}`)
+}
+
+let pendingTab = null
+function render() {
+  $('#tabs').replaceChildren(...Object.entries(TABS()).map(([id, label]) => el('button', {
+    class: id === tab ? 'active' : '',
+    onclick: () => {
+      if (dirty && pendingTab !== id) {
+        pendingTab = id
+        status('unsaved changes — click the tab again to discard them', 'err')
+        return
+      }
+      pendingTab = null
+      setDirty(false)
+      load().then(() => { tab = id; selected = null; render() })
+    },
+  }, label)))
+  ;({ games: renderGames, crowdfunding: renderCrowdfunding, pages: renderPages,
+    social: renderSocial, seo: renderSeo, endpoints: renderEndpoints, art: renderArt })[tab]()
+}
+
+async function load() {
+  data = await api('GET', '/__admin/api/data')
+}
+
+load().then(render).catch((err) => {
+  document.body.replaceChildren(el('div', { class: 'placeholder' }, `failed to load: ${err.message}`))
+})
+</script>
+</body>
+</html>
