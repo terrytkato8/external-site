@@ -96,7 +96,15 @@ let tab = 'games'
 let selected = null
 let dirty = false
 
-const TABS = { games: 'Games', seo: 'SEO', endpoints: 'Endpoints', art: 'Concept art' }
+// Crowdfunding appears only when the repo has src/data/crowdfundingGames.js
+// (staging today; prod whenever the feature merges).
+const TABS = () => ({
+  games: 'Games',
+  ...(data.crowdfundingGames ? { crowdfunding: 'Crowdfunding' } : {}),
+  seo: 'SEO',
+  endpoints: 'Endpoints',
+  art: 'Concept art',
+})
 
 function setDirty(v) { dirty = v; status(dirty ? 'unsaved changes' : '') }
 window.addEventListener('beforeunload', (e) => { if (dirty) e.preventDefault() })
@@ -199,6 +207,47 @@ function saveBar(onSave, extra = []) {
     el('span', { id: 'status' }))
 }
 
+// No native dialogs anywhere — prompt()/confirm() are suppressed in embedded
+// browsers, which made the old add-game button appear dead.
+
+// "+ add" that swaps itself for an inline slug input with create/cancel.
+function addRow(onCreate, takenSlugs) {
+  const btn = el('button', { class: 'add', onclick: () => {
+    const input = el('input', { type: 'text', placeholder: 'new-slug-kebab-case',
+      onkeydown: (e) => { if (e.key === 'Enter') create(); if (e.key === 'Escape') cancel() } })
+    const create = () => {
+      const slug = input.value.trim()
+      if (!/^[a-z0-9-]+$/.test(slug)) return status('slug must be kebab-case: a-z, 0-9, dashes', 'err')
+      if (takenSlugs().includes(slug)) return status(`"${slug}" already exists`, 'err')
+      onCreate(slug)
+    }
+    const cancel = () => wrap.replaceWith(addRow(onCreate, takenSlugs))
+    const wrap = el('div', {},
+      input,
+      el('div', { class: 'row', style: 'margin-top:6px' },
+        el('button', { class: 'add', onclick: create }, 'create'),
+        el('button', { class: 'add', onclick: cancel }, 'cancel')))
+    btn.replaceWith(wrap)
+    input.focus()
+  } }, '+ add game')
+  return btn
+}
+
+// Delete button that arms on first click and fires on the second.
+function armedDelete(label, onDelete) {
+  let armed = false
+  const btn = el('button', { class: 'ghost', onclick: () => {
+    if (!armed) {
+      armed = true
+      btn.textContent = 'click again to really delete'
+      setTimeout(() => { armed = false; btn.textContent = label }, 3000)
+      return
+    }
+    onDelete()
+  } }, label)
+  return btn
+}
+
 // ---- games tab ------------------------------------------------------------
 
 function renderGames() {
@@ -211,20 +260,13 @@ function renderGames() {
       class: `item${g.slug === selected ? ' active' : ''}`,
       onclick: () => { selected = g.slug; renderGames() },
     }, g.title, el('small', {}, g.slug))),
-    el('button', {
-      class: 'add',
-      onclick: () => {
-        const slug = prompt('Slug for the new game (kebab-case, used in /games/<slug>):')
-        if (!slug) return
-        if (!/^[a-z0-9-]+$/.test(slug)) return alert('kebab-case only: a-z, 0-9, dashes')
-        if (games.some((g) => g.slug === slug)) return alert('slug already exists')
-        games.push({ slug, title: slug, tagline: '', description: '', categories: [],
-          bgColor: '#888888', comingSoon: true, framedArt: false, gameplay: [], story: [] })
-        selected = slug
-        setDirty(true)
-        renderGames()
-      },
-    }, '+ add game'))
+    addRow((slug) => {
+      games.push({ slug, title: slug, tagline: '', description: '', categories: [],
+        bgColor: '#888888', comingSoon: true, framedArt: false, gameplay: [], story: [] })
+      selected = slug
+      setDirty(true)
+      renderGames()
+    }, () => games.map((g) => g.slug)))
 
   if (!game) { $('#form').replaceChildren(el('div', { class: 'placeholder' }, 'no games')); return }
 
@@ -261,10 +303,10 @@ function renderGames() {
       }))),
     saveBar(async () => {
       await save('games', games, 'games.js')
+      // A game without a gameRoutes entry breaks prerender — auto-create
+      // stubs (visible in the git diff, refine in the SEO tab).
       const missing = games.filter((g) => !data.gameRoutes[g.slug])
-      if (missing.length && confirm(
-        `No SEO entry for: ${missing.map((g) => g.slug).join(', ')}.\n` +
-        'Create stub gameRoutes entries now? (Needed for prerender.)')) {
+      if (missing.length) {
         for (const g of missing) {
           data.gameRoutes[g.slug] = {
             title: `${g.title} | Kato.8 Studios`,
@@ -274,23 +316,84 @@ function renderGames() {
           }
         }
         await save('gameRoutes', data.gameRoutes, 'seo-config.js')
+        status(`saved ✓ — created stub SEO entries for ${missing.map((g) => g.slug).join(', ')} (refine in SEO tab)`, 'ok')
       }
       const noEndpoints = games.filter((g) => !data.discordEndpoints[g.slug] || !data.playtestEndpoints[g.slug])
       if (noEndpoints.length) {
-        status(`saved ✓ — note: no Formspree endpoints for ${noEndpoints.map((g) => g.slug).join(', ')} (Endpoints tab)`, 'ok')
+        status(`${$('#status').textContent || 'saved ✓'} — no Formspree endpoints for ${noEndpoints.map((g) => g.slug).join(', ')}`, 'ok')
       }
-    }, [el('button', {
-      class: 'ghost',
-      onclick: () => {
-        if (!confirm(`Remove "${game.title}" from games.js?\n(SEO + endpoint entries are left alone.)`)) return
-        games.splice(games.indexOf(game), 1)
-        selected = null
-        setDirty(true)
-        renderGames()
-      },
-    }, 'delete game')]))
+    }, [armedDelete('delete game', () => {
+      games.splice(games.indexOf(game), 1)
+      selected = null
+      setDirty(true)
+      renderGames()
+    })]))
 
   preview(`/games/${game.slug}`)
+}
+
+// ---- crowdfunding tab ------------------------------------------------------
+// Staging-only data file (placeholder campaigns). SEO for these routes is
+// generated in seo-config.js from a hand-maintained slug list — the admin
+// can't edit that expression, so slug changes may need a seo-config touch-up.
+
+function renderCrowdfunding() {
+  const cfGames = data.crowdfundingGames
+  if (!cfGames.some((g) => g.slug === selected)) selected = cfGames[0]?.slug ?? null
+  const game = cfGames.find((g) => g.slug === selected)
+
+  $('#list').replaceChildren(
+    ...cfGames.map((g) => el('button', {
+      class: `item${g.slug === selected ? ' active' : ''}`,
+      onclick: () => { selected = g.slug; renderCrowdfunding() },
+    }, g.title, el('small', {}, g.slug))),
+    addRow((slug) => {
+      cfGames.push({ slug, title: slug, categories: [], comingSoon: true, description: '', body: [] })
+      selected = slug
+      setDirty(true)
+      renderCrowdfunding()
+    }, () => cfGames.map((g) => g.slug)))
+
+  if (!game) { $('#form').replaceChildren(el('div', { class: 'placeholder' }, 'no crowdfunding games')); return }
+
+  const coverImage = game.coverImage ?? {}
+  const syncCover = () => {
+    if (coverImage.src || coverImage.alt) game.coverImage = coverImage
+    else delete game.coverImage
+  }
+
+  $('#form').replaceChildren(
+    el('h2', {}, 'Card'),
+    textField(game, 'title', 'Title'),
+    listField(game, 'categories', 'Categories'),
+    el('div', {}, el('label', {}, 'Card description'), el('textarea', {
+      value: game.description ?? '',
+      oninput(e) { game.description = e.target.value; setDirty(true) },
+    })),
+    textField(game, 'image', 'Card image (/assets/…, empty = placeholder block)'),
+    el('h2', {}, 'Detail page'),
+    el('div', { class: 'checks' }, checkField(game, 'comingSoon', 'coming soon tag')),
+    paragraphsField(game, 'body', 'Body'),
+    el('div', { class: 'row' },
+      el('div', {}, el('label', {}, 'Cover image (/assets/…)'), el('input', {
+        type: 'text', value: coverImage.src ?? '',
+        oninput(e) { coverImage.src = e.target.value; syncCover(); setDirty(true) },
+      })),
+      el('div', {}, el('label', {}, 'Cover image alt text'), el('input', {
+        type: 'text', value: coverImage.alt ?? '',
+        oninput(e) { coverImage.alt = e.target.value; syncCover(); setDirty(true) },
+      }))),
+    saveBar(async () => {
+      await save('crowdfundingGames', cfGames, 'crowdfundingGames.js')
+      status('saved ✓ — if you added/renamed slugs, sync the slug list in seo-config.js', 'ok')
+    }, [armedDelete('delete game', () => {
+      cfGames.splice(cfGames.indexOf(game), 1)
+      selected = null
+      setDirty(true)
+      renderCrowdfunding()
+    })]))
+
+  preview(`/crowdfunding-games/${game.slug}`)
 }
 
 // ---- seo tab ---------------------------------------------------------------
@@ -372,16 +475,23 @@ function renderArt() {
   preview('/')
 }
 
+let pendingTab = null
 function render() {
-  $('#tabs').replaceChildren(...Object.entries(TABS).map(([id, label]) => el('button', {
+  $('#tabs').replaceChildren(...Object.entries(TABS()).map(([id, label]) => el('button', {
     class: id === tab ? 'active' : '',
     onclick: () => {
-      if (dirty && !confirm('Discard unsaved changes?')) return
+      if (dirty && pendingTab !== id) {
+        pendingTab = id
+        status('unsaved changes — click the tab again to discard them', 'err')
+        return
+      }
+      pendingTab = null
       setDirty(false)
       load().then(() => { tab = id; selected = null; render() })
     },
   }, label)))
-  ;({ games: renderGames, seo: renderSeo, endpoints: renderEndpoints, art: renderArt })[tab]()
+  ;({ games: renderGames, crowdfunding: renderCrowdfunding, seo: renderSeo,
+    endpoints: renderEndpoints, art: renderArt })[tab]()
 }
 
 async function load() {

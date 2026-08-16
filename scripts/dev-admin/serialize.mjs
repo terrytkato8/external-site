@@ -9,9 +9,13 @@
 // exports) is untouched. Comments INSIDE a block are dropped on save; the
 // data files' headers say so.
 //
-// String consts declared in the same file (e.g. HOME_TITLE in seo-config.js)
-// are resolved when reading and re-substituted when writing, so the
-// indirection survives a round trip.
+// Literal consts declared in the same file (HOME_TITLE in seo-config.js,
+// LOREM_BODY in crowdfundingGames.js) are resolved when reading and
+// re-substituted when writing, so the indirection survives a round trip.
+//
+// Blocks marked `optional` cover files that only exist in some repos —
+// kato8-staging carries crowdfundingGames.js, prod doesn't (yet). They're
+// simply absent from the admin when the file is missing.
 
 import fs from 'node:fs'
 import path from 'node:path'
@@ -22,6 +26,16 @@ export const BLOCKS = {
   gameRoutes: { file: 'src/data/seo-config.js', anchor: 'export const gameRoutes = ' },
   discordEndpoints: { file: 'src/data/discordEndpoints.js', anchor: 'export const discordEndpoints = ' },
   playtestEndpoints: { file: 'src/data/playtestEndpoints.js', anchor: 'export const playtestEndpoints = ' },
+  crowdfundingGames: { file: 'src/data/crowdfundingGames.js', anchor: 'export const crowdfundingGames = ', optional: true },
+}
+
+// The variable each block's anchor declares — excluded from const
+// resolution so a block never gets "substituted" by its own name.
+const BLOCK_VARS = new Set(Object.values(BLOCKS).map(({ anchor }) => anchor.match(/const (\w+) =/)[1]))
+
+export function blockAvailable(root, name) {
+  const spec = BLOCKS[name]
+  return !spec.optional || fs.existsSync(path.join(root, spec.file))
 }
 
 // Walk source from an opening bracket to its matching close, skipping
@@ -53,12 +67,37 @@ function findBlock(src, anchor) {
   return { start, end: matchBracket(src, start) + 1 }
 }
 
-// Top-level `const NAME = '<string>'` declarations, for identifier
-// resolution inside blocks (and re-substitution on write).
+// Top-level `const NAME = <literal>` declarations (string, array, or object
+// literals), for identifier resolution inside blocks and re-substitution on
+// write. Evaluated in file order so a const may reference earlier ones.
+// Non-literal consts (computed expressions) are skipped.
 function fileConsts(src) {
   const consts = {}
-  for (const m of src.matchAll(/^const ([A-Z_][A-Z0-9_]*) = (['"])((?:\\.|(?!\2).)*)\2$/gm)) {
-    consts[m[1]] = m[3].replace(/\\(.)/g, '$1')
+  for (const m of src.matchAll(/^(?:export )?const ([A-Za-z_$][\w$]*) = /gm)) {
+    const name = m[1]
+    if (BLOCK_VARS.has(name)) continue
+    const start = m.index + m[0].length
+    const c = src[start]
+    let literal
+    if (c === '[' || c === '{') {
+      try {
+        literal = src.slice(start, matchBracket(src, start) + 1)
+      } catch {
+        continue
+      }
+    } else if (c === "'" || c === '"') {
+      let i = start + 1
+      while (i < src.length && src[i] !== c) i += src[i] === '\\' ? 2 : 1
+      literal = src.slice(start, i + 1)
+    } else {
+      continue
+    }
+    try {
+      const names = Object.keys(consts)
+      consts[name] = new Function(...names, `return (${literal})`)(...names.map((n) => consts[n]))
+    } catch {
+      // references something we didn't resolve — not usable as a const
+    }
   }
   return consts
 }
@@ -92,9 +131,13 @@ function quote(str) {
 function printValue(val, indent, constsByValue) {
   const pad = '  '.repeat(indent)
   const padIn = '  '.repeat(indent + 1)
-  if (typeof val === 'string') {
-    return constsByValue.get(val) ?? quote(val)
+  // A value identical to a same-file const prints as the identifier
+  // (HOME_TITLE, LOREM_BODY) so the indirection survives a round trip.
+  if (val && typeof val === 'object' || typeof val === 'string') {
+    const constName = constsByValue.get(JSON.stringify(val))
+    if (constName) return constName
   }
+  if (typeof val === 'string') return quote(val)
   if (val === null || typeof val === 'boolean' || typeof val === 'number') return String(val)
   if (Array.isArray(val)) {
     if (val.length === 0) return '[]'
@@ -110,7 +153,7 @@ function printValue(val, indent, constsByValue) {
     const key = IDENT_RE.test(k) ? k : quote(k)
     const v = printValue(val[k], indent + 1, constsByValue)
     // Prettier wraps long scalar strings onto their own line.
-    if (typeof val[k] === 'string' && !constsByValue.has(val[k]) &&
+    if (typeof val[k] === 'string' && !constsByValue.has(JSON.stringify(val[k])) &&
         padIn.length + key.length + 2 + v.length > 110) {
       out += `${padIn}${key}:\n${padIn}  ${v},\n`
     } else {
@@ -130,7 +173,7 @@ export function writeBlock(root, name, value) {
   const abs = path.join(root, file)
   const src = fs.readFileSync(abs, 'utf8')
   const consts = fileConsts(src)
-  const constsByValue = new Map(Object.entries(consts).map(([k, v]) => [v, k]))
+  const constsByValue = new Map(Object.entries(consts).map(([k, v]) => [JSON.stringify(v), k]))
   const { start, end } = findBlock(src, anchor)
   const indent = src.lastIndexOf('\n', start) === -1
     ? 0

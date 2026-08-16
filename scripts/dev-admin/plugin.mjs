@@ -15,7 +15,7 @@
 import fs from 'node:fs'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
-import { BLOCKS, readBlock, writeBlock } from './serialize.mjs'
+import { BLOCKS, blockAvailable, readBlock, writeBlock } from './serialize.mjs'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
@@ -58,7 +58,7 @@ export function devAdmin() {
         if (url === '/api/data' && req.method === 'GET') {
           const data = {}
           for (const name of Object.keys(BLOCKS)) {
-            data[name] = readBlock(root, name).value
+            if (blockAvailable(root, name)) data[name] = readBlock(root, name).value
           }
           sendJson(res, 200, data)
           return
@@ -67,7 +67,7 @@ export function devAdmin() {
         const blockMatch = url.match(/^\/api\/block\/([a-zA-Z]+)$/)
         if (blockMatch && req.method === 'PUT') {
           const name = blockMatch[1]
-          if (!BLOCKS[name]) {
+          if (!BLOCKS[name] || !blockAvailable(root, name)) {
             sendJson(res, 404, { error: `unknown block "${name}"` })
             return
           }
