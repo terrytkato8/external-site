@@ -8,8 +8,7 @@ import { fileURLToPath } from 'node:url'
 
 import {
   SITE,
-  staticRoutes,
-  gameRoutes,
+  getRouteMeta,
   listPrerenderRoutes,
 } from '../src/data/seo-config.js'
 
@@ -35,13 +34,6 @@ function absoluteUrl(p) {
   if (!p) return null
   if (/^https?:\/\//.test(p)) return p
   return `${SITE.url}${p.startsWith('/') ? p : `/${p}`}`
-}
-
-function routeMetaFor(pathname) {
-  if (staticRoutes[pathname]) return staticRoutes[pathname]
-  const m = pathname.match(/^\/games\/([^/]+)\/?$/)
-  if (m && gameRoutes[m[1]]) return gameRoutes[m[1]]
-  throw new Error(`No SEO config for route ${pathname}`)
 }
 
 function buildSeoBlock(pathname, meta) {
@@ -89,7 +81,19 @@ function main() {
 
   const routes = listPrerenderRoutes()
   for (const pathname of routes) {
-    const meta = routeMetaFor(pathname)
+    // `getRouteMeta` is seo-config's own resolver, the same one `<Seo>` uses at
+    // runtime. This script used to carry a private copy of that matching logic,
+    // so adding a dynamic route family meant three edits (getRouteMeta,
+    // listPrerenderRoutes, and the copy) — miss the third and the build died
+    // here with "No SEO config for route …". One resolver, two edits.
+    const meta = getRouteMeta(pathname)
+    if (!meta) {
+      throw new Error(
+        `No SEO config for route ${pathname}. ` +
+          `It is listed by listPrerenderRoutes() but getRouteMeta() cannot resolve it — ` +
+          `add it to staticRoutes/gameRoutes, or teach getRouteMeta its URL shape, in src/data/seo-config.js.`
+      )
+    }
     const block = buildSeoBlock(pathname, meta)
     const html = template.replace(MARKER_RE, block)
     const out = outPathFor(pathname)
