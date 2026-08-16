@@ -429,7 +429,19 @@ function renderSeo() {
       oninput(e) { entry.ogDescription = e.target.value; setDirty(true) },
     })),
     textField(entry, 'ogImage', 'OG image (/assets/…, empty = site default)'),
-    saveBar(() => save(route.block, data[route.block], 'seo-config.js')))
+    saveBar(() => save(route.block, data[route.block], 'seo-config.js'),
+      // Game routes can be deleted; static routes map to hardcoded pages,
+      // so removing their SEO would only silently un-prerender them.
+      route.block === 'gameRoutes' ? [armedDelete('delete route', async () => {
+        delete data.gameRoutes[route.key]
+        selected = null
+        await save('gameRoutes', data.gameRoutes, 'seo-config.js')
+        renderSeo()
+        const orphan = data.games.find((g) => g.slug === route.key)
+        status(orphan
+          ? `route deleted ✓ — but "${orphan.title}" is still in games.js, so a stub will be recreated on the next games save`
+          : 'route deleted and saved ✓', orphan ? 'err' : 'ok')
+      })] : []))
 
   preview(route.path)
 }
