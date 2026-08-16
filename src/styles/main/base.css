@@ -70,6 +70,14 @@ h2 {
   justify-content: flex-start;
   align-items: stretch;
   display: flex;
+  /* Game pages position decorative art with viewport units (the mobile hero
+   * band's `width: 100vw`). `vw` includes the vertical scrollbar's gutter,
+   * so on browsers with classic scrollbars such elements run a few px past
+   * the visible page and drag a sideways scroll with them. `clip` cuts that
+   * excess without creating a scroll container (unlike `hidden`, it can't
+   * become scrollable and doesn't affect `position: fixed` descendants like
+   * the mobile menu). */
+  overflow-x: clip;
 }
 
 @media screen and (max-width: 991px) {

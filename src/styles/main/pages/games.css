@@ -349,12 +349,22 @@
 .game-hero-bg-layer {
   z-index: -5;
   grid-area: 1 / 1;
+  /* Definite width so the child image's `width: 100%` has something to
+   * resolve against — the wrapper grid uses `place-items: start`, and a
+   * start-aligned item otherwise shrink-wraps its content, which collapses
+   * to nothing now that the image no longer carries its own `100vw`. */
+  width: 100%;
   position: relative;
 }
 
+/* 100% of the grid cell, which is the bg wrapper — an absolutely positioned
+ * element spanning `left: 0; right: 0`, i.e. the true viewport width. The
+ * old `100vw` ignored the vertical scrollbar's gutter, so on browsers with
+ * classic scrollbars the image was ~15px wider than the visible page and
+ * the whole site scrolled sideways by that much. */
 .game-hero-bg-image {
-  width: 100vw;
-  max-width: 100vw;
+  width: 100%;
+  max-width: 100%;
 }
 
 .game-hero-bg-wireframe {
