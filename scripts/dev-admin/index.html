@@ -61,6 +61,24 @@
   table.endpoints td { padding: 3px 6px 3px 0; }
   .placeholder { color: var(--dim); padding: 40px; text-align: center; }
   a { color: var(--accent); }
+  .art-grid { display: flex; flex-direction: column; gap: 10px; }
+  .art-card { display: flex; gap: 12px; background: var(--panel); border: 1px solid var(--line);
+    border-radius: 8px; padding: 10px; align-items: center; }
+  .art-card img { width: 96px; height: 64px; object-fit: cover; border-radius: 4px;
+    background: var(--panel2); flex: none; }
+  .art-card .meta { flex: 1; min-width: 0; }
+  .art-card .meta .name { font-size: 13px; word-break: break-all; }
+  .art-card .meta small { color: var(--dim); display: block; margin-top: 2px; }
+  .art-card .chips { display: flex; gap: 4px; flex-wrap: wrap; margin-top: 4px; }
+  .art-card .chips span { font-size: 10px; padding: 1px 6px; border-radius: 8px;
+    background: var(--panel2); color: var(--dim); border: 1px solid var(--line); }
+  .art-card .chips span.warn { color: var(--err); border-color: var(--err); }
+  .art-card .ctl { display: flex; flex-direction: column; gap: 2px; flex: none; }
+  .art-card .ctl button { background: var(--panel2); color: var(--dim); border: 1px solid var(--line);
+    border-radius: 4px; cursor: pointer; padding: 1px 8px; font-size: 12px; }
+  .art-card .ctl button:disabled { opacity: .3; cursor: default; }
+  .art-card button.ghost { background: none; border: none; color: var(--err); cursor: pointer;
+    font-size: 11px; flex: none; }
 </style>
 </head>
 <body>
@@ -82,6 +100,7 @@ const $ = (sel, el = document) => el.querySelector(sel)
 const el = (tag, attrs = {}, ...kids) => {
   const n = document.createElement(tag)
   for (const [k, v] of Object.entries(attrs)) {
+    if (v === undefined) continue
     if (k === 'class') n.className = v
     else if (k.startsWith('on')) n.addEventListener(k.slice(2), v)
     else if (k === 'checked' || k === 'value') n[k] = v
@@ -484,11 +503,123 @@ function renderEndpoints() {
 
 // ---- shell -----------------------------------------------------------------
 
-function renderArt() {
-  $('#list').replaceChildren()
-  $('#form').replaceChildren(el('div', { class: 'placeholder' },
-    'Concept-art manager coming soon. Sources live under src/assets/games/<slug>/concept/<category>/ — drop files in; variants regenerate automatically.'))
-  preview('/')
+// ---- concept-art tab -------------------------------------------------------
+// Files under src/assets/games/<slug>/concept/<category>/. The gallery sorts
+// by filename, so ordering = the NN- prefixes; "save order" renumbers via the
+// server's two-pass rename (variants ride along, no re-encode). Uploads get
+// slugified + next-number-prefixed, and variants regenerate on the spot.
+
+let artData = null
+let artOrder = null // working copy of the selected category's file order
+
+async function renderArt() {
+  if (!artData) artData = await api('GET', '/__admin/api/art')
+  const pairs = artData.games.flatMap((g) =>
+    g.categories.map((c) => ({ id: `${g.slug}/${c.name}`, game: g.slug, category: c.name, sources: c.sources })))
+  if (!pairs.some((p) => p.id === selected)) selected = pairs[0]?.id ?? null
+  const pair = pairs.find((p) => p.id === selected)
+
+  $('#list').replaceChildren(
+    ...pairs.map((p) => el('button', {
+      class: `item${p.id === selected ? ' active' : ''}`,
+      onclick: () => { selected = p.id; artOrder = null; setDirty(false); renderArt() },
+    }, p.category, el('small', {}, `${p.game} · ${p.sources.length} file(s)`))))
+
+  if (!pair) {
+    $('#form').replaceChildren(el('div', { class: 'placeholder' },
+      'No concept art yet. Create src/assets/games/<slug>/concept/<category>/ by uploading below… once a game exists.'))
+    return
+  }
+
+  const { game, category } = pair
+  artOrder ??= pair.sources.map((s) => s.file)
+  const bySrc = Object.fromEntries(pair.sources.map((s) => [s.file, s]))
+  const kb = (b) => `${Math.max(1, Math.round(b / 1024))} KB`
+
+  const reloadArt = async () => { artData = null; artOrder = null; await renderArt() }
+
+  const move = (i, delta) => {
+    const j = i + delta
+    if (j < 0 || j >= artOrder.length) return
+    ;[artOrder[i], artOrder[j]] = [artOrder[j], artOrder[i]]
+    setDirty(true)
+    renderArt()
+  }
+
+  const card = (file, i) => {
+    const s = bySrc[file]
+    const thumb = s.variants.find((v) => v.width === 500) ?? s.variants[0]
+    const url = `/src/assets/games/${game}/concept/${category}/${thumb ? thumb.file : file}`
+    return el('div', { class: 'art-card' },
+      el('div', { class: 'ctl' },
+        el('button', { onclick: () => move(i, -1), disabled: i === 0 ? '' : undefined }, '↑'),
+        el('button', { onclick: () => move(i, 1), disabled: i === artOrder.length - 1 ? '' : undefined }, '↓')),
+      el('img', { src: url, alt: file, loading: 'lazy' }),
+      el('div', { class: 'meta' },
+        el('div', { class: 'name' }, file),
+        el('small', {}, `${kb(s.bytes)} · ${s.kind}`),
+        el('div', { class: 'chips' },
+          ...(s.kind === 'passthrough'
+            ? [el('span', {}, 'served as-is')]
+            : s.missingVariants
+              ? [el('span', { class: 'warn' }, 'no variants — invisible until regenerated')]
+              : s.variants.map((v) => el('span', { class: v.stale ? 'warn' : '' },
+                  `${v.width}w${v.stale ? ' stale' : ''}`))))),
+      armedDelete('delete', async () => {
+        try {
+          await api('POST', '/__admin/api/art/delete', { game, category, file })
+          await reloadArt()
+          status(`${file} and its variants deleted ✓`, 'ok')
+        } catch (err) {
+          status(`delete failed: ${err.message}`, 'err')
+        }
+      }))
+  }
+
+  const fileInput = el('input', { type: 'file', multiple: '', accept: '.jpg,.jpeg,.png,.svg,.gif',
+    style: 'display:none',
+    onchange: async () => {
+      for (const f of fileInput.files) {
+        try {
+          status(`uploading ${f.name}…`)
+          const res = await fetch(`/__admin/api/art/upload?${new URLSearchParams({ game, category, filename: f.name })}`,
+            { method: 'POST', body: await f.arrayBuffer() })
+          const json = await res.json()
+          if (!res.ok) throw new Error(json.error)
+          status(`added ${json.file} ✓ (variants generated)`, 'ok')
+        } catch (err) {
+          status(`upload failed: ${err.message}`, 'err')
+          break
+        }
+      }
+      await reloadArt()
+    } })
+
+  $('#form').replaceChildren(
+    el('h2', {}, `${game} — ${category}`),
+    el('div', { class: 'art-grid' }, ...artOrder.map(card)),
+    fileInput,
+    el('div', { class: 'bar' },
+      el('button', { onclick: async () => {
+        try {
+          const r = await api('POST', '/__admin/api/art/reorder', { game, category, order: artOrder })
+          setDirty(false)
+          await reloadArt()
+          status(r.renamed ? `order saved — ${r.renamed} file(s) renumbered ✓` : 'order unchanged', 'ok')
+        } catch (err) {
+          status(`reorder failed: ${err.message}`, 'err')
+        }
+      } }, 'Save order'),
+      el('button', { class: 'ghost', style: 'color:var(--dim)', onclick: () => fileInput.click() }, 'upload images'),
+      el('button', { class: 'ghost', style: 'color:var(--dim)', onclick: async () => {
+        status('regenerating variants…')
+        await api('POST', '/__admin/api/art/regen')
+        await reloadArt()
+        status('variants regenerated ✓', 'ok')
+      } }, 'regenerate variants'),
+      el('span', { id: 'status' })))
+
+  preview(`/games/${game}`)
 }
 
 let pendingTab = null

@@ -16,6 +16,7 @@ import fs from 'node:fs'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { BLOCKS, blockAvailable, readBlock, writeBlock } from './serialize.mjs'
+import { listArt, reorderArt, uploadArt, deleteArt, generateAllVariants } from './art.mjs'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
@@ -25,19 +26,21 @@ function sendJson(res, status, body) {
   res.end(JSON.stringify(body))
 }
 
-function readBody(req) {
+function readRawBody(req) {
   return new Promise((resolve, reject) => {
     const chunks = []
     req.on('data', (c) => chunks.push(c))
-    req.on('end', () => {
-      try {
-        resolve(JSON.parse(Buffer.concat(chunks).toString('utf8')))
-      } catch {
-        reject(new Error('invalid JSON body'))
-      }
-    })
+    req.on('end', () => resolve(Buffer.concat(chunks)))
     req.on('error', reject)
   })
+}
+
+async function readBody(req) {
+  try {
+    return JSON.parse((await readRawBody(req)).toString('utf8'))
+  } catch {
+    throw new Error('invalid JSON body')
+  }
 }
 
 export function devAdmin() {
@@ -62,6 +65,32 @@ export function devAdmin() {
           }
           sendJson(res, 200, data)
           return
+        }
+
+        try {
+          if (url === '/api/art' && req.method === 'GET') {
+            return sendJson(res, 200, listArt(root))
+          }
+          if (url === '/api/art/reorder' && req.method === 'POST') {
+            const { game, category, order } = await readBody(req)
+            return sendJson(res, 200, reorderArt(root, game, category, order))
+          }
+          if (url === '/api/art/delete' && req.method === 'POST') {
+            const { game, category, file } = await readBody(req)
+            return sendJson(res, 200, await deleteArt(root, game, category, file))
+          }
+          if (url === '/api/art/upload' && req.method === 'POST') {
+            const q = new URLSearchParams(req.url.split('?')[1] ?? '')
+            const body = await readRawBody(req)
+            return sendJson(res, 200,
+              await uploadArt(root, q.get('game'), q.get('category'), q.get('filename'), body))
+          }
+          if (url === '/api/art/regen' && req.method === 'POST') {
+            await generateAllVariants()
+            return sendJson(res, 200, { ok: true })
+          }
+        } catch (err) {
+          return sendJson(res, 400, { error: err.message })
         }
 
         const blockMatch = url.match(/^\/api\/block\/([a-zA-Z]+)$/)
