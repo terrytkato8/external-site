@@ -1,0 +1,237 @@
+{
+  "note": "Known prod/staging divergences. Regenerate with: node scripts/staging-drift.mjs --update-baseline",
+  "entries": {
+    ".env.example": {
+      "kind": "staging-only",
+      "reason": "Staging-only env template."
+    },
+    ".github/workflows/deploy-staging.yml": {
+      "kind": "staging-only",
+      "reason": "Staging-only deploy workflow. Prod has its own deploy.yml."
+    },
+    ".github/workflows/deploy.yml": {
+      "kind": "prod-only",
+      "reason": "Prod-only deploy workflow. Staging has its own deploy-staging.yml."
+    },
+    ".github/workflows/release.yml": {
+      "kind": "differs",
+      "reason": "Staging builds with VITE_DEPLOY_TARGET=staging (base /kato8-staging/, no CNAME); prod builds the default prod target."
+    },
+    ".gitignore": {
+      "kind": "differs",
+      "reason": "Per-repo ignore drift."
+    },
+    "ARCHITECTURE.md": {
+      "kind": "prod-only",
+      "reason": "Prod-only doc; staging intentionally has none."
+    },
+    "CNAME": {
+      "kind": "prod-only",
+      "reason": "Prod-only custom domain (kato8studios.com). Staging serves from github.io."
+    },
+    "COMPONENTS.md": {
+      "kind": "differs",
+      "reason": "Doc drift, partly crowdfunding components that only exist on staging."
+    },
+    "README.md": {
+      "kind": "differs",
+      "reason": "Staging README is a short pointer to prod; prod is canonical."
+    },
+    "public/404.html": {
+      "kind": "differs",
+      "reason": "Deploy-target-specific base path in the SPA fallback redirect."
+    },
+    "public/assets/img/last-light-cover.svg": {
+      "kind": "staging-only",
+      "reason": "Staging carries the unmerged crowdfunding feature (CrowdfundingGame* components/pages/data, SimpleGamePage for Last Light). Expected until that feature lands on prod."
+    },
+    "scripts/dev-admin/art.mjs": {
+      "kind": "prod-only",
+      "reason": "Prod-only dev-admin tooling (PR #86)."
+    },
+    "scripts/dev-admin/index.html": {
+      "kind": "prod-only",
+      "reason": "Prod-only dev-admin tooling (PR #86)."
+    },
+    "scripts/dev-admin/plugin.mjs": {
+      "kind": "prod-only",
+      "reason": "Prod-only dev-admin tooling (PR #86)."
+    },
+    "scripts/dev-admin/serialize.mjs": {
+      "kind": "prod-only",
+      "reason": "Prod-only dev-admin tooling (PR #86)."
+    },
+    "scripts/mirror-to-staging.mjs": {
+      "kind": "prod-only",
+      "reason": "Prod-only tooling (PR #86); scripts/ is not mirrored."
+    },
+    "scripts/prerender.mjs": {
+      "kind": "differs",
+      "reason": "Staging resolves crowdfunding routes (crowdfundingGameRoutes arm). This branch consolidates prod prerender onto getRouteMeta; re-review after mirroring."
+    },
+    "scripts/verify-deploy.mjs": {
+      "kind": "prod-only",
+      "reason": "Prod-only tooling (PR #86); scripts/ is not mirrored."
+    },
+    "src/App.jsx": {
+      "kind": "differs",
+      "reason": "Staging carries the unmerged crowdfunding feature (CrowdfundingGame* components/pages/data, SimpleGamePage for Last Light). Expected until that feature lands on prod."
+    },
+    "src/assets/games/big-boss-cleanup/concept/characters/.gitkeep": {
+      "kind": "staging-only",
+      "reason": ".gitkeep placeholder for empty Big Boss Cleanup concept dirs on staging. Staging-only."
+    },
+    "src/assets/games/big-boss-cleanup/concept/enemies/.gitkeep": {
+      "kind": "staging-only",
+      "reason": ".gitkeep placeholder for empty Big Boss Cleanup concept dirs on staging. Staging-only."
+    },
+    "src/assets/games/big-boss-cleanup/concept/environments/.gitkeep": {
+      "kind": "staging-only",
+      "reason": ".gitkeep placeholder for empty Big Boss Cleanup concept dirs on staging. Staging-only."
+    },
+    "src/assets/games/last-light/concept/characters/.gitkeep": {
+      "kind": "staging-only",
+      "reason": "Last Light placeholder concept art on staging (blank SVGs + .gitkeep); real art not yet added. Staging-only."
+    },
+    "src/assets/games/last-light/concept/characters/01-blank.svg": {
+      "kind": "staging-only",
+      "reason": "Last Light placeholder concept art on staging (blank SVGs + .gitkeep); real art not yet added. Staging-only."
+    },
+    "src/assets/games/last-light/concept/characters/02-blank.svg": {
+      "kind": "staging-only",
+      "reason": "Last Light placeholder concept art on staging (blank SVGs + .gitkeep); real art not yet added. Staging-only."
+    },
+    "src/assets/games/last-light/concept/characters/03-blank.svg": {
+      "kind": "staging-only",
+      "reason": "Last Light placeholder concept art on staging (blank SVGs + .gitkeep); real art not yet added. Staging-only."
+    },
+    "src/assets/games/last-light/concept/characters/04-blank.svg": {
+      "kind": "staging-only",
+      "reason": "Last Light placeholder concept art on staging (blank SVGs + .gitkeep); real art not yet added. Staging-only."
+    },
+    "src/assets/games/last-light/concept/enemies/.gitkeep": {
+      "kind": "staging-only",
+      "reason": "Last Light placeholder concept art on staging (blank SVGs + .gitkeep); real art not yet added. Staging-only."
+    },
+    "src/assets/games/last-light/concept/enemies/01-blank.svg": {
+      "kind": "staging-only",
+      "reason": "Last Light placeholder concept art on staging (blank SVGs + .gitkeep); real art not yet added. Staging-only."
+    },
+    "src/assets/games/last-light/concept/enemies/02-blank.svg": {
+      "kind": "staging-only",
+      "reason": "Last Light placeholder concept art on staging (blank SVGs + .gitkeep); real art not yet added. Staging-only."
+    },
+    "src/assets/games/last-light/concept/enemies/03-blank.svg": {
+      "kind": "staging-only",
+      "reason": "Last Light placeholder concept art on staging (blank SVGs + .gitkeep); real art not yet added. Staging-only."
+    },
+    "src/assets/games/last-light/concept/enemies/04-blank.svg": {
+      "kind": "staging-only",
+      "reason": "Last Light placeholder concept art on staging (blank SVGs + .gitkeep); real art not yet added. Staging-only."
+    },
+    "src/assets/games/last-light/concept/environments/.gitkeep": {
+      "kind": "staging-only",
+      "reason": "Last Light placeholder concept art on staging (blank SVGs + .gitkeep); real art not yet added. Staging-only."
+    },
+    "src/assets/games/last-light/concept/environments/01-blank.svg": {
+      "kind": "staging-only",
+      "reason": "Last Light placeholder concept art on staging (blank SVGs + .gitkeep); real art not yet added. Staging-only."
+    },
+    "src/assets/games/last-light/concept/environments/02-blank.svg": {
+      "kind": "staging-only",
+      "reason": "Last Light placeholder concept art on staging (blank SVGs + .gitkeep); real art not yet added. Staging-only."
+    },
+    "src/assets/games/last-light/concept/environments/03-blank.svg": {
+      "kind": "staging-only",
+      "reason": "Last Light placeholder concept art on staging (blank SVGs + .gitkeep); real art not yet added. Staging-only."
+    },
+    "src/assets/games/last-light/concept/environments/04-blank.svg": {
+      "kind": "staging-only",
+      "reason": "Last Light placeholder concept art on staging (blank SVGs + .gitkeep); real art not yet added. Staging-only."
+    },
+    "src/components/CrowdfundingGameCard.jsx": {
+      "kind": "staging-only",
+      "reason": "Staging carries the unmerged crowdfunding feature (CrowdfundingGame* components/pages/data, SimpleGamePage for Last Light). Expected until that feature lands on prod."
+    },
+    "src/components/CrowdfundingGameGrid.jsx": {
+      "kind": "staging-only",
+      "reason": "Staging carries the unmerged crowdfunding feature (CrowdfundingGame* components/pages/data, SimpleGamePage for Last Light). Expected until that feature lands on prod."
+    },
+    "src/components/Footer.jsx": {
+      "kind": "differs",
+      "reason": "Staging carries the unmerged crowdfunding feature (CrowdfundingGame* components/pages/data, SimpleGamePage for Last Light). Expected until that feature lands on prod."
+    },
+    "src/components/MobileMenu.jsx": {
+      "kind": "differs",
+      "reason": "Staging carries the unmerged crowdfunding feature (CrowdfundingGame* components/pages/data, SimpleGamePage for Last Light). Expected until that feature lands on prod."
+    },
+    "src/components/Nav.jsx": {
+      "kind": "differs",
+      "reason": "Staging carries the unmerged crowdfunding feature (CrowdfundingGame* components/pages/data, SimpleGamePage for Last Light). Expected until that feature lands on prod."
+    },
+    "src/data/crowdfundingGames.js": {
+      "kind": "staging-only",
+      "reason": "Staging carries the unmerged crowdfunding feature (CrowdfundingGame* components/pages/data, SimpleGamePage for Last Light). Expected until that feature lands on prod."
+    },
+    "src/data/games.js": {
+      "kind": "differs",
+      "reason": "Comment-only drift: prod header notes the dev-admin machine-edits rawGames. No runtime difference."
+    },
+    "src/data/playtestEndpoints.js": {
+      "kind": "differs",
+      "reason": "Comment-only drift naming SimpleGamePage (staging-only). No runtime difference."
+    },
+    "src/data/seo-config.js": {
+      "kind": "differs",
+      "reason": "Staging carries the unmerged crowdfunding feature (CrowdfundingGame* components/pages/data, SimpleGamePage for Last Light). Expected until that feature lands on prod."
+    },
+    "src/main.jsx": {
+      "kind": "differs",
+      "reason": "Imports crowdfunding + simple-game CSS (staging-only feature) plus an import-order difference."
+    },
+    "src/pages/CrowdfundingGamePage.jsx": {
+      "kind": "staging-only",
+      "reason": "Staging carries the unmerged crowdfunding feature (CrowdfundingGame* components/pages/data, SimpleGamePage for Last Light). Expected until that feature lands on prod."
+    },
+    "src/pages/CrowdfundingGamesPage.jsx": {
+      "kind": "staging-only",
+      "reason": "Staging carries the unmerged crowdfunding feature (CrowdfundingGame*, SimpleGamePage, preview/, crowdfunding routes). Expected until that feature lands on prod."
+    },
+    "src/pages/SimpleGamePage.jsx": {
+      "kind": "staging-only",
+      "reason": "Staging carries the unmerged crowdfunding feature (CrowdfundingGame* components/pages/data, SimpleGamePage for Last Light). Expected until that feature lands on prod."
+    },
+    "src/preview/PreviewPage.jsx": {
+      "kind": "staging-only",
+      "reason": "Staging carries the unmerged crowdfunding feature (CrowdfundingGame*, SimpleGamePage, preview/, crowdfunding routes). Expected until that feature lands on prod."
+    },
+    "src/preview/registry.jsx": {
+      "kind": "staging-only",
+      "reason": "Staging carries the unmerged crowdfunding feature (CrowdfundingGame*, SimpleGamePage, preview/, crowdfunding routes). Expected until that feature lands on prod."
+    },
+    "src/styles/main/nav.css": {
+      "kind": "differs",
+      "reason": "DRIFT TO REVIEW: staging has a nav dropdown-caret spacing fix (.nav-dropdown-caret / .w-dropdown-toggle padding) that prod lacks. Candidate to mirror BACK to prod."
+    },
+    "src/styles/main/newsletter-signup.css": {
+      "kind": "differs",
+      "reason": "DRIFT TO REVIEW: staging has newsletter spacing tweaks (negative top margin, responsive override) that prod lacks. Candidate to mirror BACK to prod."
+    },
+    "src/styles/main/pages/crowdfunding-games.css": {
+      "kind": "staging-only",
+      "reason": "Staging carries the unmerged crowdfunding feature (CrowdfundingGame* components/pages/data, SimpleGamePage for Last Light). Expected until that feature lands on prod."
+    },
+    "src/styles/main/pages/simple-game.css": {
+      "kind": "staging-only",
+      "reason": "Staging carries the unmerged crowdfunding feature (CrowdfundingGame* components/pages/data, SimpleGamePage for Last Light). Expected until that feature lands on prod."
+    },
+    "src/styles/main/support.css": {
+      "kind": "differs",
+      "reason": "DRIFT TO REVIEW: staging split margin-block into asymmetric top/bottom margins; prod still uses symmetric margin-block. Candidate to mirror BACK to prod."
+    },
+    "vite.config.js": {
+      "kind": "differs",
+      "reason": "Prod registers the dev-admin Vite plugin; staging has no dev-admin."
+    }
+  }
+}
