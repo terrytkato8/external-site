@@ -79,12 +79,6 @@ export default function GamePage() {
         </div>
       </div>
 
-      <div className="game-hero-bg-mobile-wrapper">
-        <div className="game-hero-bg-mobile-image">
-          <img src={asset('/assets/img/mobile-bg.svg')} loading="lazy" alt="" className="game-hero-bg-mobile" />
-        </div>
-      </div>
-
       <section className="games_hero-section">
         <div className="games_hero-section_left">
           <div className="games_title-wrapper">
@@ -102,6 +96,15 @@ export default function GamePage() {
                   <div className="title-tag_tag-text">{category}</div>
                 </div>
               ))}
+            </div>
+
+            {/* Mobile-only decorative band behind the title block. It lives
+              * inside the title wrapper so its bottom edge can be anchored to
+              * the bottom of the tags — see games.css. Hidden above 767px. */}
+            <div className="game-hero-bg-mobile-wrapper">
+              <div className="game-hero-bg-mobile-image">
+                <img src={asset('/assets/img/mobile-bg.svg')} loading="lazy" alt="" className="game-hero-bg-mobile" />
+              </div>
             </div>
           </div>
 
