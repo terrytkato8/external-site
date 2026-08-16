@@ -857,8 +857,14 @@
           display: none;
         }
 
+  /* `width: 90%` so the width plus the 7.5% + 2.5% margins totals 100%.
+   * The base rule's `width: 100%` made the margin box 110% of the viewport,
+   * which overflowed the page horizontally (8px of sideways scroll at 320px,
+   * with the column's right edge clipped offscreen) whenever the 360px
+   * max-width didn't absorb the excess — i.e. below 400px. */
   .game-page-main {
           align-self: center;
+          width: 90%;
           margin-top: auto;
           margin-inline: 7.5% 2.5%;
         }
@@ -917,15 +923,17 @@
           aspect-ratio: 1 / 2.15;
         }
 
-  /* Below 480px `.game-page-main` gains `margin-inline: 7.5% 2.5%`, so it is
-   * no longer simply centred and the 480-767px offset above is wrong here.
-   * Its margin box is `min(100vw, 360px) + 10vw`; centring that in the body
-   * and adding the 7.5vw left margin puts the column's left edge at
-   * `52.5vw - min(100vw, 360px) / 2`. Shift the band back by exactly that.
+  /* Below 480px `.game-page-main` gains `margin-inline: 7.5% 2.5%` (with
+   * `width: 90%`), so it is no longer simply centred and the 480-767px
+   * offset above is wrong here. Its margin box is `min(90vw, 360px) + 10vw`;
+   * centring that in the body and adding the 7.5vw left margin puts the
+   * column's left edge at `52.5vw - min(90vw, 360px) / 2`. Shift the band
+   * back by exactly that.
    *
-   * This tracks the column margins above — if they change, so must this. */
+   * This tracks the column width and margins above — if they change, so
+   * must this. */
   .game-hero-bg-mobile-wrapper {
-          left: calc(min(100vw, 360px) / 2 - 52.5vw);
+          left: calc(min(90vw, 360px) / 2 - 52.5vw);
         }
 
   /* The band is full-bleed and `object-fit: cover` at every mobile width, so
