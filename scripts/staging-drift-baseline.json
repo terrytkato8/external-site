@@ -209,10 +209,6 @@
       "kind": "staging-only",
       "reason": "Staging carries the unmerged crowdfunding feature (CrowdfundingGame*, SimpleGamePage, preview/, crowdfunding routes). Expected until that feature lands on prod."
     },
-    "src/styles/main/nav.css": {
-      "kind": "differs",
-      "reason": "DRIFT TO REVIEW: staging has a nav dropdown-caret spacing fix (.nav-dropdown-caret / .w-dropdown-toggle padding) that prod lacks. Candidate to mirror BACK to prod."
-    },
     "src/styles/main/newsletter-signup.css": {
       "kind": "differs",
       "reason": "DRIFT TO REVIEW: staging has newsletter spacing tweaks (negative top margin, responsive override) that prod lacks. Candidate to mirror BACK to prod."

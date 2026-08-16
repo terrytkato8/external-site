@@ -143,6 +143,19 @@
   color: var(--light-pearl);
 }
 
+/* The Webflow dropdown toggle reserves 40px of right padding for its
+   absolutely-positioned caret (itself inset 20px from the edge), leaving
+   ~20px of dead space after "Games ▾". That made the gap before the next
+   nav item read as ~32px vs the even 12px between the other items. Tighten
+   the toggle so its box hugs the caret and all nav gaps match. */
+.nav_right .w-dropdown-toggle {
+  padding-right: 20px;
+}
+
+.nav_right .nav-dropdown-caret {
+  margin-right: 0;
+}
+
 @media screen and (max-width: 991px) {
   .nav {
           height: auto;
