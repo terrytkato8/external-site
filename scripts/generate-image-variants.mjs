@@ -85,6 +85,30 @@ async function generateVariants(sourcePath) {
   return { generated, upToDate }
 }
 
+// Delete variants whose source image is gone — renamed, renumbered, or removed.
+// Nothing cleans these up otherwise: variants are gitignored, so they survive
+// branch switches and `git clean` runs that only touch tracked files, and they
+// accumulate in a working tree indefinitely. The gallery renders one tile per
+// variant stem, so a stale variant becomes a duplicate ghost tile on the page.
+async function pruneOrphanedVariants(files) {
+  // `<dir>/<stem>` for every source that can legitimately own a variant.
+  const sourceStems = new Set(
+    files
+      .filter((f) => SOURCE_EXTS.has(path.extname(f).toLowerCase()) && !VARIANT_PATTERN.test(f))
+      .map((f) => path.join(path.dirname(f), path.basename(f, path.extname(f))))
+  )
+
+  let pruned = 0
+  for (const file of files) {
+    if (!VARIANT_PATTERN.test(file)) continue
+    const stem = path.join(path.dirname(file), path.basename(file).replace(VARIANT_PATTERN, ''))
+    if (sourceStems.has(stem)) continue
+    await fs.unlink(file)
+    pruned++
+  }
+  return pruned
+}
+
 export async function generateAllVariants() {
   const files = await walk(CONCEPT_ROOT)
   const sources = files.filter((f) => SOURCE_EXTS.has(path.extname(f).toLowerCase()) && !VARIANT_PATTERN.test(f))
@@ -102,7 +126,10 @@ export async function generateAllVariants() {
     totalGenerated += result.generated
     totalUpToDate += result.upToDate
   }
-  console.log(`[variants] processed ${sources.length} source(s); generated ${totalGenerated}, up-to-date ${totalUpToDate}`)
+
+  const pruned = await pruneOrphanedVariants(files)
+  const prunedNote = pruned > 0 ? `, pruned ${pruned} orphaned` : ''
+  console.log(`[variants] processed ${sources.length} source(s); generated ${totalGenerated}, up-to-date ${totalUpToDate}${prunedNote}`)
 }
 
 // Still runnable standalone — that's how the npm `build` chain invokes it.
