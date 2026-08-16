@@ -233,13 +233,15 @@ function addRow(onCreate, takenSlugs) {
   return btn
 }
 
-// Delete button that arms on first click and fires on the second.
+// Delete button that arms on first click and fires on the second. The
+// two-click arm IS the confirmation, so callers save immediately — a
+// staged-but-unsaved delete looks done and then silently isn't.
 function armedDelete(label, onDelete) {
   let armed = false
   const btn = el('button', { class: 'ghost', onclick: () => {
     if (!armed) {
       armed = true
-      btn.textContent = 'click again to really delete'
+      btn.textContent = 'click again to delete & save'
       setTimeout(() => { armed = false; btn.textContent = label }, 3000)
       return
     }
@@ -322,11 +324,12 @@ function renderGames() {
       if (noEndpoints.length) {
         status(`${$('#status').textContent || 'saved ✓'} — no Formspree endpoints for ${noEndpoints.map((g) => g.slug).join(', ')}`, 'ok')
       }
-    }, [armedDelete('delete game', () => {
+    }, [armedDelete('delete game', async () => {
       games.splice(games.indexOf(game), 1)
       selected = null
-      setDirty(true)
+      await save('games', games, 'games.js')
       renderGames()
+      status(`"${game.title}" deleted and saved ✓ — SEO/endpoint entries were left alone`, 'ok')
     })]))
 
   preview(`/games/${game.slug}`)
@@ -386,11 +389,12 @@ function renderCrowdfunding() {
     saveBar(async () => {
       await save('crowdfundingGames', cfGames, 'crowdfundingGames.js')
       status('saved ✓ — if you added/renamed slugs, sync the slug list in seo-config.js', 'ok')
-    }, [armedDelete('delete game', () => {
+    }, [armedDelete('delete game', async () => {
       cfGames.splice(cfGames.indexOf(game), 1)
       selected = null
-      setDirty(true)
+      await save('crowdfundingGames', cfGames, 'crowdfundingGames.js')
       renderCrowdfunding()
+      status(`"${game.title}" deleted and saved ✓ — sync the slug list in seo-config.js if needed`, 'ok')
     })]))
 
   preview(`/crowdfunding-games/${game.slug}`)
