@@ -43,6 +43,12 @@ jobs:
           VITE_NEWSLETTER_ENDPOINT: ${{ vars.VITE_NEWSLETTER_ENDPOINT }}
         run: npm run build
 
+      - name: Check built site for broken internal references
+        # Runs before the artifact is uploaded, so a bad asset path fails the
+        # workflow instead of shipping a 404. Internal references only — see
+        # the script header for what is out of scope.
+        run: node scripts/check-built-site.mjs
+
       - uses: actions/configure-pages@v5
 
       - uses: actions/upload-pages-artifact@v3

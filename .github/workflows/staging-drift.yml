@@ -1,0 +1,39 @@
+name: Staging drift report
+
+# Compares prod (this repo) against staging (aeiti/kato8-staging) and fails if
+# any content drift appears that isn't in scripts/staging-drift-baseline.json.
+# The two repos are mirrored by file copy, not shared history, so drift is how
+# an unfinished mirror becomes visible instead of being discovered by hand.
+#
+# Weekly, plus on demand. Read-only: clones both repos, writes nothing back.
+
+on:
+  schedule:
+    - cron: '0 14 * * 1' # Mondays 14:00 UTC
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  drift:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out prod
+        uses: actions/checkout@v4
+        with:
+          path: external-site
+
+      - name: Check out staging
+        uses: actions/checkout@v4
+        with:
+          repository: aeiti/kato8-staging
+          path: kato8-staging
+          # staging is public, so the default token can read it; no PAT needed.
+
+      - name: Report drift
+        # The script locates staging as a sibling of prod's main checkout by
+        # default; here they're siblings under the workspace, so point at it
+        # explicitly. Non-zero exit on new drift fails the job, which surfaces
+        # in the Actions tab and emails the repo owner.
+        run: node external-site/scripts/staging-drift.mjs --staging "$GITHUB_WORKSPACE/kato8-staging"
