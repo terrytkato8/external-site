@@ -68,6 +68,13 @@ export function devAdmin() {
         }
 
         try {
+          if (url === '/api/social-icons' && req.method === 'GET') {
+            const dir = path.join(root, 'public/assets/img/social')
+            const icons = fs.existsSync(dir)
+              ? fs.readdirSync(dir).filter((f) => f.endsWith('.svg')).sort()
+              : []
+            return sendJson(res, 200, { icons })
+          }
           if (url === '/api/art' && req.method === 'GET') {
             return sendJson(res, 200, listArt(root))
           }

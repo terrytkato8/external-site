@@ -122,6 +122,8 @@ let dirty = false
 const TABS = () => ({
   games: 'Games',
   ...(data.crowdfundingGames ? { crowdfunding: 'Crowdfunding' } : {}),
+  pages: 'Pages',
+  social: 'Social',
   seo: 'SEO',
   endpoints: 'Endpoints',
   art: 'Concept art',
@@ -421,6 +423,113 @@ function renderCrowdfunding() {
   preview(`/crowdfunding-games/${game.slug}`)
 }
 
+// ---- pages tab -------------------------------------------------------------
+// Copy blocks extracted from hand-authored components: the home hero tagline
+// (Hero.jsx) and the About page's four sections (AboutPage.jsx). Layout and
+// images stay in the JSX; only the words are editable here.
+
+function renderPages() {
+  const pages = [
+    { id: '/', label: 'Home', sub: 'hero tagline' },
+    { id: '/about-us', label: 'About', sub: 'four sections' },
+  ]
+  if (!pages.some((p) => p.id === selected)) selected = pages[0].id
+
+  $('#list').replaceChildren(...pages.map((p) => el('button', {
+    class: `item${p.id === selected ? ' active' : ''}`,
+    onclick: () => { selected = p.id; renderPages() },
+  }, p.label, el('small', {}, p.sub))))
+
+  const area = (obj, key, label) => el('div', {},
+    el('label', {}, label),
+    el('textarea', { value: obj[key] ?? '', oninput(e) { obj[key] = e.target.value; setDirty(true) } }))
+
+  if (selected === '/') {
+    $('#form').replaceChildren(
+      el('h2', {}, 'Home — hero'),
+      area(data.heroContent, 'tagline', 'Tagline (under the logo)'),
+      saveBar(() => save('heroContent', data.heroContent, 'Hero.jsx')))
+  } else {
+    const c = data.aboutContent
+    $('#form').replaceChildren(
+      el('h2', {}, 'About Us section'),
+      textField(c.about, 'heading', 'Heading'),
+      area(c.about, 'body', 'Body'),
+      el('h2', {}, 'Why Kato.8? section'),
+      textField(c.whyKato8, 'heading', 'Heading'),
+      area(c.whyKato8, 'body', 'Body'),
+      el('h2', {}, 'Documentary section'),
+      textField(c.documentary, 'heading', 'Heading (also the iframe title)'),
+      textField(c.documentary, 'youtubeEmbedUrl', 'YouTube embed URL (https://www.youtube.com/embed/…)'),
+      el('h2', {}, 'Support section'),
+      textField(c.support, 'heading', 'Heading'),
+      area(c.support, 'body', 'Body'),
+      saveBar(() => save('aboutContent', data.aboutContent, 'AboutPage.jsx')))
+  }
+
+  preview(selected)
+}
+
+// ---- social tab ------------------------------------------------------------
+// One canonical list edited here, written to BOTH copies on save: the nav's
+// socialLinks (SocialIcons.jsx) and the footer's footerSocials (Footer.jsx)
+// — they were hand-duplicated before and drifted apart at your peril.
+
+let socialIcons = null
+
+async function renderSocial() {
+  socialIcons ??= (await api('GET', '/__admin/api/social-icons')).icons
+  const links = data.socialLinks
+
+  const differ = JSON.stringify(links) !== JSON.stringify(data.footerSocials)
+  $('#list').replaceChildren(el('div', { class: 'placeholder' },
+    'One list, two homes: saving writes both the nav (SocialIcons.jsx) and the footer (Footer.jsx). ' +
+    'Icons come from public/assets/img/social/.'))
+
+  const row = (link, i) => el('div', { class: 'art-card' },
+    el('div', { class: 'ctl' },
+      el('button', { onclick: () => { [links[i - 1], links[i]] = [links[i], links[i - 1]]; setDirty(true); renderSocial() },
+        disabled: i === 0 ? '' : undefined }, '↑'),
+      el('button', { onclick: () => { [links[i + 1], links[i]] = [links[i], links[i + 1]]; setDirty(true); renderSocial() },
+        disabled: i === links.length - 1 ? '' : undefined }, '↓')),
+    el('img', { src: link.src, alt: link.name, style: 'width:28px;height:28px;object-fit:contain;padding:4px' }),
+    el('div', { class: 'meta' },
+      el('div', { class: 'row' },
+        el('div', {}, el('label', {}, 'Name'), el('input', {
+          type: 'text', value: link.name, oninput(e) { link.name = e.target.value; setDirty(true) } })),
+        el('div', {}, el('label', {}, 'Icon'), el('select', {
+          onchange(e) { link.src = `/assets/img/social/${e.target.value}`; setDirty(true); renderSocial() },
+          style: 'width:100%;background:var(--panel);color:var(--text);border:1px solid var(--line);border-radius:6px;padding:7px',
+        }, ...socialIcons.map((icon) => {
+          const opt = el('option', { value: icon }, icon)
+          if (link.src.endsWith(`/${icon}`)) opt.selected = true
+          return opt
+        })))),
+      el('div', {}, el('label', {}, 'URL'), el('input', {
+        type: 'text', value: link.href, oninput(e) { link.href = e.target.value; setDirty(true) } }))),
+    armedDelete('remove', () => { links.splice(i, 1); setDirty(true); renderSocial() }))
+
+  $('#form').replaceChildren(
+    el('h2', {}, 'Social links — nav & footer'),
+    ...(differ ? [el('div', { class: 'placeholder', style: 'padding:10px;color:var(--err)' },
+      'Heads up: the nav and footer lists currently differ. Saving unifies both to what you see here (the nav list).')] : []),
+    el('div', { class: 'art-grid' }, ...links.map(row)),
+    el('div', { class: 'bar' },
+      el('button', { onclick: async () => {
+        await save('socialLinks', links, 'SocialIcons.jsx')
+        await save('footerSocials', links, 'Footer.jsx')
+        status('saved to nav + footer ✓', 'ok')
+      } }, 'Save'),
+      el('button', { class: 'ghost', style: 'color:var(--dim)', onclick: () => {
+        links.push({ name: '', href: '', src: `/assets/img/social/${socialIcons[0] ?? ''}` })
+        setDirty(true)
+        renderSocial()
+      } }, '+ add link'),
+      el('span', { id: 'status' })))
+
+  preview('/')
+}
+
 // ---- seo tab ---------------------------------------------------------------
 
 function renderSeo() {
@@ -669,8 +778,8 @@ function render() {
       load().then(() => { tab = id; selected = null; render() })
     },
   }, label)))
-  ;({ games: renderGames, crowdfunding: renderCrowdfunding, seo: renderSeo,
-    endpoints: renderEndpoints, art: renderArt })[tab]()
+  ;({ games: renderGames, crowdfunding: renderCrowdfunding, pages: renderPages,
+    social: renderSocial, seo: renderSeo, endpoints: renderEndpoints, art: renderArt })[tab]()
 }
 
 async function load() {
