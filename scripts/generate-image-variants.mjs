@@ -64,10 +64,16 @@ async function generateVariants(sourcePath) {
   const metadata = await image.metadata()
   const sourceWidth = metadata.width ?? Infinity
 
+  // Only widths below the source width, so we never upscale. If the source is
+  // narrower than every listed width, emit a single native-width variant
+  // instead: the gallery renders from variants alone, so a source with no
+  // variant at all would be invisible on the page.
+  const targetWidths = VARIANT_WIDTHS.filter((width) => width < sourceWidth)
+  if (targetWidths.length === 0) targetWidths.push(sourceWidth)
+
   let generated = 0
   let upToDate = 0
-  for (const width of VARIANT_WIDTHS) {
-    if (width >= sourceWidth) continue
+  for (const width of targetWidths) {
     const outPath = path.join(dir, `${stem}-${width}w.webp`)
     if (await isUpToDate(sourcePath, outPath)) {
       upToDate++
@@ -79,7 +85,7 @@ async function generateVariants(sourcePath) {
   return { generated, upToDate }
 }
 
-async function main() {
+export async function generateAllVariants() {
   const files = await walk(CONCEPT_ROOT)
   const sources = files.filter((f) => SOURCE_EXTS.has(path.extname(f).toLowerCase()) && !VARIANT_PATTERN.test(f))
 
@@ -99,7 +105,15 @@ async function main() {
   console.log(`[variants] processed ${sources.length} source(s); generated ${totalGenerated}, up-to-date ${totalUpToDate}`)
 }
 
-main().catch((err) => {
-  console.error('[variants] failed:', err)
-  process.exit(1)
-})
+// Still runnable standalone — that's how the npm `build` chain invokes it.
+// `vite.config.js` imports `generateAllVariants` directly so a bare `vite` /
+// `vite build` regenerates variants too; without that, a fresh clone would
+// render an empty gallery (variants are gitignored).
+const invokedDirectly = process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)
+
+if (invokedDirectly) {
+  generateAllVariants().catch((err) => {
+    console.error('[variants] failed:', err)
+    process.exit(1)
+  })
+}
