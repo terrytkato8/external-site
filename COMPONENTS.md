@@ -134,7 +134,7 @@ src/assets/games/<game-slug>/concept/<category>/<filename>.<ext>
 | `<game-slug>` | Matches the `slug` in `src/data/games.js` (e.g. `universal-serial-blade`). | Determines which game page the row appears on. |
 | `<category>` | Lowercase folder name. Use dashes for spaces (e.g. `characters`, `enemies`, `key-art`). | Becomes the uppercased row label (`KEY ART`). |
 | `<filename>` | Lowercase. Dashes for spaces. Make it descriptive — it becomes the alt text. | `boss-final-design.jpg` → alt `"Boss final design"`. |
-| `<ext>` | Lowercase `.jpg`, `.jpeg`, or `.png`. **Not** `.JPG`. | Source format. WebP variants auto-generated. |
+| `<ext>` | Lowercase. Raster: `.jpg`, `.jpeg`, `.png` (**not** `.JPG`) — WebP variants are generated from these. Vector/animated: `.svg`, `.gif` — served as-is (no variants). | Determines how it's shipped (see Image-size guidance). |
 
 **Ordering, additions, moves:**
 
@@ -145,7 +145,9 @@ src/assets/games/<game-slug>/concept/<category>/<filename>.<ext>
 
 **Image-size guidance:**
 
-Drop the **full-resolution original** (ideally ≥1600 px wide). At build time [`scripts/generate-image-variants.mjs`](./scripts/generate-image-variants.mjs) uses `sharp` to produce 500/800/1080/1600w WebP variants alongside the source. The component builds an automatic `srcSet` from them. Variants are gitignored — regenerated every build — so the repo only carries the originals. A small source means no variants and a single low-res `<img>`.
+For raster art, drop the **full-resolution original** (ideally ≥1600 px wide). At build time [`scripts/generate-image-variants.mjs`](./scripts/generate-image-variants.mjs) uses `sharp` to produce 500/800/1080/1600w WebP variants alongside the source (or a single native-width variant if the source is narrower than all of those), and the component builds an automatic `srcSet` from them. The variants are gitignored and regenerated every build; the repo carries only the originals, but the **deployed site ships only the variants** — the multi-megabyte originals are never emitted. So a source with no generated variant would not appear at all; the generator guarantees at least one.
+
+`.svg` and `.gif` sources skip that pipeline and are served as-is with no `srcSet` — resampling vector art degrades it, and `sharp` would flatten an animated GIF to a still frame. If a raster source and a same-named `.svg`/`.gif` coexist, the raster's variants win. Stale variants whose source was renamed or removed are pruned automatically each build, so a rename doesn't leave a ghost tile.
 
 **Workflow:**
 
