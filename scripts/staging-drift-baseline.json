@@ -227,7 +227,7 @@
     },
     "src/styles/main/newsletter-signup.css": {
       "kind": "differs",
-      "reason": "DRIFT TO REVIEW: staging has newsletter spacing tweaks (negative top margin, responsive override) that prod lacks. Candidate to mirror BACK to prod."
+      "reason": "ON HOLD (until further notice) — staging has newsletter spacing tweaks (negative top margin, responsive override) prod lacks. Back-port parked in kato8-sandbox/backlog/css-backports/; source of truth staging main. Do not mirror to prod until released."
     },
     "src/styles/main/pages/crowdfunding-games.css": {
       "kind": "staging-only",
@@ -239,7 +239,7 @@
     },
     "src/styles/main/support.css": {
       "kind": "differs",
-      "reason": "DRIFT TO REVIEW: staging split margin-block into asymmetric top/bottom margins; prod still uses symmetric margin-block. Candidate to mirror BACK to prod."
+      "reason": "ON HOLD (until further notice) — staging split margin-block into asymmetric top/bottom margins; prod still symmetric. Back-port parked in kato8-sandbox/backlog/css-backports/; source of truth staging main. Do not mirror to prod until released."
     },
     "vite.config.js": {
       "kind": "differs",
