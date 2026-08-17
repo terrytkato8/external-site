@@ -1,0 +1,29 @@
+#!/bin/sh
+# Pre-commit guard: refuse to commit changes under docs/.
+#
+# docs/ is a build artifact, not source. CI runs `npm run build` and deploys
+# the result via GitHub Pages; the tracked docs/ is never hand-updated and PRs
+# are source-only. But a local `npm run build` dirties tracked docs/ files, and
+# a reflexive `git add -A` sweeps them into the commit — producing a huge,
+# misleading diff that buries the real change. This stops that at commit time.
+#
+# Enabled repo-wide via `core.hooksPath=.githooks`, which the package.json
+# "prepare" script sets on every `npm install` (so fresh clones get it too).
+#
+# If you genuinely mean to commit docs/ — you almost never do — bypass with:
+#   git commit --no-verify
+
+staged_docs=$(git diff --cached --name-only -- docs/)
+
+if [ -n "$staged_docs" ]; then
+  echo "pre-commit: refusing to commit docs/ build-artifact churn:" >&2
+  echo "$staged_docs" | sed 's/^/  /' >&2
+  echo >&2
+  echo "docs/ is regenerated and deployed by CI; PRs are source-only." >&2
+  echo "Clear it with:" >&2
+  echo "  git restore --staged docs/ && git checkout -- docs/ && git clean -fd docs/" >&2
+  echo "Or, if committing docs/ really is intentional:  git commit --no-verify" >&2
+  exit 1
+fi
+
+exit 0
