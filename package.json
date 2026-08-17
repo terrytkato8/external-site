@@ -4,6 +4,7 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
+    "prepare": "git config core.hooksPath .githooks || true",
     "dev": "node scripts/generate-image-variants.mjs && vite",
     "build": "node scripts/generate-image-variants.mjs && vite build && node scripts/write-cname.mjs && node scripts/prerender.mjs",
     "preview": "vite preview",
