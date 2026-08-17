@@ -83,13 +83,12 @@ The site is a single-page React app, but each route also has a prerendered HTML 
 
 If you add a new top-level route, **also add it to `src/data/seo-config.js`** so the prerender step generates a static HTML file for it. Otherwise crawlers fall into the 404-redirect fallback and won't get the right meta tags on first byte.
 
-**Gotcha — the route resolver exists twice.** `seo-config.js` exports `getRouteMeta()` for the runtime `<Seo>` component, but `scripts/prerender.mjs` carries its *own* copy at [`routeMetaFor()`](./scripts/prerender.mjs). Adding a new **dynamic route family** (something like `/blog/:slug`, as opposed to another entry in an existing family) therefore takes three edits:
+**Adding a new dynamic route family** (something like `/blog/:slug`, as opposed to another entry in an existing family) takes two edits, both in [`src/data/seo-config.js`](./src/data/seo-config.js):
 
-1. `getRouteMeta()` in `src/data/seo-config.js` — so the runtime resolves it.
-2. `listPrerenderRoutes()` in the same file — so prerender knows to visit it.
-3. `routeMetaFor()` in `scripts/prerender.mjs` — so prerender can resolve it.
+1. `getRouteMeta()` — add the URL-shape match, so the runtime `<Seo>` resolves it.
+2. `listPrerenderRoutes()` — list the concrete paths, so prerender emits static HTML.
 
-Miss the third and the build dies with `No SEO config for route …`. Adding a game to the existing `gameRoutes` map needs none of this — the `/games/:slug` family is already wired in all three places.
+`scripts/prerender.mjs` imports `getRouteMeta` directly (it used to carry a duplicate `routeMetaFor()`, consolidated in PR #87), so there's no third resolver to keep in sync. If `listPrerenderRoutes()` emits a path `getRouteMeta()` can't resolve, the build still dies with `No SEO config for route …` — but that's now a genuine mismatch between the two, not a forgotten copy. Adding a game to the existing `gameRoutes` map needs neither edit — the `/games/:slug` family is already wired in.
 
 ## Deployment
 
@@ -108,12 +107,23 @@ Because it's still tracked, a local `npm run build` rewrites dozens of hashed fi
 git checkout -- docs/ && git clean -fd docs/
 ```
 
-**A merge to `main` occasionally fires no deploy at all** — a transient dropped GitHub event, not a workflow bug. After merging, confirm a run exists for the merge SHA; if not, kick it manually:
+A pre-commit guard ([`.githooks/pre-commit`](./.githooks/pre-commit), self-installed via the `package.json` `prepare` script on `npm install`) now blocks a commit with staged `docs/` paths and prints that recipe; `git commit --no-verify` overrides for the rare intentional case.
+
+**A merge to `main` occasionally fires no deploy at all** — a transient dropped GitHub event, not a workflow bug. [`scripts/verify-deploy.mjs`](./scripts/verify-deploy.mjs) detects this (and CDN staleness, below), re-dispatches the workflow when needed, and polls until the live site is serving the merge SHA — run it after any merge (`node scripts/verify-deploy.mjs`, or `--staging`). The manual fallback:
 
 ```bash
 gh run list --workflow deploy.yml --limit 5
 gh workflow run deploy.yml --ref main
 ```
+
+### Integrity checks in CI
+
+- **Broken internal references fail the deploy.** [`scripts/check-built-site.mjs`](./scripts/check-built-site.mjs) runs in `deploy.yml` between build and artifact upload; it resolves every internal `href`/`src`/`srcset`, CSS `url()`, and `/assets/*` bundle reference against the built `docs/`, and asserts every prerendered route emitted HTML. A green deploy therefore already means references resolve. (External URLs and SPA `<Link>` targets are out of scope — see the script header.)
+- **Prod↔staging drift is reported weekly.** [`.github/workflows/staging-drift.yml`](./.github/workflows/staging-drift.yml) runs [`scripts/staging-drift.mjs`](./scripts/staging-drift.mjs) on a Monday cron (plus on demand), comparing the two repos against `scripts/staging-drift-baseline.json` and failing on any unexpected divergence. The baseline records the expected differences (the crowdfunding feature, prod-only tooling, per-repo plumbing) with reasons.
+
+### Cross-repo release tooling
+
+Prod-only helpers for the mirror-based release flow (the two repos share no history — a release is a file-copy mirror, not a push): [`scripts/mirror-to-staging.mjs`](./scripts/mirror-to-staging.mjs) classifies and applies the prod→staging mirror, and `verify-deploy.mjs`/`staging-drift.mjs` (above) confirm and monitor it. The `/ship` skill (`.claude/skills/ship/`, local-only) orchestrates the whole sequence.
 
 ## Versioning
 
