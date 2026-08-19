@@ -27,12 +27,18 @@ export const BLOCKS = {
   discordEndpoints: { file: 'src/data/discordEndpoints.js', anchor: 'export const discordEndpoints = ' },
   playtestEndpoints: { file: 'src/data/playtestEndpoints.js', anchor: 'export const playtestEndpoints = ' },
   crowdfundingGames: { file: 'src/data/crowdfundingGames.js', anchor: 'export const crowdfundingGames = ', optional: true },
+  // Staging keeps a hand-maintained slug list feeding crowdfundingGameRoutes;
+  // the anchor is absent in prod, so this block is optional on the anchor, not
+  // just the file (seo-config.js exists in both repos).
+  crowdfundingSlugs: { file: 'src/data/seo-config.js', anchor: 'const CROWDFUNDING_SLUGS = ', optional: true },
   // Content blocks that live inside components — the block editor works on
   // any file, as long as the anchored literal is pure data.
   socialLinks: { file: 'src/components/SocialIcons.jsx', anchor: 'export const socialLinks = ' },
   footerSocials: { file: 'src/components/Footer.jsx', anchor: 'const footerSocials = ' },
+  footerLegal: { file: 'src/components/Footer.jsx', anchor: 'const footerLegal = ' },
   aboutContent: { file: 'src/pages/AboutPage.jsx', anchor: 'const aboutContent = ' },
   heroContent: { file: 'src/components/Hero.jsx', anchor: 'const heroContent = ' },
+  conventionBanner: { file: 'src/components/ConventionBanner.jsx', anchor: 'const conventionBanner = ' },
 }
 
 // The variable each block's anchor declares — excluded from const
@@ -41,7 +47,12 @@ const BLOCK_VARS = new Set(Object.values(BLOCKS).map(({ anchor }) => anchor.matc
 
 export function blockAvailable(root, name) {
   const spec = BLOCKS[name]
-  return !spec.optional || fs.existsSync(path.join(root, spec.file))
+  if (!spec.optional) return true
+  const abs = path.join(root, spec.file)
+  // Optional blocks may be missing two ways: the whole file is absent (e.g.
+  // crowdfundingGames.js in prod), or the file exists but doesn't carry the
+  // anchor (CROWDFUNDING_SLUGS lives only in staging's seo-config.js).
+  return fs.existsSync(abs) && fs.readFileSync(abs, 'utf8').includes(spec.anchor)
 }
 
 // Walk source from an opening bracket to its matching close, skipping
