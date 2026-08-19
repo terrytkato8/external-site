@@ -12,7 +12,8 @@
  *     link as icon + name text, while the nav is icon-only. `.footer_icon`
  *     is currently hidden via CSS (`display: none`) — only the labels show.
  *
- * Bottom bar: Terms/Cookies/Legal placeholder links and copyright.
+ * Bottom bar: the `footerLegal` block (Terms/Cookies/Legal links + copyright),
+ * editable from the dev admin's Pages → Footer tab.
  */
 import { Link } from 'react-router-dom'
 import { games } from '../data/games'
@@ -50,6 +51,24 @@ const footerSocials = [
     src: '/assets/img/social/linkedin.svg',
   },
 ]
+
+const footerLegal = {
+  links: [
+    {
+      label: 'Terms',
+      href: '#',
+    },
+    {
+      label: 'Cookies',
+      href: '#',
+    },
+    {
+      label: 'Legal',
+      href: '#',
+    },
+  ],
+  copyright: '© 2026 Kato.8. All rights reserved.',
+}
 
 export default function Footer() {
   return (
@@ -122,23 +141,15 @@ export default function Footer() {
 
         <div className="footer_bottom">
           <ul role="list" className="button-group gap-xsmall margin-top_none w-list-unstyled">
-            <li className="margin-bottom_none">
-              <a href="#" className="footer_link w-inline-block">
-                <div>Terms</div>
-              </a>
-            </li>
-            <li className="margin-bottom_none">
-              <a href="#" className="footer_link w-inline-block">
-                <div>Cookies</div>
-              </a>
-            </li>
-            <li className="margin-bottom_none">
-              <a href="#" className="footer_link w-inline-block">
-                <div>Legal</div>
-              </a>
-            </li>
+            {footerLegal.links.map((link) => (
+              <li key={link.label} className="margin-bottom_none">
+                <a href={link.href} className="footer_link w-inline-block">
+                  <div>{link.label}</div>
+                </a>
+              </li>
+            ))}
           </ul>
-          <div className="text-color_secondary">© 2026 Kato.8. All rights reserved.</div>
+          <div className="text-color_secondary">{footerLegal.copyright}</div>
         </div>
       </div>
     </footer>

@@ -14,11 +14,36 @@
 
 import fs from 'node:fs'
 import path from 'node:path'
+import { execFile } from 'node:child_process'
 import { fileURLToPath } from 'node:url'
 import { BLOCKS, blockAvailable, readBlock, writeBlock } from './serialize.mjs'
 import { listArt, reorderArt, uploadArt, deleteArt, renameArt, generateAllVariants } from './art.mjs'
+import { listAssets } from './assets.mjs'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
+
+// The admin can rewrite source files and upload assets, so — even though the
+// dev server runs with `--host` for LAN demos of the *site* — the /__admin
+// surface is restricted to the local machine. Anything not on the loopback
+// interface gets a 403 before any handler runs.
+function isLoopback(req) {
+  const addr = req.socket.remoteAddress ?? ''
+  return addr === '127.0.0.1' || addr === '::1' || addr === '::ffff:127.0.0.1'
+}
+
+// Run a read-only git command in the repo and resolve its stdout. Rejects on
+// non-zero exit so callers can surface "not a git repo" etc. as a 400.
+function git(root, args) {
+  return new Promise((resolve, reject) => {
+    execFile('git', args, { cwd: root, maxBuffer: 8 * 1024 * 1024 }, (err, stdout, stderr) => {
+      // `git diff` exits 1 when there ARE differences — not an error. Trust
+      // stdout whenever git produced any; only reject when it gave us nothing.
+      if (stdout) resolve(stdout)
+      else if (err) reject(new Error((stderr || err.message).split('\n')[0]))
+      else resolve('')
+    })
+  })
+}
 
 function sendJson(res, status, body) {
   res.statusCode = status
@@ -50,6 +75,13 @@ export function devAdmin() {
     configureServer(server) {
       const root = server.config.root
       server.middlewares.use('/__admin', async (req, res, next) => {
+        if (!isLoopback(req)) {
+          res.statusCode = 403
+          res.setHeader('content-type', 'text/plain')
+          res.end('dev admin is restricted to the local machine')
+          return
+        }
+
         const url = req.url.split('?')[0]
 
         if (url === '/' || url === '') {
@@ -74,6 +106,34 @@ export function devAdmin() {
               ? fs.readdirSync(dir).filter((f) => f.endsWith('.svg')).sort()
               : []
             return sendJson(res, 200, { icons })
+          }
+          if (url === '/api/assets' && req.method === 'GET') {
+            return sendJson(res, 200, { assets: listAssets(root) })
+          }
+          if (url === '/api/git' && req.method === 'GET') {
+            const [branch, porcelain] = await Promise.all([
+              git(root, ['rev-parse', '--abbrev-ref', 'HEAD']),
+              git(root, ['status', '--porcelain']),
+            ])
+            // Porcelain lines are "XY <path>"; the two-char status maps to a
+            // short label the UI colours. Renames ("R  old -> new") keep the
+            // arrow form so both paths stay visible.
+            const files = porcelain.split('\n').filter(Boolean).map((line) => ({
+              status: line.slice(0, 2).trim(),
+              path: line.slice(3),
+            }))
+            return sendJson(res, 200, { branch: branch.trim(), files })
+          }
+          if (url === '/api/git/diff' && req.method === 'GET') {
+            const file = new URLSearchParams(req.url.split('?')[1] ?? '').get('file')
+            if (!file) throw new Error('missing file parameter')
+            // `--` guards against a path that looks like a flag; untracked
+            // files have no diff, so fall back to /dev/null for those.
+            const tracked = (await git(root, ['ls-files', '--', file])).trim()
+            const diff = tracked
+              ? await git(root, ['diff', 'HEAD', '--', file])
+              : await git(root, ['diff', '--no-index', '--', '/dev/null', file])
+            return sendJson(res, 200, { diff })
           }
           if (url === '/api/art' && req.method === 'GET') {
             return sendJson(res, 200, listArt(root))

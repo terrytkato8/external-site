@@ -81,6 +81,22 @@
   .art-card .ctl button:disabled { opacity: .3; cursor: default; }
   .art-card button.ghost { background: none; border: none; color: var(--err); cursor: pointer;
     font-size: 11px; flex: none; }
+  /* Games list reorder rows: ↑↓ stack beside the full-width item button. */
+  .reorder-row { display: flex; align-items: stretch; gap: 4px; border-radius: 6px; }
+  .reorder-row.active { background: var(--panel2); }
+  .reorder-row .item { flex: 1; }
+  .reorder-row .ctl { display: flex; flex-direction: column; justify-content: center; gap: 2px; flex: none; }
+  .reorder-row .ctl button { background: var(--panel2); color: var(--dim); border: 1px solid var(--line);
+    border-radius: 4px; cursor: pointer; padding: 0 6px; font-size: 11px; line-height: 1.4; }
+  .reorder-row .ctl button:disabled { opacity: .3; cursor: default; }
+  /* Changes tab: status badges + colourised diff. */
+  .gstatus { font-family: ui-monospace, monospace; font-size: 11px; color: var(--dim); }
+  .gstatus.g-M { color: var(--accent); } .gstatus.g-A, .gstatus.g-\?\? { color: var(--ok); }
+  .gstatus.g-D { color: var(--err); }
+  pre.diff { margin: 0; padding: 10px; background: var(--panel); border: 1px solid var(--line);
+    border-radius: 6px; overflow-x: auto; font: 12px/1.5 ui-monospace, monospace; white-space: pre; }
+  pre.diff .dl.add { color: var(--ok); } pre.diff .dl.del { color: var(--err); }
+  pre.diff .dl.hunk { color: var(--accent); } pre.diff .dl.meta { color: var(--dim); }
 </style>
 </head>
 <body>
@@ -123,10 +139,12 @@ const TABS = () => ({
   games: 'Games',
   ...(data.crowdfundingGames ? { crowdfunding: 'Crowdfunding' } : {}),
   pages: 'Pages',
+  ...(data.conventionBanner ? { banner: 'Banner' } : {}),
   social: 'Social',
   seo: 'SEO',
   endpoints: 'Endpoints',
   art: 'Concept art',
+  git: 'Changes',
 })
 
 function setDirty(v) { dirty = v; status(dirty ? 'unsaved changes' : '') }
@@ -173,6 +191,7 @@ function textField(obj, key, label, opts = {}) {
     oninput: () => {
       if (input.value === '') delete obj[key]
       else obj[key] = input.value
+      opts.after?.()
       setDirty(true)
     },
   })
@@ -187,6 +206,38 @@ function textField(obj, key, label, opts = {}) {
     })
     wrap.replaceChildren(el('label', {}, label), el('div', { class: 'row' }, swatch, input))
   }
+  return wrap
+}
+
+// Asset paths (card bg, story/cover image, OG image) are free text, but we
+// know every image under public/, so the field autocompletes real paths and
+// flags one that points at a file that isn't there — the 404-only-on-deploy
+// class of typo. Loaded once, lazily.
+let assetList = null
+async function ensureAssets() {
+  if (!assetList) {
+    assetList = (await api('GET', '/__admin/api/assets')).assets
+    let dl = document.getElementById('asset-list')
+    if (!dl) { dl = el('datalist', { id: 'asset-list' }); document.body.append(dl) }
+    dl.replaceChildren(...assetList.map((a) => el('option', { value: a })))
+  }
+  return assetList
+}
+
+// textField + an autocomplete datalist + a live exists/missing indicator.
+function imageField(obj, key, label, opts = {}) {
+  const flag = el('small', { style: 'display:block;margin-top:3px' })
+  const check = () => {
+    const v = (obj[key] ?? '').trim()
+    if (!v) { flag.textContent = ''; return }
+    const ok = assetList?.includes(v.split('?')[0])
+    flag.textContent = ok ? '✓ file exists' : '⚠ no file at this path in public/'
+    flag.style.color = ok ? 'var(--ok)' : 'var(--err)'
+  }
+  const wrap = textField(obj, key, label, { after: () => { check(); opts.after?.() } })
+  wrap.querySelector('input').setAttribute('list', 'asset-list')
+  wrap.append(flag)
+  check()
   return wrap
 }
 
@@ -280,11 +331,24 @@ function renderGames() {
   if (!games.some((g) => g.slug === selected)) selected = games[0]?.slug ?? null
   const game = games.find((g) => g.slug === selected)
 
+  // The array order here is the homepage/nav order. Reorder with ↑↓, then
+  // Save — the games.js write persists whatever order you've arranged.
+  const moveGame = (i, delta) => {
+    const j = i + delta
+    if (j < 0 || j >= games.length) return
+    ;[games[i], games[j]] = [games[j], games[i]]
+    setDirty(true)
+    renderGames()
+  }
   $('#list').replaceChildren(
-    ...games.map((g) => el('button', {
-      class: `item${g.slug === selected ? ' active' : ''}`,
-      onclick: () => { selected = g.slug; renderGames() },
-    }, g.title, el('small', {}, g.slug))),
+    ...games.map((g, i) => el('div', { class: `reorder-row${g.slug === selected ? ' active' : ''}` },
+      el('div', { class: 'ctl' },
+        el('button', { onclick: () => moveGame(i, -1), disabled: i === 0 ? '' : undefined }, '↑'),
+        el('button', { onclick: () => moveGame(i, 1), disabled: i === games.length - 1 ? '' : undefined }, '↓')),
+      el('button', {
+        class: `item${g.slug === selected ? ' active' : ''}`,
+        onclick: () => { selected = g.slug; renderGames() },
+      }, g.title, el('small', {}, g.slug)))),
     addRow((slug) => {
       games.push({ slug, title: slug, tagline: '', description: '', categories: [],
         bgColor: '#888888', comingSoon: true, framedArt: false, gameplay: [], story: [] })
@@ -309,7 +373,7 @@ function renderGames() {
     listField(game, 'categories', 'Categories'),
     el('div', { class: 'row' },
       textField(game, 'bgColor', 'Card background color', { color: true }),
-      textField(game, 'bgImage', 'Card background image (/assets/…)')),
+      imageField(game, 'bgImage', 'Card background image (/assets/…)')),
     el('h2', {}, 'Game page'),
     textField(game, 'kickstarterUrl', 'Kickstarter URL (empty = no CTA)'),
     el('div', { class: 'checks' },
@@ -318,14 +382,8 @@ function renderGames() {
     paragraphsField(game, 'gameplay', 'Gameplay'),
     paragraphsField(game, 'story', 'Story'),
     el('div', { class: 'row' },
-      el('div', {}, el('label', {}, 'Story image (/assets/…)'), el('input', {
-        type: 'text', value: storyImage.src ?? '',
-        oninput(e) { storyImage.src = e.target.value; syncStoryImage(); setDirty(true) },
-      })),
-      el('div', {}, el('label', {}, 'Story image alt text'), el('input', {
-        type: 'text', value: storyImage.alt ?? '',
-        oninput(e) { storyImage.alt = e.target.value; syncStoryImage(); setDirty(true) },
-      }))),
+      imageField(storyImage, 'src', 'Story image (/assets/…)', { after: syncStoryImage }),
+      textField(storyImage, 'alt', 'Story image alt text', { after: syncStoryImage })),
     saveBar(async () => {
       await save('games', games, 'games.js')
       // A game without a gameRoutes entry breaks prerender — auto-create
@@ -360,8 +418,23 @@ function renderGames() {
 
 // ---- crowdfunding tab ------------------------------------------------------
 // Staging-only data file (placeholder campaigns). SEO for these routes is
-// generated in seo-config.js from a hand-maintained slug list — the admin
-// can't edit that expression, so slug changes may need a seo-config touch-up.
+// generated in seo-config.js from the CROWDFUNDING_SLUGS list, which the save
+// handler now keeps in sync automatically (see syncCrowdfundingSlugs).
+
+// Keep seo-config's hand-list CROWDFUNDING_SLUGS in step with the campaigns,
+// so adding/removing/renaming a crowdfunding game no longer needs a manual
+// seo-config edit. Only runs where that block exists (staging).
+async function syncCrowdfundingSlugs(cfGames) {
+  if (!data.crowdfundingSlugs) { status('saved ✓', 'ok'); return }
+  const want = cfGames.map((g) => g.slug)
+  if (JSON.stringify(want) === JSON.stringify(data.crowdfundingSlugs)) {
+    status('saved ✓ — SEO slug list already in sync', 'ok')
+    return
+  }
+  data.crowdfundingSlugs = want
+  await save('crowdfundingSlugs', want, 'seo-config.js')
+  status('saved ✓ — synced the SEO slug list in seo-config.js', 'ok')
+}
 
 function renderCrowdfunding() {
   const cfGames = data.crowdfundingGames
@@ -396,28 +469,22 @@ function renderCrowdfunding() {
       value: game.description ?? '',
       oninput(e) { game.description = e.target.value; setDirty(true) },
     })),
-    textField(game, 'image', 'Card image (/assets/…, empty = placeholder block)'),
+    imageField(game, 'image', 'Card image (/assets/…, empty = placeholder block)'),
     el('h2', {}, 'Detail page'),
     el('div', { class: 'checks' }, checkField(game, 'comingSoon', 'coming soon tag')),
     paragraphsField(game, 'body', 'Body'),
     el('div', { class: 'row' },
-      el('div', {}, el('label', {}, 'Cover image (/assets/…)'), el('input', {
-        type: 'text', value: coverImage.src ?? '',
-        oninput(e) { coverImage.src = e.target.value; syncCover(); setDirty(true) },
-      })),
-      el('div', {}, el('label', {}, 'Cover image alt text'), el('input', {
-        type: 'text', value: coverImage.alt ?? '',
-        oninput(e) { coverImage.alt = e.target.value; syncCover(); setDirty(true) },
-      }))),
+      imageField(coverImage, 'src', 'Cover image (/assets/…)', { after: syncCover }),
+      textField(coverImage, 'alt', 'Cover image alt text', { after: syncCover })),
     saveBar(async () => {
       await save('crowdfundingGames', cfGames, 'crowdfundingGames.js')
-      status('saved ✓ — if you added/renamed slugs, sync the slug list in seo-config.js', 'ok')
+      await syncCrowdfundingSlugs(cfGames)
     }, [armedDelete('delete game', async () => {
       cfGames.splice(cfGames.indexOf(game), 1)
       selected = null
       await save('crowdfundingGames', cfGames, 'crowdfundingGames.js')
+      await syncCrowdfundingSlugs(cfGames)
       renderCrowdfunding()
-      status(`"${game.title}" deleted and saved ✓ — sync the slug list in seo-config.js if needed`, 'ok')
     })]))
 
   preview(`/crowdfunding-games/${game.slug}`)
@@ -432,6 +499,7 @@ function renderPages() {
   const pages = [
     { id: '/', label: 'Home', sub: 'hero tagline' },
     { id: '/about-us', label: 'About', sub: 'four sections' },
+    { id: 'footer', label: 'Footer', sub: 'legal links + copyright' },
   ]
   if (!pages.some((p) => p.id === selected)) selected = pages[0].id
 
@@ -449,6 +517,35 @@ function renderPages() {
       el('h2', {}, 'Home — hero'),
       area(data.heroContent, 'tagline', 'Tagline (under the logo)'),
       saveBar(() => save('heroContent', data.heroContent, 'Hero.jsx')))
+  } else if (selected === 'footer') {
+    const legal = data.footerLegal
+    const move = (i, d) => {
+      const j = i + d
+      if (j < 0 || j >= legal.links.length) return
+      ;[legal.links[i], legal.links[j]] = [legal.links[j], legal.links[i]]
+      setDirty(true); renderPages()
+    }
+    const linkRow = (link, i) => el('div', { class: 'art-card' },
+      el('div', { class: 'ctl' },
+        el('button', { onclick: () => move(i, -1), disabled: i === 0 ? '' : undefined }, '↑'),
+        el('button', { onclick: () => move(i, 1), disabled: i === legal.links.length - 1 ? '' : undefined }, '↓')),
+      el('div', { class: 'meta' },
+        el('div', { class: 'row' },
+          textField(link, 'label', 'Label'),
+          textField(link, 'href', 'URL (# = placeholder)'))),
+      armedDelete('remove', () => { legal.links.splice(i, 1); setDirty(true); renderPages() }))
+    $('#form').replaceChildren(
+      el('h2', {}, 'Footer — bottom bar'),
+      el('div', { class: 'art-grid' }, ...legal.links.map(linkRow)),
+      el('div', { class: 'bar', style: 'margin-top:10px' },
+        el('button', { class: 'add', style: 'width:auto', onclick: () => {
+          legal.links.push({ label: 'New link', href: '#' }); setDirty(true); renderPages()
+        } }, '+ add link')),
+      el('h2', {}, 'Copyright'),
+      textField(legal, 'copyright', 'Copyright line'),
+      saveBar(() => save('footerLegal', data.footerLegal, 'Footer.jsx')))
+    preview('/')
+    return
   } else {
     const c = data.aboutContent
     $('#form').replaceChildren(
@@ -468,6 +565,57 @@ function renderPages() {
   }
 
   preview(selected)
+}
+
+// ---- banner tab ------------------------------------------------------------
+// The convention strip above the nav (ConventionBanner.jsx). Editing the lead
+// sentence and the list of appearances. Clearing the list hides the banner
+// entirely — the component renders null with no conventions, so rotating past
+// an event no longer means editing App.jsx.
+
+function renderBanner() {
+  const banner = data.conventionBanner
+  const list = banner.conventions
+
+  $('#list').replaceChildren(el('div', { class: 'placeholder' },
+    'The strip above the nav announcing in-person appearances. ' +
+    'Remove every appearance to hide the banner sitewide — no code change needed.'))
+
+  const move = (i, d) => {
+    const j = i + d
+    if (j < 0 || j >= list.length) return
+    ;[list[i], list[j]] = [list[j], list[i]]
+    setDirty(true); renderBanner()
+  }
+  const row = (conv, i) => el('div', { class: 'art-card' },
+    el('div', { class: 'ctl' },
+      el('button', { onclick: () => move(i, -1), disabled: i === 0 ? '' : undefined }, '↑'),
+      el('button', { onclick: () => move(i, 1), disabled: i === list.length - 1 ? '' : undefined }, '↓')),
+    el('div', { class: 'meta' },
+      el('div', { class: 'row' },
+        textField(conv, 'name', 'Name'),
+        textField(conv, 'dates', 'Dates (e.g. Sept 4–7)')),
+      textField(conv, 'href', 'Link URL (blank = plain text, no link)')),
+    armedDelete('remove', () => { list.splice(i, 1); setDirty(true); renderBanner() }))
+
+  $('#form').replaceChildren(
+    el('h2', {}, 'Banner'),
+    textField(banner, 'lead', 'Lead text (before the list)'),
+    ...(list.length === 0
+      ? [el('div', { class: 'placeholder', style: 'padding:14px;color:var(--dim)' },
+          'No appearances — the banner is hidden. Add one below to show it.')]
+      : []),
+    el('h2', {}, 'Appearances'),
+    el('div', { class: 'art-grid' }, ...list.map(row)),
+    el('div', { class: 'bar', style: 'margin-top:10px' },
+      el('button', { class: 'add', style: 'width:auto', onclick: () => {
+        // blank href → the name renders as plain text (href is deleted when
+        // empty by textField, and the component treats missing href as no link)
+        list.push({ name: 'New event', dates: '', href: '' }); setDirty(true); renderBanner()
+      } }, '+ add appearance')),
+    saveBar(() => save('conventionBanner', data.conventionBanner, 'ConventionBanner.jsx')))
+
+  preview('/')
 }
 
 // ---- social tab ------------------------------------------------------------
@@ -558,7 +706,7 @@ function renderSeo() {
       value: entry.ogDescription ?? '',
       oninput(e) { entry.ogDescription = e.target.value; setDirty(true) },
     })),
-    textField(entry, 'ogImage', 'OG image (/assets/…, empty = site default)'),
+    imageField(entry, 'ogImage', 'OG image (/assets/…, empty = site default)'),
     saveBar(() => save(route.block, data[route.block], 'seo-config.js'),
       // Game routes can be deleted; static routes map to hardcoded pages,
       // so removing their SEO would only silently un-prerender them.
@@ -763,6 +911,53 @@ async function renderArt() {
   preview(`/games/${game}`)
 }
 
+// ---- changes tab -----------------------------------------------------------
+// A read-only window on `git status` / `git diff` for the repo, so after
+// editing here you can see exactly which source files changed before taking
+// them through the branch → staging → PR flow by hand. Never writes anything.
+
+async function renderGit() {
+  let git
+  try {
+    git = await api('GET', '/__admin/api/git')
+  } catch (err) {
+    $('#list').replaceChildren(el('div', { class: 'placeholder' }, 'not a git repo?'))
+    $('#form').replaceChildren(el('div', { class: 'placeholder' }, err.message))
+    return
+  }
+  if (!git.files.some((f) => f.path === selected)) selected = git.files[0]?.path ?? null
+
+  $('#list').replaceChildren(
+    el('div', { class: 'placeholder', style: 'padding:8px 10px;text-align:left' },
+      el('div', {}, 'on branch ', el('strong', { style: 'color:var(--text)' }, git.branch)),
+      el('button', { class: 'add', style: 'margin-top:8px', onclick: () => renderGit() }, '↻ refresh')),
+    ...git.files.map((f) => el('button', {
+      class: `item${f.path === selected ? ' active' : ''}`,
+      onclick: () => { selected = f.path; renderGit() },
+    }, el('span', { class: `gstatus g-${f.status || 'x'}` }, f.status || '??'), ' ' + f.path)))
+
+  if (!selected) {
+    $('#form').replaceChildren(el('div', { class: 'placeholder' }, 'Working tree clean — nothing to commit.'))
+    return
+  }
+
+  $('#form').replaceChildren(el('div', { class: 'placeholder' }, 'loading diff…'))
+  try {
+    const { diff } = await api('GET', `/__admin/api/git/diff?file=${encodeURIComponent(selected)}`)
+    const pre = el('pre', { class: 'diff' })
+    for (const line of diff.split('\n')) {
+      const cls = line.startsWith('+') && !line.startsWith('+++') ? 'add'
+        : line.startsWith('-') && !line.startsWith('---') ? 'del'
+        : line.startsWith('@@') ? 'hunk' : line.startsWith('diff ') || line.startsWith('index ') ? 'meta' : ''
+      pre.append(el('span', { class: `dl ${cls}` }, line + '\n'))
+    }
+    $('#form').replaceChildren(el('h2', {}, selected), diff.trim() ? pre
+      : el('div', { class: 'placeholder' }, 'no textual diff (binary or unchanged)'))
+  } catch (err) {
+    $('#form').replaceChildren(el('div', { class: 'placeholder' }, `diff failed: ${err.message}`))
+  }
+}
+
 let pendingTab = null
 function render() {
   $('#tabs').replaceChildren(...Object.entries(TABS()).map(([id, label]) => el('button', {
@@ -778,12 +973,13 @@ function render() {
       load().then(() => { tab = id; selected = null; render() })
     },
   }, label)))
-  ;({ games: renderGames, crowdfunding: renderCrowdfunding, pages: renderPages,
-    social: renderSocial, seo: renderSeo, endpoints: renderEndpoints, art: renderArt })[tab]()
+  ;({ games: renderGames, crowdfunding: renderCrowdfunding, pages: renderPages, banner: renderBanner,
+    social: renderSocial, seo: renderSeo, endpoints: renderEndpoints, art: renderArt, git: renderGit })[tab]()
 }
 
 async function load() {
   data = await api('GET', '/__admin/api/data')
+  await ensureAssets()
 }
 
 load().then(render).catch((err) => {
