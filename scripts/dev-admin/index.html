@@ -477,6 +477,15 @@ function renderGames() {
     else delete game.storyImage
   }
 
+  // Up-to-two-layer hero backdrop (GamePage, desktop). The object is created
+  // only when something is set, and dropped when everything is cleared, so a
+  // game with no backdrop stays absent from the data.
+  const heroBg = game.heroBackground ?? {}
+  const syncHeroBg = () => {
+    if (heroBg.primary || heroBg.overlay || heroBg.anchorTop) game.heroBackground = heroBg
+    else delete game.heroBackground
+  }
+
   $('#form').replaceChildren(
     el('h2', {}, 'Card'),
     textField(game, 'title', 'Title'),
@@ -496,6 +505,15 @@ function renderGames() {
     el('div', { class: 'row' },
       assetPicker(storyImage, 'src', 'Story image (/assets/…)', { after: syncStoryImage }),
       textField(storyImage, 'alt', 'Story image alt text', { after: syncStoryImage })),
+    el('h2', {}, 'Hero background (desktop) — up to two layers'),
+    assetPicker(heroBg, 'primary', 'Main layer (/assets/…, empty = no backdrop)', { after: syncHeroBg }),
+    assetPicker(heroBg, 'overlay', 'Overlay layer (/assets/…, e.g. wireframe — optional)', { after: syncHeroBg }),
+    el('div', { class: 'checks' },
+      (() => {
+        const input = el('input', { type: 'checkbox', checked: !!heroBg.anchorTop,
+          onchange: () => { heroBg.anchorTop = input.checked; syncHeroBg(); setDirty(true) } })
+        return el('label', {}, input, 'anchor to top of window')
+      })()),
     saveBar(async () => {
       await save('games', games, 'games.js')
       // A game without a gameRoutes entry breaks prerender — auto-create
