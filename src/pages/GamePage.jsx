@@ -36,11 +36,11 @@ function RichText({ paragraphs, extraClass = '' }) {
  * rather than showing a broken layout).
  *
  * Layout:
- *   - Background art: layered desktop background SVG + wireframe overlay
- *     (with responsive srcSet), and a separate mobile background. Note:
- *     desktop bg image is hard-coded to Universal Serial Blade's SVG for now — every
- *     game page uses the same hero background regardless of slug. If you
- *     want per-game backgrounds, move the URL into the game's data entry.
+ *   - Background art (desktop only): the layered hero backdrop comes from
+ *     `game.heroBackground` — `primary` is the base layer, `overlay` a second
+ *     layer above it, and `anchorTop` pins the block to the top of the window.
+ *     A game with no `heroBackground` renders no backdrop. The mobile
+ *     decorative band (`mobile-bg.svg`) is separate and always present.
  *   - Hero section: title, tags (incl. "Coming soon" if `game.comingSoon`),
  *     optional framed art (`game.framedArt`), and gameplay copy.
  *   - Story section: long-form story paragraphs + optional `game.storyImage`.
@@ -63,21 +63,20 @@ export default function GamePage() {
   return (
     <section className="game-page-main">
       {seo && <Seo path={`/games/${slug}`} {...seo} />}
-      <div className="game-hero-bg-wrapper">
-        <div className="game-hero-bg-layer">
-          <img src={asset('/assets/img/universal-serial-blade-hero-background.svg')} loading="lazy" alt="" className="game-hero-bg-image" />
+      {(game.heroBackground?.primary || game.heroBackground?.overlay) && (
+        <div className={`game-hero-bg-wrapper${game.heroBackground.anchorTop ? ' anchor-top' : ''}`}>
+          {game.heroBackground.primary && (
+            <div className="game-hero-bg-layer">
+              <img src={game.heroBackground.primary} loading="lazy" alt="" className="game-hero-bg-image" />
+            </div>
+          )}
+          {game.heroBackground.overlay && (
+            <div className="game-hero-bg-wireframe">
+              <img src={game.heroBackground.overlay} loading="lazy" alt="" className="game-hero-bg-image" />
+            </div>
+          )}
         </div>
-        <div className="game-hero-bg-wireframe">
-          <img
-            src={asset('/assets/img/wire-layer.webp')}
-            loading="lazy"
-            sizes="100vw"
-            srcSet={asset('/assets/img/wire-layer-500.webp 500w, /assets/img/wire-layer-800.webp 800w, /assets/img/wire-layer-1080.webp 1080w, /assets/img/wire-layer-1600.webp 1600w, /assets/img/wire-layer.webp 1920w')}
-            alt=""
-            className="game-hero-bg-image"
-          />
-        </div>
-      </div>
+      )}
 
       <section className="games_hero-section">
         <div className="games_hero-section_left">
