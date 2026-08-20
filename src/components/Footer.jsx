@@ -52,6 +52,15 @@ const footerSocials = [
   },
 ]
 
+const footerBrand = {
+  logo: {
+    src: '/assets/img/anime-type.png',
+    alt: 'Kato.8 Studios',
+  },
+  blurb:
+    'Kato.8 Studios is an emerging indie game studio focused on creating modern games with retro-inspired aesthetics, mechanics, and emotional engagement.',
+}
+
 const footerLegal = {
   links: [
     {
@@ -77,17 +86,12 @@ export default function Footer() {
         <div className="w-layout-grid grid_6-col gap-small">
           <div className="footer-brand-block">
             <img
-              src={asset('/assets/img/anime-type.png')}
+              src={asset(footerBrand.logo.src)}
               loading="lazy"
-              sizes="(max-width: 624px) 100vw, 624px"
-              srcSet={asset('/assets/img/anime-type-500.png 500w, /assets/img/anime-type.png 624w')}
-              alt="Kato.8 Studios"
+              alt={footerBrand.logo.alt}
               className="footer-brand-logo"
             />
-            <p className="text-color_secondary paragraph_small">
-              Kato.8 Studios is an emerging indie game studio focused on creating modern games with retro-inspired aesthetics, mechanics, and emotional
-              engagement.
-            </p>
+            <p className="text-color_secondary paragraph_small">{footerBrand.blurb}</p>
           </div>
 
           <div>
