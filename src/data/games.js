@@ -19,6 +19,11 @@
  *                    CTA under the title/tags.
  *   comingSoon  — boolean. Shows a "Coming soon" tag on the GamePage.
  *   framedArt   — boolean. If true, GamePage renders the framed-art block.
+ *   heroBackground — { primary?, overlay?, anchorTop? } | undefined. The
+ *                 GamePage hero backdrop (desktop only): `primary` is the base
+ *                 layer, `overlay` a second layer above it (e.g. a wireframe),
+ *                 and `anchorTop` pins the block to the top of the window
+ *                 instead of the default 5vh offset. Omit for no backdrop.
  *   gameplay    — string[]. Paragraphs shown in the Gameplay block.
  *   story       — string[]. Paragraphs shown in the Story block.
  *   storyImage  — { src, alt } | undefined.
@@ -56,6 +61,11 @@ const rawGames = [
     kickstarterUrl: 'https://www.kickstarter.com/projects/kato8-lastlight/universal-serial-blade-usb',
     comingSoon: true,
     framedArt: true,
+    heroBackground: {
+      primary: '/assets/img/universal-serial-blade-hero-background.svg',
+      overlay: '/assets/img/wire-layer.webp',
+      anchorTop: false,
+    },
     gameplay: [
       "Universal Serial Blade isn't just a nostalgic callback to side-scrolling action games of the 90s and 00s, it's an evolution of the formula. Combat is fast and fluid, allowing any player to unlock the full power of their creativity with a customizable move-set and a highly flexible combo system. Players will fight challenging bosses, meet colorful characters, combo tens of enemies at a time, and unlock new powers as they fight their way through the AI Apocalypse to save humanity from their tragic fate.",
     ],

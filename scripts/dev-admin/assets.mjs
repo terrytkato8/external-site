@@ -30,3 +30,25 @@ export function listAssets(root) {
     .map((f) => '/' + path.relative(base, f).split(path.sep).join('/'))
     .sort()
 }
+
+// Write an uploaded image into public/assets/img so it's part of the build
+// (Vite copies public/ verbatim). The name is slugified and auto-numbered on
+// collision — same convention as the concept-art uploader — and the returned
+// value is the /assets/… path the data files reference. Site images here need
+// no responsive variants (unlike concept art): every editable field renders a
+// single src, so a plain copy into place is all the build needs.
+export function saveAsset(root, filename, buffer) {
+  if (!filename || !buffer?.length) throw new Error('missing upload parameters')
+  const ext = path.extname(filename).toLowerCase()
+  if (!IMAGE_EXTS.has(ext)) {
+    throw new Error(`unsupported type ${ext} — use png, jpg, webp, svg, gif, avif, or ico`)
+  }
+  const stem = path.basename(filename, path.extname(filename))
+    .toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '') || 'image'
+  const dir = path.join(root, 'public/assets/img')
+  fs.mkdirSync(dir, { recursive: true })
+  let name = `${stem}${ext}`
+  for (let n = 2; fs.existsSync(path.join(dir, name)); n++) name = `${stem}-${n}${ext}`
+  fs.writeFileSync(path.join(dir, name), buffer)
+  return { path: `/assets/img/${name}` }
+}

@@ -346,6 +346,12 @@
   inset: 5vh 0% auto;
 }
 
+/* Opt-in per game (heroBackground.anchorTop): pin the hero backdrop to the top
+ * of the window instead of the default 5vh drop. */
+.game-hero-bg-wrapper.anchor-top {
+  inset: 0 0% auto;
+}
+
 .game-hero-bg-layer {
   z-index: -5;
   grid-area: 1 / 1;

@@ -18,7 +18,8 @@ import { execFile } from 'node:child_process'
 import { fileURLToPath } from 'node:url'
 import { BLOCKS, blockAvailable, readBlock, writeBlock } from './serialize.mjs'
 import { listArt, reorderArt, uploadArt, deleteArt, renameArt, generateAllVariants } from './art.mjs'
-import { listAssets } from './assets.mjs'
+import { listAssets, saveAsset } from './assets.mjs'
+import { readHeadImages, writeHeadImage } from './head-images.mjs'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
@@ -110,6 +111,14 @@ export function devAdmin() {
           if (url === '/api/assets' && req.method === 'GET') {
             return sendJson(res, 200, { assets: listAssets(root) })
           }
+          if (url === '/api/assets/upload' && req.method === 'POST') {
+            const filename = new URLSearchParams(req.url.split('?')[1] ?? '').get('filename')
+            const body = await readRawBody(req)
+            return sendJson(res, 200, saveAsset(root, filename, body))
+          }
+          if (url === '/api/head-images' && req.method === 'GET') {
+            return sendJson(res, 200, readHeadImages(root))
+          }
           if (url === '/api/git' && req.method === 'GET') {
             const [branch, porcelain] = await Promise.all([
               git(root, ['rev-parse', '--abbrev-ref', 'HEAD']),
@@ -162,6 +171,18 @@ export function devAdmin() {
           }
         } catch (err) {
           return sendJson(res, 400, { error: err.message })
+        }
+
+        const headMatch = url.match(/^\/api\/head-images\/([a-zA-Z]+)$/)
+        if (headMatch && req.method === 'PUT') {
+          try {
+            const { path: assetPath } = await readBody(req)
+            writeHeadImage(root, headMatch[1], assetPath)
+            sendJson(res, 200, { ok: true })
+          } catch (err) {
+            sendJson(res, 400, { error: err.message })
+          }
+          return
         }
 
         const blockMatch = url.match(/^\/api\/block\/([a-zA-Z]+)$/)

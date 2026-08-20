@@ -97,6 +97,35 @@
     border-radius: 6px; overflow-x: auto; font: 12px/1.5 ui-monospace, monospace; white-space: pre; }
   pre.diff .dl.add { color: var(--ok); } pre.diff .dl.del { color: var(--err); }
   pre.diff .dl.hunk { color: var(--accent); } pre.diff .dl.meta { color: var(--dim); }
+  /* Asset picker field: thumbnail + path input + Choose/Upload/Clear. */
+  .asset-row { display: flex; gap: 10px; align-items: flex-start; margin-top: 2px; }
+  .asset-thumb { width: 60px; height: 60px; flex: none; border-radius: 6px; border: 1px solid var(--line);
+    background: var(--panel2) center/contain no-repeat; background-image: var(--thumb, none); }
+  .asset-thumb.empty { display: flex; align-items: center; justify-content: center; color: var(--dim); font-size: 20px; }
+  .asset-body { flex: 1; min-width: 0; }
+  .asset-btns { display: flex; gap: 6px; margin-top: 6px; flex-wrap: wrap; }
+  .asset-btns button { background: var(--panel2); color: var(--dim); border: 1px solid var(--line);
+    border-radius: 5px; cursor: pointer; padding: 3px 10px; font-size: 12px; }
+  .asset-btns button:hover { color: var(--text); border-color: var(--accent); }
+  /* Picker modal overlay. */
+  .picker-overlay { position: fixed; inset: 0; background: rgba(0,0,0,.6); display: flex;
+    align-items: center; justify-content: center; z-index: 50; }
+  .picker-panel { background: var(--panel); border: 1px solid var(--line); border-radius: 10px;
+    width: min(860px, 92vw); max-height: 86vh; display: flex; flex-direction: column; overflow: hidden; }
+  .picker-head { display: flex; gap: 10px; align-items: center; padding: 12px 14px;
+    border-bottom: 1px solid var(--line); }
+  .picker-head h3 { margin: 0; font-size: 14px; color: var(--accent); flex: none; }
+  .picker-head input { flex: 1; }
+  .picker-head button { flex: none; background: var(--panel2); color: var(--text); border: 1px solid var(--line);
+    border-radius: 6px; padding: 6px 12px; cursor: pointer; }
+  .picker-grid { padding: 12px; overflow-y: auto; display: grid; gap: 10px;
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); }
+  .picker-cell { border: 1px solid var(--line); border-radius: 8px; overflow: hidden; cursor: pointer;
+    background: var(--panel2); text-align: left; padding: 0; color: var(--text); }
+  .picker-cell:hover { border-color: var(--accent); }
+  .picker-cell .ph { height: 90px; background: #0d0e12 center/contain no-repeat; }
+  .picker-cell .cap { font-size: 10px; color: var(--dim); padding: 4px 6px; word-break: break-all;
+    border-top: 1px solid var(--line); }
 </style>
 </head>
 <body>
@@ -140,6 +169,7 @@ const TABS = () => ({
   ...(data.crowdfundingGames ? { crowdfunding: 'Crowdfunding' } : {}),
   pages: 'Pages',
   ...(data.conventionBanner ? { banner: 'Banner' } : {}),
+  ...(data.heroContent && data.footerBrand ? { branding: 'Branding' } : {}),
   social: 'Social',
   seo: 'SEO',
   endpoints: 'Endpoints',
@@ -224,21 +254,103 @@ async function ensureAssets() {
   return assetList
 }
 
-// textField + an autocomplete datalist + a live exists/missing indicator.
-function imageField(obj, key, label, opts = {}) {
-  const flag = el('small', { style: 'display:block;margin-top:3px' })
-  const check = () => {
+// Upload one File into public/assets/img and return its /assets/… path.
+// Refreshes the cached asset list so the new file shows up everywhere.
+async function uploadAsset(file) {
+  const res = await fetch(`/__admin/api/assets/upload?${new URLSearchParams({ filename: file.name })}`,
+    { method: 'POST', body: await file.arrayBuffer() })
+  const json = await res.json()
+  if (!res.ok) throw new Error(json.error)
+  assetList = null
+  await ensureAssets()
+  return json.path
+}
+
+// Full-screen thumbnail browser over everything in public/assets/img, with a
+// filter box and an inline upload. Resolves the chosen /assets/… path, or null
+// if cancelled. No native dialogs — errors show inline (they no-op in embedded
+// browsers otherwise).
+function openAssetPicker() {
+  return new Promise((resolve) => {
+    const grid = el('div', { class: 'picker-grid' })
+    const err = el('span', { style: 'color:var(--err);font-size:12px' })
+    const render = (filter = '') => {
+      const items = (assetList ?? []).filter((a) => a.toLowerCase().includes(filter.toLowerCase()))
+      if (!items.length) { grid.replaceChildren(el('div', { class: 'placeholder' }, 'no matching images')); return }
+      grid.replaceChildren(...items.map((a) => el('button', { class: 'picker-cell', onclick: () => close(a) },
+        el('div', { class: 'ph', style: `background-image:url('${a}')` }),
+        el('div', { class: 'cap' }, a.replace('/assets/img/', '')))))
+    }
+    const search = el('input', { type: 'text', placeholder: 'filter…', oninput: () => render(search.value) })
+    const fileInput = el('input', { type: 'file', accept: 'image/*', style: 'display:none',
+      onchange: async () => {
+        if (!fileInput.files[0]) return
+        err.textContent = ''
+        try { close(await uploadAsset(fileInput.files[0])) }
+        catch (e) { err.textContent = 'upload failed: ' + e.message }
+      } })
+    const overlay = el('div', { class: 'picker-overlay', onclick: (e) => { if (e.target === overlay) close(null) } },
+      el('div', { class: 'picker-panel' },
+        el('div', { class: 'picker-head' },
+          el('h3', {}, 'Pick image'), search, err,
+          el('button', { onclick: () => fileInput.click() }, 'Upload new'),
+          el('button', { onclick: () => close(null) }, 'Cancel')),
+        grid, fileInput))
+    const close = (val) => { overlay.remove(); document.removeEventListener('keydown', onKey); resolve(val) }
+    const onKey = (e) => { if (e.key === 'Escape') close(null) }
+    document.addEventListener('keydown', onKey)
+    document.body.append(overlay)
+    render()
+    search.focus()
+  })
+}
+
+// An image field: live thumbnail + a path input (still typeable, with the
+// asset-list autocomplete + exists/missing flag) + Choose (browse) / Upload /
+// Clear. Drop-in for any string field holding an /assets/… image path.
+function assetPicker(obj, key, label, opts = {}) {
+  const thumb = el('div', { class: 'asset-thumb' })
+  const flag = el('small', {})
+  const refresh = () => {
     const v = (obj[key] ?? '').trim()
+    const base = v.split('?')[0]
+    thumb.style.setProperty('--thumb', v ? `url('${base}')` : 'none')
+    thumb.classList.toggle('empty', !v)
+    thumb.textContent = v ? '' : '🖼'
     if (!v) { flag.textContent = ''; return }
-    const ok = assetList?.includes(v.split('?')[0])
+    const ok = assetList?.includes(base)
     flag.textContent = ok ? '✓ file exists' : '⚠ no file at this path in public/'
     flag.style.color = ok ? 'var(--ok)' : 'var(--err)'
   }
-  const wrap = textField(obj, key, label, { after: () => { check(); opts.after?.() } })
-  wrap.querySelector('input').setAttribute('list', 'asset-list')
-  wrap.append(flag)
-  check()
-  return wrap
+  const input = el('input', {
+    type: 'text', list: 'asset-list', value: obj[key] ?? '',
+    oninput: () => {
+      if (input.value === '') delete obj[key]; else obj[key] = input.value
+      refresh(); opts.after?.(); setDirty(true)
+    },
+  })
+  const setVal = (v) => {
+    if (v) obj[key] = v; else delete obj[key]
+    input.value = v || ''
+    refresh(); opts.after?.(); setDirty(true)
+  }
+  const fileInput = el('input', { type: 'file', accept: 'image/*', style: 'display:none',
+    onchange: async () => {
+      if (!fileInput.files[0]) return
+      try { status('uploading…'); setVal(await uploadAsset(fileInput.files[0])); status('uploaded ✓', 'ok') }
+      catch (e) { status('upload failed: ' + e.message, 'err') }
+    } })
+  refresh()
+  return el('div', {},
+    el('label', {}, label),
+    el('div', { class: 'asset-row' },
+      thumb,
+      el('div', { class: 'asset-body' }, input, flag,
+        el('div', { class: 'asset-btns' },
+          el('button', { onclick: async () => { const p = await openAssetPicker(); if (p !== null) setVal(p) } }, 'Choose…'),
+          el('button', { onclick: () => fileInput.click() }, 'Upload…'),
+          el('button', { onclick: () => setVal('') }, 'Clear'))),
+      fileInput))
 }
 
 function paragraphsField(obj, key, label) {
@@ -365,6 +477,15 @@ function renderGames() {
     else delete game.storyImage
   }
 
+  // Up-to-two-layer hero backdrop (GamePage, desktop). The object is created
+  // only when something is set, and dropped when everything is cleared, so a
+  // game with no backdrop stays absent from the data.
+  const heroBg = game.heroBackground ?? {}
+  const syncHeroBg = () => {
+    if (heroBg.primary || heroBg.overlay || heroBg.anchorTop) game.heroBackground = heroBg
+    else delete game.heroBackground
+  }
+
   $('#form').replaceChildren(
     el('h2', {}, 'Card'),
     textField(game, 'title', 'Title'),
@@ -373,7 +494,7 @@ function renderGames() {
     listField(game, 'categories', 'Categories'),
     el('div', { class: 'row' },
       textField(game, 'bgColor', 'Card background color', { color: true }),
-      imageField(game, 'bgImage', 'Card background image (/assets/…)')),
+      assetPicker(game, 'bgImage', 'Card background image (/assets/…)')),
     el('h2', {}, 'Game page'),
     textField(game, 'kickstarterUrl', 'Kickstarter URL (empty = no CTA)'),
     el('div', { class: 'checks' },
@@ -382,8 +503,17 @@ function renderGames() {
     paragraphsField(game, 'gameplay', 'Gameplay'),
     paragraphsField(game, 'story', 'Story'),
     el('div', { class: 'row' },
-      imageField(storyImage, 'src', 'Story image (/assets/…)', { after: syncStoryImage }),
+      assetPicker(storyImage, 'src', 'Story image (/assets/…)', { after: syncStoryImage }),
       textField(storyImage, 'alt', 'Story image alt text', { after: syncStoryImage })),
+    el('h2', {}, 'Hero background (desktop) — up to two layers'),
+    assetPicker(heroBg, 'primary', 'Main layer (/assets/…, empty = no backdrop)', { after: syncHeroBg }),
+    assetPicker(heroBg, 'overlay', 'Overlay layer (/assets/…, e.g. wireframe — optional)', { after: syncHeroBg }),
+    el('div', { class: 'checks' },
+      (() => {
+        const input = el('input', { type: 'checkbox', checked: !!heroBg.anchorTop,
+          onchange: () => { heroBg.anchorTop = input.checked; syncHeroBg(); setDirty(true) } })
+        return el('label', {}, input, 'anchor to top of window')
+      })()),
     saveBar(async () => {
       await save('games', games, 'games.js')
       // A game without a gameRoutes entry breaks prerender — auto-create
@@ -469,12 +599,12 @@ function renderCrowdfunding() {
       value: game.description ?? '',
       oninput(e) { game.description = e.target.value; setDirty(true) },
     })),
-    imageField(game, 'image', 'Card image (/assets/…, empty = placeholder block)'),
+    assetPicker(game, 'image', 'Card image (/assets/…, empty = placeholder block)'),
     el('h2', {}, 'Detail page'),
     el('div', { class: 'checks' }, checkField(game, 'comingSoon', 'coming soon tag')),
     paragraphsField(game, 'body', 'Body'),
     el('div', { class: 'row' },
-      imageField(coverImage, 'src', 'Cover image (/assets/…)', { after: syncCover }),
+      assetPicker(coverImage, 'src', 'Cover image (/assets/…)', { after: syncCover }),
       textField(coverImage, 'alt', 'Cover image alt text', { after: syncCover })),
     saveBar(async () => {
       await save('crowdfundingGames', cfGames, 'crowdfundingGames.js')
@@ -618,6 +748,58 @@ function renderBanner() {
   preview('/')
 }
 
+// ---- branding tab ----------------------------------------------------------
+// The logos and site icons: hero logo (heroContent.logo), footer brand logo +
+// blurb (footerBrand), and the browser/social icons that live in the static
+// index.html head (favicon, apple-touch, first-byte OG) plus the SPA/prerender
+// default share image (SITE.defaultImage). The one "Default share image"
+// control drives both the SITE default and the index.html og/twitter image so
+// they never drift apart.
+
+let headImages = null
+
+async function renderBranding() {
+  headImages = await api('GET', '/__admin/api/head-images')
+  const hero = data.heroContent
+  const brand = data.footerBrand
+
+  $('#list').replaceChildren(el('div', { class: 'placeholder' },
+    'Logos and site icons. Uploaded files land in public/assets/img and are wired in on save. ' +
+    'The favicon / touch icon / share image update the static index.html head.'))
+
+  $('#form').replaceChildren(
+    el('h2', {}, 'Home hero logo'),
+    assetPicker(hero.logo, 'src', 'Hero logo'),
+    textField(hero.logo, 'alt', 'Hero logo alt text'),
+    el('h2', {}, 'Footer brand'),
+    assetPicker(brand.logo, 'src', 'Footer logo'),
+    textField(brand.logo, 'alt', 'Footer logo alt text'),
+    el('div', {}, el('label', {}, 'Footer brand blurb'), el('textarea', {
+      value: brand.blurb ?? '', oninput(e) { brand.blurb = e.target.value; setDirty(true) } })),
+    el('h2', {}, 'Browser & social icons'),
+    assetPicker(headImages, 'favicon', 'Favicon (browser tab icon)'),
+    assetPicker(headImages, 'appleTouchIcon', 'Apple touch icon (home-screen)'),
+    assetPicker(data.site, 'defaultImage', 'Default share image (OG / Twitter, all pages)'),
+    saveBar(async () => {
+      // Head-image slots are required; an empty one would break the tag.
+      for (const [slot, label] of [['favicon', 'Favicon'], ['appleTouchIcon', 'Apple touch icon']]) {
+        if (!headImages[slot]) { status(`${label} can't be empty`, 'err'); return }
+      }
+      if (!data.site.defaultImage) { status("Default share image can't be empty", 'err'); return }
+      await save('heroContent', data.heroContent, 'Hero.jsx')
+      await save('footerBrand', data.footerBrand, 'Footer.jsx')
+      await save('site', data.site, 'seo-config.js')
+      // Keep the static-head share image in step with the SITE default.
+      await api('PUT', '/__admin/api/head-images/favicon', { path: headImages.favicon })
+      await api('PUT', '/__admin/api/head-images/appleTouchIcon', { path: headImages.appleTouchIcon })
+      await api('PUT', '/__admin/api/head-images/ogImage', { path: data.site.defaultImage })
+      setDirty(false)
+      status('branding saved ✓ (logos, icons, share image)', 'ok')
+    }))
+
+  preview('/')
+}
+
 // ---- social tab ------------------------------------------------------------
 // One canonical list edited here, written to BOTH copies on save: the nav's
 // socialLinks (SocialIcons.jsx) and the footer's footerSocials (Footer.jsx)
@@ -706,7 +888,7 @@ function renderSeo() {
       value: entry.ogDescription ?? '',
       oninput(e) { entry.ogDescription = e.target.value; setDirty(true) },
     })),
-    imageField(entry, 'ogImage', 'OG image (/assets/…, empty = site default)'),
+    assetPicker(entry, 'ogImage', 'OG image (/assets/…, empty = site default)'),
     saveBar(() => save(route.block, data[route.block], 'seo-config.js'),
       // Game routes can be deleted; static routes map to hardcoded pages,
       // so removing their SEO would only silently un-prerender them.
@@ -974,7 +1156,8 @@ function render() {
     },
   }, label)))
   ;({ games: renderGames, crowdfunding: renderCrowdfunding, pages: renderPages, banner: renderBanner,
-    social: renderSocial, seo: renderSeo, endpoints: renderEndpoints, art: renderArt, git: renderGit })[tab]()
+    branding: renderBranding, social: renderSocial, seo: renderSeo, endpoints: renderEndpoints,
+    art: renderArt, git: renderGit })[tab]()
 }
 
 async function load() {
