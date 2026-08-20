@@ -57,6 +57,14 @@
       "kind": "prod-only",
       "reason": "Prod-only dev-admin tooling (PR #86)."
     },
+    "scripts/dev-admin/assets.mjs": {
+      "kind": "prod-only",
+      "reason": "Prod-only dev-admin tooling: asset lister + image upload for the picker."
+    },
+    "scripts/dev-admin/head-images.mjs": {
+      "kind": "prod-only",
+      "reason": "Prod-only dev-admin tooling: favicon/apple-touch/OG editor for index.html head."
+    },
     "scripts/dev-admin/index.html": {
       "kind": "prod-only",
       "reason": "Prod-only dev-admin tooling (PR #86)."
