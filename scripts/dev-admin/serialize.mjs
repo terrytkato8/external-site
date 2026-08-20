@@ -22,6 +22,7 @@ import path from 'node:path'
 
 export const BLOCKS = {
   games: { file: 'src/data/games.js', anchor: 'const rawGames = ' },
+  site: { file: 'src/data/seo-config.js', anchor: 'export const SITE = ' },
   staticRoutes: { file: 'src/data/seo-config.js', anchor: 'export const staticRoutes = ' },
   gameRoutes: { file: 'src/data/seo-config.js', anchor: 'export const gameRoutes = ' },
   discordEndpoints: { file: 'src/data/discordEndpoints.js', anchor: 'export const discordEndpoints = ' },
@@ -35,6 +36,7 @@ export const BLOCKS = {
   // any file, as long as the anchored literal is pure data.
   socialLinks: { file: 'src/components/SocialIcons.jsx', anchor: 'export const socialLinks = ' },
   footerSocials: { file: 'src/components/Footer.jsx', anchor: 'const footerSocials = ' },
+  footerBrand: { file: 'src/components/Footer.jsx', anchor: 'const footerBrand = ' },
   footerLegal: { file: 'src/components/Footer.jsx', anchor: 'const footerLegal = ' },
   aboutContent: { file: 'src/pages/AboutPage.jsx', anchor: 'const aboutContent = ' },
   heroContent: { file: 'src/components/Hero.jsx', anchor: 'const heroContent = ' },
