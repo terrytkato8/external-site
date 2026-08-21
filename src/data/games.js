@@ -171,6 +171,9 @@ const rawGames = [
     cardLogo: {
       src: '/assets/img/bbcl-logo-final-red.png',
     },
+    pageLogo: {
+      src: '/assets/img/bbcl-logo-final-red.png',
+    },
   },
 ]
 
