@@ -156,6 +156,66 @@
   margin-right: 0;
 }
 
+/* ---- Compact pinned bar --------------------------------------------------
+ * A slim bar that slides down from the top once the user scrolls past the tall
+ * wavy header, so navigation is always reachable (e.g. a phone visitor who
+ * scanned a convention QR and is deep in a game page). It's a separate fixed
+ * element — the main header stays in flow, so revealing this causes no layout
+ * shift. Hidden (translated up + visibility:hidden, which also drops it from
+ * the tab order) until `.is-visible`. */
+.nav-compact {
+  z-index: 200;
+  color: var(--light-pearl);
+  background-color: #211c37;
+  box-shadow: 0 2px 14px #00000047;
+  justify-content: center;
+  align-items: center;
+  padding: .4rem 120px;
+  display: flex;
+  position: fixed;
+  inset: 0 0 auto;
+  transform: translateY(-100%);
+  visibility: hidden;
+  transition: transform .25s ease, visibility .25s ease;
+}
+
+.nav-compact.is-visible {
+  transform: translateY(0);
+  visibility: visible;
+}
+
+.nav-compact-inner {
+  justify-content: space-between;
+  align-items: center;
+  gap: 1.5rem;
+  width: 100%;
+  max-width: 1280px;
+  display: flex;
+}
+
+.nav-compact-logo {
+  align-items: center;
+  display: flex;
+}
+
+.nav-compact-logo-img {
+  object-fit: contain;
+  width: 38px;
+  height: 38px;
+  display: block;
+}
+
+.nav-compact-right {
+  align-items: center;
+  gap: 1.25rem;
+  display: flex;
+}
+
+.nav-compact .nav-games-label,
+.nav-compact .nav-dropdown-caret {
+  color: var(--light-pearl);
+}
+
 @media screen and (max-width: 991px) {
   .nav {
           height: auto;
@@ -181,11 +241,31 @@
   .nav-about-link {
           text-decoration: none;
         }
+
+  /* Compact bar mirrors the header on mobile: hide the inline controls, let
+   * the shared `.nav-hamburger` (shown at this breakpoint) drive MobileMenu. */
+  .nav-compact {
+          padding-inline: 24px;
+        }
+
+  .nav-compact-right {
+          display: none;
+        }
 }
 
 @media screen and (max-width: 767px) {
   .nav {
           padding-right: 60px;
+        }
+
+  /* Shorten the wavy header on phones so more of the page's header image shows
+   * below it (the wave background scales with the nav's height). */
+  .nav {
+          padding-bottom: 22px;
+        }
+
+  .nav_container {
+          height: 64px;
         }
 
   .nav_menu {
