@@ -28,9 +28,12 @@ h2 {
 
 .svg {
   background-image: url("https://cdn.prod.website-files.com/698c011e3b27f3bde0b4b604/69adb1559f50f81c75ec3982_Copy%20of%20NewlogoNoMouth%20(1).png");
-  background-position: 50%;
+  /* Nav octopus. Sized + nudged up from centre so it sits within the blue and
+   * clears the pink wave at the nav's bottom (the wave scales with the header
+   * width via background-size:cover, so it can crest into a larger glyph). */
+  background-position: 50% 42%;
   background-repeat: no-repeat;
-  background-size: 35px;
+  background-size: 30px;
   padding-bottom: 48px;
   padding-right: 48px;
 }
