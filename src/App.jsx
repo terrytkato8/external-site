@@ -6,6 +6,9 @@ import ScrollToTop from './components/ScrollToTop'
 import Analytics from './components/Analytics'
 import HomePage from './pages/HomePage'
 import GamePage from './pages/GamePage'
+import UniversalSerialBladePage from './pages/games/UniversalSerialBladePage'
+import LastLightPage from './pages/games/LastLightPage'
+import BigBossCleanupPage from './pages/games/BigBossCleanupPage'
 import AboutPage from './pages/AboutPage'
 import NotFoundPage from './pages/NotFoundPage'
 
@@ -41,6 +44,12 @@ export default function App() {
       <Nav />
       <Routes>
         <Route path="/" element={<HomePage />} />
+        {/* Each game has its own page component (a thin extension of the shared
+            GamePage) so the three can diverge; the generic `:slug` route below
+            still catches any game without a dedicated component yet. */}
+        <Route path="/games/universal-serial-blade" element={<UniversalSerialBladePage />} />
+        <Route path="/games/last-light" element={<LastLightPage />} />
+        <Route path="/games/big-boss-cleanup" element={<BigBossCleanupPage />} />
         <Route path="/games/:slug" element={<GamePage />} />
         <Route path="/about-us" element={<AboutPage />} />
         <Route path="*" element={<NotFoundPage />} />
