@@ -92,7 +92,13 @@ export default function GamePage({ slug: slugProp }) {
         <div className="games_hero-section_left">
           <div className="games_title-wrapper">
             <div className="games_title-text">
-              <h1 className="games_h1">{game.title}</h1>
+              <h1 className="games_h1">
+                {game.pageLogo?.src ? (
+                  <img src={game.pageLogo.src} alt={game.pageLogo.alt || game.title} className="games_title-logo" />
+                ) : (
+                  game.title
+                )}
+              </h1>
             </div>
             {/* Title tags (Coming soon + genre categories) were removed from the
               * game page in the 2026-08 UI/UX pass. The data (`game.categories`,

@@ -485,6 +485,15 @@ function renderGames() {
     else delete game.cardLogo
   }
 
+  // Game-page logo (shown in place of the title on /games/:slug). Separate from
+  // cardLogo so a game can use, e.g., a colour logo on the card and a white one
+  // on the dark game-page hero. Same create-on-set, drop-on-clear pattern.
+  const pageLogo = game.pageLogo ?? {}
+  const syncPageLogo = () => {
+    if (pageLogo.src || pageLogo.alt) game.pageLogo = pageLogo
+    else delete game.pageLogo
+  }
+
   // Up-to-two-layer hero backdrop (GamePage, desktop). The object is created
   // only when something is set, and dropped when everything is cleared, so a
   // game with no backdrop stays absent from the data.
@@ -507,6 +516,9 @@ function renderGames() {
       assetPicker(cardLogo, 'src', 'Card logo (/assets/…, empty = no logo)', { after: syncCardLogo }),
       textField(cardLogo, 'alt', 'Card logo alt text', { after: syncCardLogo })),
     el('h2', {}, 'Game page'),
+    el('div', { class: 'row' },
+      assetPicker(pageLogo, 'src', 'Page logo (/assets/…, empty = text title)', { after: syncPageLogo }),
+      textField(pageLogo, 'alt', 'Page logo alt text', { after: syncPageLogo })),
     textField(game, 'kickstarterUrl', 'Kickstarter URL (empty = no CTA)'),
     el('div', { class: 'checks' },
       checkField(game, 'comingSoon', 'coming soon tag'),

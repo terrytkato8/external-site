@@ -15,6 +15,13 @@
  *   categories  — string[]. Rendered as pill tags.
  *   bgColor     — hex string. GameCard background fallback.
  *   bgImage     — URL or `/assets/...` path. GameCard background image.
+ *   cardLogo    — { src, alt } | undefined. Logo shown on the home-page card
+ *                 (in place of the title). Usually the colour logo, since the
+ *                 card art varies.
+ *   pageLogo    — { src, alt } | undefined. Logo shown on the game page hero
+ *                 (in place of the title text). Usually the white logo, since
+ *                 the game-page hero backdrop is dark. Falls back to the text
+ *                 title when omitted.
  *   kickstarterUrl — URL. If set, GamePage renders a "Back on Kickstarter"
  *                    CTA under the title/tags.
  *   comingSoon  — boolean. Shows a "Coming soon" tag on the GamePage.
@@ -60,6 +67,10 @@ const rawGames = [
     bgImage: '/assets/img/universal-serial-blade-outside-city-concept.jpg',
     cardLogo: {
       src: '/assets/img/universal-serial-blade-logo.png',
+      alt: 'Universal Serial Blade logo',
+    },
+    pageLogo: {
+      src: '/assets/img/universal-serial-blade-logo-white.png',
       alt: 'Universal Serial Blade logo',
     },
     kickstarterUrl: 'https://www.kickstarter.com/projects/kato8-lastlight/universal-serial-blade-usb',
@@ -113,6 +124,10 @@ const rawGames = [
     conceptArt: [],
     cardLogo: {
       src: '/assets/img/logo-01.png',
+      alt: 'Last Light logo',
+    },
+    pageLogo: {
+      src: '/assets/img/last-light-logo-white.png',
       alt: 'Last Light logo',
     },
     heroBackground: {
