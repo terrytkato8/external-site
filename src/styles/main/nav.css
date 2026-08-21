@@ -259,16 +259,13 @@
         }
 
   /* Shorten the wavy header on phones so more of the page's header image shows
-   * below it (the wave background scales with the nav's height). Trim the
-   * container's own vertical padding too, so the octopus logo — which stretches
-   * to the container's content box — doesn't clip as the bar gets shorter. */
+   * below it (the wave background scales with the nav's height). */
   .nav {
-          padding-bottom: 8px;
+          padding-bottom: 22px;
         }
 
   .nav_container {
-          height: 50px;
-          padding-block: .3rem;
+          height: 64px;
         }
 
   .nav_menu {
