@@ -52,11 +52,21 @@ function RichText({ paragraphs, extraClass = '' }) {
  * SEO meta comes from `gameRoutes[slug]` in `src/data/seo-config.js`.
  * Skipped silently if no entry exists for the slug.
  */
-export default function GamePage() {
-  const { slug } = useParams()
+export default function GamePage({ slug: slugProp }) {
+  const params = useParams()
+  // Per-game wrapper components (src/pages/games/*) pass an explicit `slug`;
+  // the generic `/games/:slug` route falls back to the URL param.
+  const slug = slugProp ?? params.slug
   const game = getGameBySlug(slug)
 
   if (!game) return <NotFoundPage />
+
+  // Mobile/tablet (≤991px) hides the desktop hero backdrop and shows this
+  // decorative band instead. Drive it from the game's own heroBackground so an
+  // admin change lands on every breakpoint, not just desktop; fall back to the
+  // shared decorative SVG for games with no backdrop set. `heroBackground.primary`
+  // is already asset()-prefixed by games.js; the fallback needs prefixing here.
+  const mobileHeroBg = game.heroBackground?.primary || asset('/assets/img/mobile-bg.svg')
 
   const seo = gameRoutes[slug]
 
@@ -84,25 +94,17 @@ export default function GamePage() {
             <div className="games_title-text">
               <h1 className="games_h1">{game.title}</h1>
             </div>
-            <div className="title-tags_wrapper">
-              {game.comingSoon && (
-                <div className="title-tag coming-soon">
-                  <div className="title-tag_tag-text">Coming soon</div>
-                </div>
-              )}
-              {game.categories.map((category) => (
-                <div key={category} className="title-tag category">
-                  <div className="title-tag_tag-text">{category}</div>
-                </div>
-              ))}
-            </div>
+            {/* Title tags (Coming soon + genre categories) were removed from the
+              * game page in the 2026-08 UI/UX pass. The data (`game.categories`,
+              * `game.comingSoon`) and the `.title-tag*` styles are kept so the
+              * tags live on in the sandbox and can be re-enabled here later. */}
 
             {/* Mobile-only decorative band behind the title block. It lives
               * inside the title wrapper so its bottom edge can be anchored to
               * the bottom of the tags — see games.css. Hidden above 767px. */}
-            <div className="game-hero-bg-mobile-wrapper">
+            <div className={`game-hero-bg-mobile-wrapper${game.heroBackground?.anchorTop ? ' anchor-top' : ''}`}>
               <div className="game-hero-bg-mobile-image">
-                <img src={asset('/assets/img/mobile-bg.svg')} loading="lazy" alt="" className="game-hero-bg-mobile" />
+                <img src={mobileHeroBg} loading="lazy" alt="" className="game-hero-bg-mobile" />
               </div>
             </div>
           </div>
