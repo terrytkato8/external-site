@@ -6,12 +6,17 @@ import { Link } from 'react-router-dom'
  * Rendered by `GameGrid` once per entry in `src/data/games.js`.
  *
  * Visual: full-bleed background image (or fallback color) + dark overlay,
- * with category tags, title, tagline, and a "Learn More" pill that links
- * to `/games/:slug`.
+ * with an optional game logo, the tagline, and a "Learn More" pill that
+ * links to `/games/:slug`. Category tags and the text title were dropped in
+ * the 2026-08 UI/UX pass — the logo carries the game's identity instead, and
+ * a game with no logo art yet simply shows its description.
  *
  * Props:
  *   game — game entry from `src/data/games.js`. Uses:
- *     - slug, title, tagline, categories[]
+ *     - slug, title, tagline
+ *     - cardLogo ({ src, alt }, optional) — logo shown in place of the title.
+ *       Path is already asset()-prefixed by games.js. Omit until logo art
+ *       exists; editable in the dev admin (/__admin) Games tab.
  *     - bgImage (URL, optional; falls back to bgColor)
  *     - bgColor (hex string)
  */
@@ -25,16 +30,16 @@ export default function GameCard({ game }) {
     <div style={style} role="listitem" className="game-card w-dyn-item w-col w-col-4">
       <div className="game-card-overlay">
         <div className="game-card-content">
-          <div className="game-card-tags">
-            {game.categories.map((category) => (
-              <div key={category} className="category category-number">
-                <div className="category-text category-number">{category}</div>
-              </div>
-            ))}
-          </div>
-          <div className="game-card-title-block">
-            <h2 className="game-card-title">{game.title}</h2>
-          </div>
+          {game.cardLogo?.src && (
+            <div className="game-card-logo-block">
+              <img
+                src={game.cardLogo.src}
+                loading="lazy"
+                alt={game.cardLogo.alt || game.title}
+                className="game-card-logo"
+              />
+            </div>
+          )}
           <div className="game-card-description">
             <p>{game.tagline}</p>
           </div>
