@@ -66,11 +66,11 @@ const rawGames = [
     bgColor: '#ff9183',
     bgImage: '/assets/img/universal-serial-blade-outside-city-concept.jpg',
     cardLogo: {
-      src: '/assets/img/universal-serial-blade-logo.png',
+      src: '/assets/img/usbwhite.png',
       alt: 'Universal Serial Blade logo',
     },
     pageLogo: {
-      src: '/assets/img/universal-serial-blade-logo-white.png',
+      src: '/assets/img/universal-serial-blade-logo.png',
       alt: 'Universal Serial Blade logo',
     },
     kickstarterUrl: 'https://www.kickstarter.com/projects/kato8-lastlight/universal-serial-blade-usb',
@@ -123,7 +123,7 @@ const rawGames = [
     },
     conceptArt: [],
     cardLogo: {
-      src: '/assets/img/logo-01.png',
+      src: '/assets/img/last-light-logo-white.png',
       alt: 'Last Light logo',
     },
     pageLogo: {
@@ -166,7 +166,7 @@ const rawGames = [
     conceptArt: [],
     heroBackground: {
       primary: '/assets/img/big-boss-cleanup-cover.jpg',
-      anchorTop: false,
+      anchorTop: true,
     },
     cardLogo: {
       src: '/assets/img/bbcl-logo-final-red.png',
