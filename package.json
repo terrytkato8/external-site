@@ -8,7 +8,8 @@
     "dev": "node scripts/generate-image-variants.mjs && vite",
     "build": "node scripts/generate-image-variants.mjs && vite build && node scripts/write-cname.mjs && node scripts/prerender.mjs",
     "preview": "vite preview",
-    "variants": "node scripts/generate-image-variants.mjs"
+    "variants": "node scripts/generate-image-variants.mjs",
+    "unused-assets": "node scripts/find-unused-assets.mjs"
   },
   "dependencies": {
     "react": "^18.3.1",
