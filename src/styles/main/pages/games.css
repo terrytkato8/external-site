@@ -170,6 +170,12 @@
   display: flex;
 }
 
+/* Center the Kickstarter CTA in the hero column so it lines up with the
+ * (centered) logo above and framed art below, rather than hugging the left. */
+.game-hero-kickstarter {
+  align-self: center;
+}
+
 .title-tags_wrapper {
   grid-column-gap: 8px;
   grid-row-gap: 8px;
