@@ -76,13 +76,13 @@
   display: flex;
 }
 
-/* The logo grows to fill the card's free vertical space above the description +
- * CTA (flex:1), and the image scales proportionally within it (object-fit:
- * contain), so a tall near-square logo fills more height while a wide logo caps
- * on width — never overflowing the card or overlapping the text below. */
+/* Cap every card logo to a consistent height so logos with very different
+ * aspect ratios (near-square vs very wide) share a baseline instead of each
+ * filling the card by a different amount. The height cap wins for all current
+ * logos (their width at this height stays within the 72% cap), so they line up;
+ * object-fit: contain keeps each one proportional. Bump --card-logo-h to taste. */
 .game-card-logo-block {
-  flex: 1;
-  min-height: 0;
+  flex: 0 auto;
   justify-content: flex-start;
   align-items: flex-end;
   max-width: 72%;
@@ -92,10 +92,8 @@
 .game-card-logo {
   width: auto;
   height: auto;
-  min-width: 0;
-  min-height: 0;
   max-width: 100%;
-  max-height: 100%;
+  max-height: 4rem;
   object-fit: contain;
 }
 
