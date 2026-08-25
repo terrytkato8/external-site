@@ -73,7 +73,7 @@ export default function GamePage({ slug: slugProp }) {
   const seo = gameRoutes[slug]
 
   return (
-    <section className="game-page-main">
+    <section className={`game-page-main game-page-${slug}`}>
       {seo && <Seo path={`/games/${slug}`} {...seo} />}
       {(game.heroBackground?.primary || game.heroBackground?.overlay) && (
         <div className={`game-hero-bg-wrapper${game.heroBackground.anchorTop ? ' anchor-top' : ''}`}>
