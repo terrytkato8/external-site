@@ -119,7 +119,7 @@ const rawGames = [
       'Scavenge. Build. Survive the night.',
     ],
     storyImage: {
-      src: '/assets/img/last-light-concept.png',
+      src: '/assets/img/general-store.webp',
       alt: 'Last Light concept art',
     },
     conceptArt: [],
@@ -161,7 +161,7 @@ const rawGames = [
       "Someone has to clean up the heroes' mess.",
     ],
     storyImage: {
-      src: '/assets/img/library-hero-size.jpg',
+      src: '/assets/img/ui-concepts.webp',
       alt: 'Big Boss Cleanup concept art',
     },
     conceptArt: [],
