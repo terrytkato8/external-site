@@ -516,6 +516,21 @@
   line-height: 100%;
 }
 
+/* Last Light's hero cover is a dark, `position: fixed` backdrop. Game pages
+ * have a transparent body, so on desktop that dark art shows through behind
+ * the signup forms at the foot of the page — where the forms' default dark
+ * headings/labels lose contrast. Flip the form headers and labels to white on
+ * the LL page, but only at >=992px: below that the fixed backdrop is hidden and
+ * the forms sit on the white page, where the dark text is correct. Scoped via
+ * `.game-page-last-light` (GamePage adds `game-page-<slug>`). */
+@media screen and (min-width: 992px) {
+  .game-page-last-light .signup-form__heading,
+  .game-page-last-light .signup-form__description,
+  .game-page-last-light .signup-form__label {
+    color: #fff;
+  }
+}
+
 @media screen and (max-width: 1199px) {
   .game-card {
           aspect-ratio: auto;
