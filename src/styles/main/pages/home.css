@@ -34,12 +34,24 @@
 
 .home-main {
   grid-column-gap: 1.5rem;
-  grid-row-gap: 1.5rem;
+  grid-row-gap: 1.25rem;
   flex-flow: column;
   justify-content: center;
   align-items: center;
   padding-inline: 5%;
   display: flex;
+}
+
+/* Fixed/parallax backdrop. The image + white scrim come from an inline style
+ * set in HomePage.jsx (so the art path stays admin-editable via heroContent);
+ * these rules just pin and size it. `fixed` holds the art still while the page
+ * scrolls in front of it. Both background layers share these values. */
+.home-main.has-fixed-bg {
+  background-attachment: fixed;
+  background-position: center top;
+  background-repeat: no-repeat;
+  background-size: cover;
+  padding-block: 2.5rem;
 }
 
 .hero-logo-wrapper {
@@ -88,6 +100,13 @@
 @media screen and (max-width: 767px) {
   .text-12 {
           font-size: 28px;
+        }
+
+  /* iOS Safari ignores (and older Androids stutter on) a fixed attachment —
+   * fall back to a scrolling backdrop on small screens. No parallax, but the
+   * cover art still shows and nothing janks. */
+  .home-main.has-fixed-bg {
+          background-attachment: scroll;
         }
 
   .hero-logo-wrapper {

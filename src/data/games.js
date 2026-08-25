@@ -15,6 +15,13 @@
  *   categories  — string[]. Rendered as pill tags.
  *   bgColor     — hex string. GameCard background fallback.
  *   bgImage     — URL or `/assets/...` path. GameCard background image.
+ *   cardLogo    — { src, alt } | undefined. Logo shown on the home-page card
+ *                 (in place of the title). Usually the colour logo, since the
+ *                 card art varies.
+ *   pageLogo    — { src, alt } | undefined. Logo shown on the game page hero
+ *                 (in place of the title text). Usually the white logo, since
+ *                 the game-page hero backdrop is dark. Falls back to the text
+ *                 title when omitted.
  *   kickstarterUrl — URL. If set, GamePage renders a "Back on Kickstarter"
  *                    CTA under the title/tags.
  *   comingSoon  — boolean. Shows the "Coming soon" badge on the GamePage.
@@ -59,13 +66,21 @@ const rawGames = [
     categories: ['2D Side-Scroller', 'Action/Adventure'],
     bgColor: '#ff9183',
     bgImage: '/assets/img/universal-serial-blade-outside-city-concept.jpg',
+    cardLogo: {
+      src: '/assets/img/usbwhite.png',
+      alt: 'Universal Serial Blade logo',
+    },
+    pageLogo: {
+      src: '/assets/img/universal-serial-blade-logo.png',
+      alt: 'Universal Serial Blade logo',
+    },
     kickstarterUrl: 'https://www.kickstarter.com/projects/kato8-lastlight/universal-serial-blade-usb',
     comingSoon: false,
     framedArt: true,
     heroBackground: {
       primary: '/assets/img/universal-serial-blade-hero-background.svg',
       overlay: '/assets/img/wire-layer.webp',
-      anchorTop: false,
+      anchorTop: true,
     },
     gameplay: [
       "Universal Serial Blade isn't just a nostalgic callback to side-scrolling action games of the 90s and 00s, it's an evolution of the formula. Combat is fast and fluid, allowing any player to unlock the full power of their creativity with a customizable move-set and a highly flexible combo system. Players will fight challenging bosses, meet colorful characters, combo tens of enemies at a time, and unlock new powers as they fight their way through the AI Apocalypse to save humanity from their tragic fate.",
@@ -104,10 +119,22 @@ const rawGames = [
       'Scavenge. Build. Survive the night.',
     ],
     storyImage: {
-      src: '/assets/img/enemy-idea-2-3200.png',
+      src: '/assets/img/last-light-concept.png',
       alt: 'Last Light concept art',
     },
     conceptArt: [],
+    cardLogo: {
+      src: '/assets/img/last-light-logo-white.png',
+      alt: 'Last Light logo',
+    },
+    pageLogo: {
+      src: '/assets/img/last-light-logo-white.png',
+      alt: 'Last Light logo',
+    },
+    heroBackground: {
+      anchorTop: true,
+      primary: '/assets/img/last-light-cover.jpg',
+    },
   },
   {
     slug: 'big-boss-cleanup',
@@ -134,10 +161,20 @@ const rawGames = [
       "Someone has to clean up the heroes' mess.",
     ],
     storyImage: {
-      src: '/assets/img/enemy-idea-2-3200.png',
+      src: '/assets/img/library-hero-size.jpg',
       alt: 'Big Boss Cleanup concept art',
     },
     conceptArt: [],
+    heroBackground: {
+      primary: '/assets/img/big-boss-cleanup-cover.jpg',
+      anchorTop: true,
+    },
+    cardLogo: {
+      src: '/assets/img/bbcl-logo-final-red.png',
+    },
+    pageLogo: {
+      src: '/assets/img/bbcl-logo-final-red.png',
+    },
   },
 ]
 

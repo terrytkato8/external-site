@@ -31,6 +31,15 @@ export default defineConfig({
   // on the dev server, never in build output.
   plugins: [generateImageVariants, react(), devAdmin()],
   base,
+  // `host: true` binds the dev server to every network interface (0.0.0.0),
+  // so phones/tablets on the same Wi-Fi can hit http://<your-lan-ip>:5173 —
+  // e.g. for scanning a convention QR at the real device. Without it, Vite
+  // (depending on how it's launched) may bind IPv6 localhost only and be
+  // unreachable from other devices. Config-level so it holds no matter how
+  // the server is started (`npm run dev`, the launcher, etc.).
+  server: {
+    host: true,
+  },
   build: {
     outDir: 'docs',
   },

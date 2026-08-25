@@ -126,12 +126,21 @@
 .mobile-menu-socials {
   display: flex;
   flex-wrap: wrap;
-  gap: 1rem;
+  gap: 0.25rem;
   margin-top: 0.5rem;
+  /* Pull the row back to the panel's edge — the tap-target padding below adds
+   * its own inset, so the icons still line up with the text above. */
+  margin-inline: -0.625rem;
 }
 
+/* ~44px touch target (icon stays 20px, padding grows the hit area) so the
+ * social links are comfortably tappable on a phone — e.g. a convention visitor. */
 .mobile-menu-socials a {
   display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 44px;
+  min-height: 44px;
   color: #fff;
   opacity: 0.85;
 }
