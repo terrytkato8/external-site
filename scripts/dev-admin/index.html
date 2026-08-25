@@ -492,6 +492,8 @@ function renderGames() {
     textField(game, 'tagline', 'Tagline'),
     textField(game, 'description', 'Description (fallback)'),
     listField(game, 'categories', 'Categories'),
+    el('div', { class: 'checks' },
+      checkField(game, 'showCategoryBadges', 'show category badges (card + game page)')),
     el('div', { class: 'row' },
       textField(game, 'bgColor', 'Card background color', { color: true }),
       assetPicker(game, 'bgImage', 'Card background image (/assets/…)')),
