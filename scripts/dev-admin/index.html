@@ -500,7 +500,7 @@ function renderGames() {
     el('h2', {}, 'Game page'),
     textField(game, 'kickstarterUrl', 'Kickstarter URL (empty = no CTA)'),
     el('div', { class: 'checks' },
-      checkField(game, 'comingSoon', 'coming soon tag'),
+      checkField(game, 'comingSoon', 'show coming soon badge'),
       checkField(game, 'framedArt', 'framed art block')),
     paragraphsField(game, 'gameplay', 'Gameplay'),
     paragraphsField(game, 'story', 'Story'),
