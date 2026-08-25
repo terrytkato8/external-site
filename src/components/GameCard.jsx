@@ -6,12 +6,14 @@ import { Link } from 'react-router-dom'
  * Rendered by `GameGrid` once per entry in `src/data/games.js`.
  *
  * Visual: full-bleed background image (or fallback color) + dark overlay,
- * with category tags, title, tagline, and a "Learn More" pill that links
- * to `/games/:slug`.
+ * with the title, tagline, and a "Learn More" pill that links to `/games/:slug`.
+ * Category badges are hidden by default (removed in the 2026-08 pass) and only
+ * render when a game opts in via `showCategoryBadges` (dev admin → Games tab).
  *
  * Props:
  *   game — game entry from `src/data/games.js`. Uses:
  *     - slug, title, tagline, categories[]
+ *     - showCategoryBadges (boolean, optional) — show the category pills
  *     - bgImage (URL, optional; falls back to bgColor)
  *     - bgColor (hex string)
  */
@@ -25,13 +27,15 @@ export default function GameCard({ game }) {
     <div style={style} role="listitem" className="game-card w-dyn-item w-col w-col-4">
       <div className="game-card-overlay">
         <div className="game-card-content">
-          <div className="game-card-tags">
-            {game.categories.map((category) => (
-              <div key={category} className="category category-number">
-                <div className="category-text category-number">{category}</div>
-              </div>
-            ))}
-          </div>
+          {game.showCategoryBadges && game.categories?.length > 0 && (
+            <div className="game-card-tags">
+              {game.categories.map((category) => (
+                <div key={category} className="category category-number">
+                  <div className="category-text category-number">{category}</div>
+                </div>
+              ))}
+            </div>
+          )}
           <div className="game-card-title-block">
             <h2 className="game-card-title">{game.title}</h2>
           </div>

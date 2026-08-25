@@ -17,7 +17,8 @@
  *   bgImage     — URL or `/assets/...` path. GameCard background image.
  *   kickstarterUrl — URL. If set, GamePage renders a "Back on Kickstarter"
  *                    CTA under the title/tags.
- *   comingSoon  — boolean. Shows a "Coming soon" tag on the GamePage.
+ *   comingSoon  — boolean. Shows the "Coming soon" badge on the GamePage.
+ *                 Off by default; toggle per game in the dev admin (Games tab).
  *   framedArt   — boolean. If true, GamePage renders the framed-art block.
  *   heroBackground — { primary?, overlay?, anchorTop? } | undefined. The
  *                 GamePage hero backdrop (desktop only): `primary` is the base
@@ -59,7 +60,7 @@ const rawGames = [
     bgColor: '#ff9183',
     bgImage: '/assets/img/universal-serial-blade-outside-city-concept.jpg',
     kickstarterUrl: 'https://www.kickstarter.com/projects/kato8-lastlight/universal-serial-blade-usb',
-    comingSoon: true,
+    comingSoon: false,
     framedArt: true,
     heroBackground: {
       primary: '/assets/img/universal-serial-blade-hero-background.svg',

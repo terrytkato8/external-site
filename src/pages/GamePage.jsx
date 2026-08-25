@@ -41,7 +41,8 @@ function RichText({ paragraphs, extraClass = '' }) {
  *     layer above it, and `anchorTop` pins the block to the top of the window.
  *     A game with no `heroBackground` renders no backdrop. The mobile
  *     decorative band (`mobile-bg.svg`) is separate and always present.
- *   - Hero section: title, tags (incl. "Coming soon" if `game.comingSoon`),
+ *   - Hero section: title, the "Coming soon" status badge (if `game.comingSoon`),
+ *     category badges (only if `game.showCategoryBadges` — off by default),
  *     optional framed art (`game.framedArt`), and gameplay copy.
  *   - Story section: long-form story paragraphs + optional `game.storyImage`.
  *   - Concept Art gallery: `<ConceptArtGallery>` reads images from
@@ -90,11 +91,12 @@ export default function GamePage() {
                   <div className="title-tag_tag-text">Coming soon</div>
                 </div>
               )}
-              {game.categories.map((category) => (
-                <div key={category} className="title-tag category">
-                  <div className="title-tag_tag-text">{category}</div>
-                </div>
-              ))}
+              {game.showCategoryBadges &&
+                game.categories.map((category) => (
+                  <div key={category} className="title-tag category">
+                    <div className="title-tag_tag-text">{category}</div>
+                  </div>
+                ))}
             </div>
 
             {/* Mobile-only decorative band behind the title block. It lives
