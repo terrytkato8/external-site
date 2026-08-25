@@ -477,6 +477,23 @@ function renderGames() {
     else delete game.storyImage
   }
 
+  // Homepage card logo (shown in place of the title). Same create-on-set,
+  // drop-on-clear pattern as storyImage — a game with no logo stays absent.
+  const cardLogo = game.cardLogo ?? {}
+  const syncCardLogo = () => {
+    if (cardLogo.src || cardLogo.alt) game.cardLogo = cardLogo
+    else delete game.cardLogo
+  }
+
+  // Game-page logo (shown in place of the title on /games/:slug). Separate from
+  // cardLogo so a game can use, e.g., a colour logo on the card and a white one
+  // on the dark game-page hero. Same create-on-set, drop-on-clear pattern.
+  const pageLogo = game.pageLogo ?? {}
+  const syncPageLogo = () => {
+    if (pageLogo.src || pageLogo.alt) game.pageLogo = pageLogo
+    else delete game.pageLogo
+  }
+
   // Up-to-two-layer hero backdrop (GamePage, desktop). The object is created
   // only when something is set, and dropped when everything is cleared, so a
   // game with no backdrop stays absent from the data.
@@ -497,7 +514,13 @@ function renderGames() {
     el('div', { class: 'row' },
       textField(game, 'bgColor', 'Card background color', { color: true }),
       assetPicker(game, 'bgImage', 'Card background image (/assets/…)')),
+    el('div', { class: 'row' },
+      assetPicker(cardLogo, 'src', 'Card logo (/assets/…, empty = no logo)', { after: syncCardLogo }),
+      textField(cardLogo, 'alt', 'Card logo alt text', { after: syncCardLogo })),
     el('h2', {}, 'Game page'),
+    el('div', { class: 'row' },
+      assetPicker(pageLogo, 'src', 'Page logo (/assets/…, empty = text title)', { after: syncPageLogo }),
+      textField(pageLogo, 'alt', 'Page logo alt text', { after: syncPageLogo })),
     textField(game, 'kickstarterUrl', 'Kickstarter URL (empty = no CTA)'),
     el('div', { class: 'checks' },
       checkField(game, 'comingSoon', 'show coming soon badge'),
@@ -514,7 +537,7 @@ function renderGames() {
       (() => {
         const input = el('input', { type: 'checkbox', checked: !!heroBg.anchorTop,
           onchange: () => { heroBg.anchorTop = input.checked; syncHeroBg(); setDirty(true) } })
-        return el('label', {}, input, 'anchor to top of window')
+        return el('label', {}, input, 'lock header to top (parallax — stays fixed while the page scrolls, all screen sizes; off = header scrolls with the page)')
       })()),
     saveBar(async () => {
       await save('games', games, 'games.js')
@@ -763,6 +786,7 @@ let headImages = null
 async function renderBranding() {
   headImages = await api('GET', '/__admin/api/head-images')
   const hero = data.heroContent
+  hero.background ??= {}
   const brand = data.footerBrand
 
   $('#list').replaceChildren(el('div', { class: 'placeholder' },
@@ -773,6 +797,9 @@ async function renderBranding() {
     el('h2', {}, 'Home hero logo'),
     assetPicker(hero.logo, 'src', 'Hero logo'),
     textField(hero.logo, 'alt', 'Hero logo alt text'),
+    el('h2', {}, 'Home fixed background (parallax)'),
+    assetPicker(hero.background, 'src', 'Fixed background (/assets/…, empty = none)'),
+    textField(hero.background, 'alt', 'Fixed background alt text'),
     el('h2', {}, 'Footer brand'),
     assetPicker(brand.logo, 'src', 'Footer logo'),
     textField(brand.logo, 'alt', 'Footer logo alt text'),

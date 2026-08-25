@@ -1,47 +1,28 @@
 import { useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { games } from '../data/games'
+import { asset } from '../utils/asset.js'
 import { socialLinks, SocialIcon } from './SocialIcons'
 import MobileMenu from './MobileMenu'
 
 /**
- * Top navigation bar.
- *
- * Rendered once at the app root in App.jsx (appears on every page).
- *
- * Desktop layout: logo (links home) on the left; Games dropdown, About
- * link, and social icons on the right. The Games dropdown lists every
- * entry in `src/data/games.js`.
- *
- * Mobile layout: hamburger button instead of the right-side controls.
- * Tapping it toggles a `MobileMenu` overlay (which Nav owns the open
- * state for).
- *
- * Behavior:
- *   - Games dropdown closes on outside click or Escape.
- *   - Games dropdown closes when a link inside is clicked (handled by
- *     `closeDropdown`, not React Router automatically).
- *   - Mobile menu state lives here; MobileMenu is dumb and receives it
- *     via props.
- *
- * No props.
+ * The "Games" dropdown — the toggle plus the list of every game in
+ * `src/data/games.js`. Closes on outside click, Escape, or picking a link.
+ * Owns its own open state so it can be dropped into both the main nav and the
+ * compact pinned bar without the two sharing (or fighting over) one state.
  */
-export default function Nav() {
-  const [dropdownOpen, setDropdownOpen] = useState(false)
-  const [mobileOpen, setMobileOpen] = useState(false)
-  const dropdownRef = useRef(null)
+function GamesDropdown() {
+  const [open, setOpen] = useState(false)
+  const ref = useRef(null)
 
   useEffect(() => {
-    if (!dropdownOpen) return
+    if (!open) return undefined
 
     function handleClickOutside(event) {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
-        setDropdownOpen(false)
-      }
+      if (ref.current && !ref.current.contains(event.target)) setOpen(false)
     }
-
     function handleEscape(event) {
-      if (event.key === 'Escape') setDropdownOpen(false)
+      if (event.key === 'Escape') setOpen(false)
     }
 
     document.addEventListener('mousedown', handleClickOutside)
@@ -50,9 +31,73 @@ export default function Nav() {
       document.removeEventListener('mousedown', handleClickOutside)
       document.removeEventListener('keydown', handleEscape)
     }
-  }, [dropdownOpen])
+  }, [open])
 
-  const closeDropdown = () => setDropdownOpen(false)
+  return (
+    <div ref={ref} data-hover="false" data-delay="0" className={`w-dropdown${open ? ' w--open' : ''}`}>
+      <div
+        className={`w-dropdown-toggle${open ? ' w--open' : ''}`}
+        role="button"
+        tabIndex={0}
+        aria-haspopup="menu"
+        aria-expanded={open}
+        onClick={() => setOpen((o) => !o)}
+        onKeyDown={(event) => {
+          if (event.key === 'Enter' || event.key === ' ') {
+            event.preventDefault()
+            setOpen((o) => !o)
+          }
+        }}
+      >
+        <div className="nav-dropdown-caret w-icon-dropdown-toggle" />
+        <div className="nav-games-label">Games</div>
+      </div>
+      <nav className={`nav-games-dropdown w-dropdown-list${open ? ' w--open' : ''}`}>
+        <div className="nav-games-list-wrapper w-dyn-list">
+          <div role="list" className="nav-games-list w-dyn-items">
+            {games.map((game) => (
+              <div key={game.slug} role="listitem" className="nav-games-item w-dyn-item">
+                <Link to={`/games/${game.slug}`} className="link" onClick={() => setOpen(false)}>
+                  {game.title}
+                </Link>
+              </div>
+            ))}
+          </div>
+        </div>
+      </nav>
+    </div>
+  )
+}
+
+/**
+ * Top navigation.
+ *
+ * Rendered once at the app root in App.jsx (appears on every page).
+ *
+ * Two bars:
+ *   - The main tall wavy header (in-flow at the top): logo, Games dropdown,
+ *     About, socials on desktop; hamburger → MobileMenu on mobile.
+ *   - A compact pinned bar (`.nav-compact`) that slides down once the user
+ *     scrolls past the header, so navigation stays reachable — handy for a
+ *     phone visitor who scanned a convention QR. Same controls, slimmed down.
+ *
+ * Nav owns the mobile-menu open state (both hamburgers toggle it) and the
+ * `scrolled` flag that reveals the compact bar. Each `GamesDropdown` owns its
+ * own open state.
+ *
+ * No props.
+ */
+export default function Nav() {
+  const [mobileOpen, setMobileOpen] = useState(false)
+  const [scrolled, setScrolled] = useState(false)
+
+  useEffect(() => {
+    // Reveal the compact bar once past the tall header (~its own height).
+    const onScroll = () => setScrolled(window.scrollY > 160)
+    onScroll()
+    window.addEventListener('scroll', onScroll, { passive: true })
+    return () => window.removeEventListener('scroll', onScroll)
+  }, [])
 
   return (
     <div className="nav">
@@ -77,38 +122,7 @@ export default function Nav() {
         </div>
 
         <div className="nav_right">
-          <div ref={dropdownRef} data-hover="false" data-delay="0" className={`w-dropdown${dropdownOpen ? ' w--open' : ''}`}>
-            <div
-              className={`w-dropdown-toggle${dropdownOpen ? ' w--open' : ''}`}
-              role="button"
-              tabIndex={0}
-              aria-haspopup="menu"
-              aria-expanded={dropdownOpen}
-              onClick={() => setDropdownOpen((open) => !open)}
-              onKeyDown={(event) => {
-                if (event.key === 'Enter' || event.key === ' ') {
-                  event.preventDefault()
-                  setDropdownOpen((open) => !open)
-                }
-              }}
-            >
-              <div className="nav-dropdown-caret w-icon-dropdown-toggle" />
-              <div className="nav-games-label">Games</div>
-            </div>
-            <nav className={`nav-games-dropdown w-dropdown-list${dropdownOpen ? ' w--open' : ''}`}>
-              <div className="nav-games-list-wrapper w-dyn-list">
-                <div role="list" className="nav-games-list w-dyn-items">
-                  {games.map((game) => (
-                    <div key={game.slug} role="listitem" className="nav-games-item w-dyn-item">
-                      <Link to={`/games/${game.slug}`} className="link" onClick={closeDropdown}>
-                        {game.title}
-                      </Link>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </nav>
-          </div>
+          <GamesDropdown />
 
           <nav role="navigation" className="nav_menu w-nav-menu">
             <ul role="list" className="nav_menu-list w-list-unstyled" />
@@ -139,6 +153,42 @@ export default function Nav() {
             <span />
           </span>
         </button>
+      </div>
+
+      {/* Compact pinned bar — appears on scroll. Reuses the main nav's controls. */}
+      <div className={`nav-compact${scrolled ? ' is-visible' : ''}`} aria-hidden={!scrolled}>
+        <div className="nav-compact-inner">
+          <Link to="/" className="nav-compact-logo w-inline-block" aria-label="Kato.8 Studios home">
+            <img src={asset('/assets/img/logo-no-mouth.png')} alt="" className="nav-compact-logo-img" />
+          </Link>
+
+          <div className="nav-compact-right">
+            <GamesDropdown />
+            <Link to="/about-us" className="nav-about-link">
+              About
+            </Link>
+            <div className="nav-social-icons">
+              {socialLinks.map((link) => (
+                <SocialIcon key={link.name} {...link} />
+              ))}
+            </div>
+          </div>
+
+          <button
+            type="button"
+            className={`nav-hamburger${mobileOpen ? ' is-open' : ''}`}
+            aria-label={mobileOpen ? 'Close menu' : 'Open menu'}
+            aria-expanded={mobileOpen}
+            aria-controls="mobile-menu-panel"
+            onClick={() => setMobileOpen((open) => !open)}
+          >
+            <span className="nav-hamburger-bars" aria-hidden="true">
+              <span />
+              <span />
+              <span />
+            </span>
+          </button>
+        </div>
       </div>
 
       <MobileMenu open={mobileOpen} onClose={() => setMobileOpen(false)} />

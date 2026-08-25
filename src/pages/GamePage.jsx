@@ -39,8 +39,9 @@ function RichText({ paragraphs, extraClass = '' }) {
  *   - Background art (desktop only): the layered hero backdrop comes from
  *     `game.heroBackground` — `primary` is the base layer, `overlay` a second
  *     layer above it, and `anchorTop` pins the block to the top of the window.
- *     A game with no `heroBackground` renders no backdrop. The mobile
- *     decorative band (`mobile-bg.svg`) is separate and always present.
+ *     A game with no `heroBackground` renders no backdrop. Below 991px the
+ *     desktop backdrop is hidden and a decorative band shows instead — it
+ *     reuses `heroBackground.primary`, falling back to `mobile-bg.svg`.
  *   - Hero section: title, the "Coming soon" status badge (if `game.comingSoon`),
  *     category badges (only if `game.showCategoryBadges` — off by default),
  *     optional framed art (`game.framedArt`), and gameplay copy.
@@ -53,11 +54,21 @@ function RichText({ paragraphs, extraClass = '' }) {
  * SEO meta comes from `gameRoutes[slug]` in `src/data/seo-config.js`.
  * Skipped silently if no entry exists for the slug.
  */
-export default function GamePage() {
-  const { slug } = useParams()
+export default function GamePage({ slug: slugProp }) {
+  const params = useParams()
+  // Per-game wrapper components (src/pages/games/*) pass an explicit `slug`;
+  // the generic `/games/:slug` route falls back to the URL param.
+  const slug = slugProp ?? params.slug
   const game = getGameBySlug(slug)
 
   if (!game) return <NotFoundPage />
+
+  // Mobile/tablet (≤991px) hides the desktop hero backdrop and shows this
+  // decorative band instead. Drive it from the game's own heroBackground so an
+  // admin change lands on every breakpoint, not just desktop; fall back to the
+  // shared decorative SVG for games with no backdrop set. `heroBackground.primary`
+  // is already asset()-prefixed by games.js; the fallback needs prefixing here.
+  const mobileHeroBg = game.heroBackground?.primary || asset('/assets/img/mobile-bg.svg')
 
   const seo = gameRoutes[slug]
 
@@ -83,8 +94,17 @@ export default function GamePage() {
         <div className="games_hero-section_left">
           <div className="games_title-wrapper">
             <div className="games_title-text">
-              <h1 className="games_h1">{game.title}</h1>
+              <h1 className="games_h1">
+                {game.pageLogo?.src ? (
+                  <img src={game.pageLogo.src} alt={game.pageLogo.alt || game.title} className="games_title-logo" />
+                ) : (
+                  game.title
+                )}
+              </h1>
             </div>
+            {/* Title tags: "Coming soon" shows when `game.comingSoon`; genre
+              * category badges show only when `game.showCategoryBadges` (an
+              * admin toggle, off by default). Both hidden by default. */}
             <div className="title-tags_wrapper">
               {game.comingSoon && (
                 <div className="title-tag coming-soon">
@@ -102,9 +122,9 @@ export default function GamePage() {
             {/* Mobile-only decorative band behind the title block. It lives
               * inside the title wrapper so its bottom edge can be anchored to
               * the bottom of the tags — see games.css. Hidden above 767px. */}
-            <div className="game-hero-bg-mobile-wrapper">
+            <div className={`game-hero-bg-mobile-wrapper${game.heroBackground?.anchorTop ? ' anchor-top' : ''}`}>
               <div className="game-hero-bg-mobile-image">
-                <img src={asset('/assets/img/mobile-bg.svg')} loading="lazy" alt="" className="game-hero-bg-mobile" />
+                <img src={mobileHeroBg} loading="lazy" alt="" className="game-hero-bg-mobile" />
               </div>
             </div>
           </div>
