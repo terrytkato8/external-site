@@ -4,11 +4,11 @@ Submission endpoints for forms on the marketing site. Keeping the IDs in one pla
 
 | Form | Endpoint |
 |---|---|
-| Big Boss Cleanup Discord | <https://formspree.io/f/xrenpjrq> |
+| Universal Serial Blade Discord | <https://formspree.io/f/mkodqogv> |
 | Last Light Discord | <https://formspree.io/f/mpqvyqwl> |
-| USB Discord | <https://formspree.io/f/mkodqogv> |
-| Big Boss Cleanup Playtest | <https://formspree.io/f/mojgerpg> |
+| Big Boss Cleanup Discord | <https://formspree.io/f/xrenpjrq> |
+| Universal Serial Blade Playtest | <https://formspree.io/f/xqerpngw> |
 | Last Light Playtest | <https://formspree.io/f/xykreobv> |
-| USB Playtest | <https://formspree.io/f/xqerpngw> |
+| Big Boss Cleanup Playtest | <https://formspree.io/f/mojgerpg> |
 
 When adding a new form, create the endpoint in Formspree first, then add a row above.

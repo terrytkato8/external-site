@@ -20,6 +20,7 @@ import { BLOCKS, blockAvailable, readBlock, writeBlock } from './serialize.mjs'
 import { listArt, reorderArt, uploadArt, deleteArt, renameArt, generateAllVariants } from './art.mjs'
 import { listAssets, saveAsset } from './assets.mjs'
 import { readHeadImages, writeHeadImage } from './head-images.mjs'
+import { writeFormspreeDoc } from './formspree-doc.mjs'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
@@ -44,6 +45,36 @@ function git(root, args) {
       else resolve('')
     })
   })
+}
+
+// Strict variant for write commands (checkout, commit, branch): unlike the
+// read helper above, any non-zero exit rejects — we never want to treat a
+// failed mutation as success just because it printed something to stdout.
+function gitStrict(root, args) {
+  return new Promise((resolve, reject) => {
+    execFile('git', args, { cwd: root, maxBuffer: 8 * 1024 * 1024 }, (err, stdout, stderr) => {
+      if (err) reject(new Error((stderr || err.message).split('\n')[0]))
+      else resolve((stdout || stderr || '').trim())
+    })
+  })
+}
+
+// Resolve a client-supplied repo-relative path and refuse anything that would
+// escape the repo root (absolute paths, `..`). Paths always come from our own
+// git-status list, but the endpoint is reachable by any loopback caller.
+function safeRepoPath(root, file) {
+  if (typeof file !== 'string' || !file) throw new Error('missing file')
+  const abs = path.resolve(root, file)
+  if (abs !== root && !abs.startsWith(root + path.sep)) throw new Error('path escapes the repository')
+  return abs
+}
+
+// Guard the destructive-history operations: never let the admin commit on the
+// shared integration branches — the repo's rule is PR-only onto main.
+function assertNotMainBranch(branch) {
+  if (branch === 'main' || branch === 'master') {
+    throw new Error(`refusing to commit directly on ${branch} — create a branch first (repo is PR-only)`)
+  }
 }
 
 function sendJson(res, status, body) {
@@ -131,7 +162,59 @@ export function devAdmin() {
               status: line.slice(0, 2).trim(),
               path: line.slice(3),
             }))
-            return sendJson(res, 200, { branch: branch.trim(), files })
+            // Upstream tracking + ahead/behind, when the branch has one. No
+            // upstream (a fresh local branch) is normal, not an error.
+            let upstream = null, ahead = null, behind = null
+            try {
+              upstream = (await gitStrict(root, ['rev-parse', '--abbrev-ref', '--symbolic-full-name', '@{u}'])).trim()
+              const counts = await gitStrict(root, ['rev-list', '--left-right', '--count', '@{u}...HEAD'])
+              const [b, a] = counts.split(/\s+/).map(Number)
+              behind = b; ahead = a
+            } catch { /* no upstream configured */ }
+            return sendJson(res, 200, { branch: branch.trim(), files, upstream, ahead, behind })
+          }
+          if (url === '/api/git/revert' && req.method === 'POST') {
+            const { file } = await readBody(req)
+            const abs = safeRepoPath(root, file)
+            // In HEAD → restore the committed version (index + worktree).
+            // Not in HEAD → a new file: drop it from the index if staged and
+            // delete it from disk.
+            let inHead = true
+            try { await gitStrict(root, ['cat-file', '-e', `HEAD:${file}`]) } catch { inHead = false }
+            if (inHead) {
+              await gitStrict(root, ['checkout', 'HEAD', '--', file])
+              return sendJson(res, 200, { ok: true, action: 'reverted' })
+            }
+            try { await gitStrict(root, ['rm', '-f', '--cached', '--', file]) } catch { /* not staged */ }
+            if (fs.existsSync(abs)) fs.rmSync(abs)
+            return sendJson(res, 200, { ok: true, action: 'removed' })
+          }
+          if (url === '/api/git/commit' && req.method === 'POST') {
+            const { message, files } = await readBody(req)
+            if (!message || !message.trim()) throw new Error('commit message is required')
+            const branch = (await git(root, ['rev-parse', '--abbrev-ref', 'HEAD'])).trim()
+            assertNotMainBranch(branch)
+            if (Array.isArray(files) && files.length) {
+              for (const f of files) safeRepoPath(root, f)
+              await gitStrict(root, ['add', '--', ...files])
+            } else {
+              await gitStrict(root, ['add', '-A'])
+            }
+            const staged = (await git(root, ['diff', '--cached', '--name-only'])).trim()
+            if (!staged) throw new Error('nothing staged to commit')
+            const out = await gitStrict(root, ['commit', '-m', message])
+            return sendJson(res, 200, { ok: true, output: out.split('\n')[0] })
+          }
+          if (url === '/api/git/branch' && req.method === 'POST') {
+            const { name } = await readBody(req)
+            if (!/^[A-Za-z0-9][A-Za-z0-9._/-]*$/.test(name || '')) {
+              throw new Error('branch name: letters, digits, dot, dash, slash, underscore; no leading dash')
+            }
+            await gitStrict(root, ['checkout', '-b', name])
+            return sendJson(res, 200, { ok: true, branch: name })
+          }
+          if (url === '/api/formspree-doc' && req.method === 'POST') {
+            return sendJson(res, 200, writeFormspreeDoc(root))
           }
           if (url === '/api/git/diff' && req.method === 'GET') {
             const file = new URLSearchParams(req.url.split('?')[1] ?? '').get('file')

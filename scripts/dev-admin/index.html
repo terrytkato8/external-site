@@ -174,6 +174,7 @@ const TABS = () => ({
   seo: 'SEO',
   endpoints: 'Endpoints',
   art: 'Concept art',
+  health: 'Health',
   git: 'Changes',
 })
 
@@ -422,12 +423,12 @@ function addRow(onCreate, takenSlugs) {
 // Delete button that arms on first click and fires on the second. The
 // two-click arm IS the confirmation, so callers save immediately — a
 // staged-but-unsaved delete looks done and then silently isn't.
-function armedDelete(label, onDelete) {
+function armedDelete(label, onDelete, armedLabel = 'click again to delete & save') {
   let armed = false
   const btn = el('button', { class: 'ghost', onclick: () => {
     if (!armed) {
       armed = true
-      btn.textContent = 'click again to delete & save'
+      btn.textContent = armedLabel
       setTimeout(() => { armed = false; btn.textContent = label }, 3000)
       return
     }
@@ -503,6 +504,29 @@ function renderGames() {
     else delete game.heroBackground
   }
 
+  // --- consolidated per-game config (also editable in bulk in their own tabs) ---
+  // SEO for this game's /games/<slug> route. Bind to the live entry, creating
+  // an empty one to bind to if absent; empty entries are stub-filled on save.
+  const seo = (data.gameRoutes[game.slug] ??= {})
+  const seoArea = (key, label) => el('div', {},
+    el('label', {}, label),
+    el('textarea', { value: seo[key] ?? '',
+      oninput(e) { if (e.target.value) seo[key] = e.target.value; else delete seo[key]; setDirty(true) } }))
+
+  // Formspree endpoints keyed by this slug. Snapshot so we only rewrite the
+  // endpoint files + FORMSPREE.md when they actually change.
+  const epBefore = JSON.stringify([data.discordEndpoints[game.slug], data.playtestEndpoints[game.slug]])
+  const endpointField = (map, label) => {
+    const input = el('input', { type: 'text', value: map[game.slug] ?? '', placeholder: '(none — form no-ops)',
+      oninput: () => { if (input.value) map[game.slug] = input.value; else delete map[game.slug]; setDirty(true) } })
+    return el('div', {}, el('label', {}, label), input)
+  }
+
+  // Concept-art summary for this game — filled in asynchronously below so the
+  // form itself stays a synchronous render.
+  const artSummary = el('div', { class: 'placeholder', style: 'padding:8px 0;text-align:left;color:var(--dim)' },
+    'loading concept art…')
+
   $('#form').replaceChildren(
     el('h2', {}, 'Card'),
     textField(game, 'title', 'Title'),
@@ -539,27 +563,45 @@ function renderGames() {
           onchange: () => { heroBg.anchorTop = input.checked; syncHeroBg(); setDirty(true) } })
         return el('label', {}, input, 'lock header to top (parallax — stays fixed while the page scrolls, all screen sizes; off = header scrolls with the page)')
       })()),
+    el('h2', {}, `SEO — /games/${game.slug}`),
+    textField(seo, 'title', '<title>'),
+    seoArea('description', 'Meta description'),
+    textField(seo, 'ogTitle', 'OG title'),
+    seoArea('ogDescription', 'OG description'),
+    assetPicker(seo, 'ogImage', 'OG image (/assets/…, empty = site default)'),
+    el('h2', {}, 'Sign-up endpoints'),
+    endpointField(data.discordEndpoints, 'Discord form (Formspree URL, empty = form no-ops)'),
+    endpointField(data.playtestEndpoints, 'Playtest form (Formspree URL, empty = form no-ops)'),
+    el('h2', {}, 'Concept art'),
+    artSummary,
     saveBar(async () => {
       await save('games', games, 'games.js')
-      // A game without a gameRoutes entry breaks prerender — auto-create
-      // stubs (visible in the git diff, refine in the SEO tab).
-      const missing = games.filter((g) => !data.gameRoutes[g.slug])
-      if (missing.length) {
-        for (const g of missing) {
-          data.gameRoutes[g.slug] = {
-            title: `${g.title} | Kato.8 Studios`,
-            description: g.description || g.tagline || g.title,
-            ogTitle: `${g.title} — ${g.tagline || 'from Kato.8 Studios'}`,
-            ogDescription: g.description || g.tagline || g.title,
-          }
+      // Every game needs a gameRoutes entry with a title or prerender breaks.
+      // Fill any that lack one (brand-new games, or the empty {} we bound to
+      // for inline editing), keeping any inline-edited fields, then persist.
+      const missing = games.filter((g) => !data.gameRoutes[g.slug]?.title)
+      for (const g of missing) {
+        data.gameRoutes[g.slug] = {
+          title: `${g.title} | Kato.8 Studios`,
+          description: g.description || g.tagline || g.title,
+          ogTitle: `${g.title} — ${g.tagline || 'from Kato.8 Studios'}`,
+          ogDescription: g.description || g.tagline || g.title,
+          ...data.gameRoutes[g.slug],
         }
-        await save('gameRoutes', data.gameRoutes, 'seo-config.js')
-        status(`saved ✓ — created stub SEO entries for ${missing.map((g) => g.slug).join(', ')} (refine in SEO tab)`, 'ok')
       }
-      const noEndpoints = games.filter((g) => !data.discordEndpoints[g.slug] || !data.playtestEndpoints[g.slug])
-      if (noEndpoints.length) {
-        status(`${$('#status').textContent || 'saved ✓'} — no Formspree endpoints for ${noEndpoints.map((g) => g.slug).join(', ')}`, 'ok')
+      await save('gameRoutes', data.gameRoutes, 'seo-config.js')
+      // Endpoints + FORMSPREE.md: only when this game's inline fields changed.
+      let msg = 'games.js + SEO saved ✓'
+      const epAfter = JSON.stringify([data.discordEndpoints[game.slug], data.playtestEndpoints[game.slug]])
+      if (epAfter !== epBefore) {
+        await save('discordEndpoints', data.discordEndpoints, 'discordEndpoints.js')
+        await save('playtestEndpoints', data.playtestEndpoints, 'playtestEndpoints.js')
+        await api('POST', '/__admin/api/formspree-doc')
+        msg += ' — endpoints + FORMSPREE.md updated'
       }
+      if (missing.length) msg += ` — stub SEO created for ${missing.map((g) => g.slug).join(', ')}`
+      setDirty(false)
+      status(msg, 'ok')
     }, [armedDelete('delete game', async () => {
       games.splice(games.indexOf(game), 1)
       selected = null
@@ -569,6 +611,35 @@ function renderGames() {
     })]))
 
   preview(`/games/${game.slug}`)
+
+  // Fill the concept-art summary without blocking the render. Jumping to the
+  // art tab respects unsaved edits (the programmatic switch would otherwise
+  // bypass the tab-click dirty guard and discard them).
+  ;(async () => {
+    try {
+      if (!artData) artData = await api('GET', '/__admin/api/art')
+    } catch { artSummary.replaceChildren('concept art unavailable'); return }
+    const g = artData.games.find((x) => x.slug === game.slug)
+    const cats = g?.categories ?? []
+    const jump = (cat) => {
+      if (dirty) return status('save your game edits first, then open Concept art', 'err')
+      setDirty(false)
+      load().then(() => { tab = 'art'; selected = cat ? `${game.slug}/${cat}` : null; render() })
+    }
+    const link = (text, cat) => el('a', { href: '#', onclick: (e) => { e.preventDefault(); jump(cat) } }, text)
+    if (!cats.length) {
+      artSummary.replaceChildren('No concept-art folders yet for this game. ', link('Open the Concept art tab →', ''))
+      return
+    }
+    const warn = cats.reduce((n, c) => n + c.sources.filter((s) => s.missingVariants).length, 0)
+    artSummary.className = ''
+    artSummary.replaceChildren(
+      ...cats.map((c) => el('div', { style: 'margin-bottom:2px' },
+        link(c.name, c.name), el('span', { style: 'color:var(--dim)' }, ` — ${c.sources.length} file(s)`))),
+      warn ? el('div', { style: 'color:var(--err);margin-top:4px' },
+        `⚠ ${warn} image(s) missing variants — invisible until regenerated`) : '',
+      el('div', { style: 'margin-top:6px' }, link('Manage in Concept art tab →', cats[0].name)))
+  })()
 }
 
 // ---- crowdfunding tab ------------------------------------------------------
@@ -655,6 +726,7 @@ function renderPages() {
     { id: '/', label: 'Home', sub: 'hero tagline' },
     { id: '/about-us', label: 'About', sub: 'four sections' },
     { id: 'footer', label: 'Footer', sub: 'legal links + copyright' },
+    { id: '404', label: '404 / Not found', sub: 'error page copy' },
   ]
   if (!pages.some((p) => p.id === selected)) selected = pages[0].id
 
@@ -690,6 +762,10 @@ function renderPages() {
           textField(link, 'href', 'URL (# = placeholder)'))),
       armedDelete('remove', () => { legal.links.splice(i, 1); setDirty(true); renderPages() }))
     $('#form').replaceChildren(
+      el('div', { class: 'placeholder', style: 'padding:8px 10px;text-align:left;color:var(--dim)' },
+        'This tab edits the footer’s legal links + copyright. The footer brand logo & blurb live in ',
+        el('strong', { style: 'color:var(--text)' }, 'Branding'),
+        '; the social icons live in ', el('strong', { style: 'color:var(--text)' }, 'Social'), '.'),
       el('h2', {}, 'Footer — bottom bar'),
       el('div', { class: 'art-grid' }, ...legal.links.map(linkRow)),
       el('div', { class: 'bar', style: 'margin-top:10px' },
@@ -700,6 +776,17 @@ function renderPages() {
       textField(legal, 'copyright', 'Copyright line'),
       saveBar(() => save('footerLegal', data.footerLegal, 'Footer.jsx')))
     preview('/')
+    return
+  } else if (selected === '404') {
+    const nf = data.notFoundContent
+    $('#form').replaceChildren(
+      el('h2', {}, '404 — not-found page'),
+      textField(nf, 'heading', 'Heading (big number/word)'),
+      area(nf, 'body', 'Body line'),
+      textField(nf, 'backLabel', 'Back-link label'),
+      saveBar(() => save('notFoundContent', data.notFoundContent, 'NotFoundPage.jsx')))
+    // Any unmatched path renders NotFoundPage — preview one.
+    preview('/__not-found-preview__')
     return
   } else {
     const c = data.aboutContent
@@ -892,19 +979,36 @@ async function renderSocial() {
 // ---- seo tab ---------------------------------------------------------------
 
 function renderSeo() {
+  // A synthetic "Site defaults" entry at the top edits the SITE-level fields
+  // in seo-config.js (name/url/twitter card) that back every page's meta;
+  // the rest are the per-route entries.
   const routes = [
+    { block: 'site', path: '__site__', label: 'Site defaults', kind: 'site' },
     ...Object.keys(data.staticRoutes).map((k) => ({ block: 'staticRoutes', key: k, path: k })),
     ...Object.keys(data.gameRoutes).map((k) => ({ block: 'gameRoutes', key: k, path: `/games/${k}` })),
   ]
   if (!routes.some((r) => r.path === selected)) selected = routes[0]?.path
   const route = routes.find((r) => r.path === selected)
-  const entry = data[route.block][route.key]
 
   $('#list').replaceChildren(...routes.map((r) => el('button', {
     class: `item${r.path === selected ? ' active' : ''}`,
     onclick: () => { selected = r.path; renderSeo() },
-  }, r.path, el('small', {}, r.block === 'staticRoutes' ? 'static' : 'game'))))
+  }, r.label ?? r.path, el('small', {}, r.kind === 'site' ? 'sitewide' : r.block === 'staticRoutes' ? 'static' : 'game'))))
 
+  if (route.kind === 'site') {
+    $('#form').replaceChildren(
+      el('h2', {}, 'Site defaults — sitewide SEO'),
+      el('div', { class: 'placeholder', style: 'padding:8px 0;text-align:left;color:var(--dim)' },
+        'These back every page. The default share image lives in the Branding tab.'),
+      textField(data.site, 'name', 'Site name (OG site_name, title suffix)'),
+      textField(data.site, 'url', 'Canonical origin (https://…, no trailing slash)'),
+      textField(data.site, 'twitterCard', 'Twitter card type (e.g. summary_large_image)'),
+      saveBar(() => save('site', data.site, 'seo-config.js')))
+    preview('/')
+    return
+  }
+
+  const entry = data[route.block][route.key]
   $('#form').replaceChildren(
     el('h2', {}, `SEO — ${route.path}`),
     textField(entry, 'title', '<title>'),
@@ -965,7 +1069,12 @@ function renderEndpoints() {
     saveBar(async () => {
       await save('discordEndpoints', data.discordEndpoints, 'discordEndpoints.js')
       await save('playtestEndpoints', data.playtestEndpoints, 'playtestEndpoints.js')
-      status('both endpoint files saved ✓ — remember FORMSPREE.md', 'ok')
+      // Regenerate FORMSPREE.md's table from the two maps so the doc no longer
+      // drifts by hand. Labels come from game titles server-side.
+      const doc = await api('POST', '/__admin/api/formspree-doc')
+      status(doc.changed
+        ? 'endpoints saved ✓ — FORMSPREE.md table regenerated'
+        : 'endpoints saved ✓ — FORMSPREE.md already in sync', 'ok')
     }))
 
   preview('/')
@@ -1122,10 +1231,109 @@ async function renderArt() {
   preview(`/games/${game}`)
 }
 
+// ---- health tab ------------------------------------------------------------
+// Pre-flight validation across the whole content surface, computed from the
+// already-loaded data plus the asset list, head images, and concept-art tree.
+// Surfaces the failures that otherwise only bite on deploy (missing SEO,
+// broken /assets paths, games with no endpoints, art with no variants) so you
+// can see them before committing. Read-only — every row links to its editor.
+
+async function renderHealth() {
+  $('#list').replaceChildren(el('div', { class: 'placeholder', style: 'padding:8px 10px;text-align:left' },
+    el('div', {}, 'Pre-flight checks across content, SEO, endpoints, assets, and concept art.'),
+    el('button', { class: 'add', style: 'margin-top:8px', onclick: () => renderHealth() }, '↻ recheck')))
+  $('#form').replaceChildren(el('div', { class: 'placeholder' }, 'running checks…'))
+
+  await ensureAssets()
+  const assets = new Set(assetList)
+  let head = {}
+  try { head = await api('GET', '/__admin/api/head-images') } catch { /* index.html unreadable */ }
+  try { if (!artData) artData = await api('GET', '/__admin/api/art') } catch { /* no art tree */ }
+
+  const items = []
+  const add = (level, text, jump) => items.push({ level, text, jump })
+  const exists = (p) => !p || assets.has(String(p).split('?')[0])
+  const goGame = (slug) => () => { setDirty(false); load().then(() => { tab = 'games'; selected = slug; render() }) }
+  const goTab = (t) => () => { setDirty(false); load().then(() => { tab = t; selected = null; render() }) }
+
+  // SEO coverage — a game route without a <title> fails prerender.
+  for (const g of data.games) {
+    if (!data.gameRoutes[g.slug]?.title)
+      add('error', `Game "${g.slug}" has no SEO entry with a <title> — prerender will fail.`, goGame(g.slug))
+  }
+  // Orphan SEO routes — a route with no backing game.
+  for (const slug of Object.keys(data.gameRoutes)) {
+    if (!data.games.some((g) => g.slug === slug))
+      add('warn', `SEO route /games/${slug} has no matching game in games.js.`, goTab('seo'))
+  }
+  // Endpoints — a missing one means that sign-up form silently no-ops.
+  for (const g of data.games) {
+    const miss = []
+    if (!data.discordEndpoints[g.slug]) miss.push('Discord')
+    if (!data.playtestEndpoints[g.slug]) miss.push('Playtest')
+    if (miss.length) add('warn', `Game "${g.slug}" has no ${miss.join(' or ')} endpoint — that form silently no-ops.`, goGame(g.slug))
+  }
+  // Broken /assets references — the 404-only-on-deploy class of bug.
+  const refs = []
+  const push = (p, where) => { if (p) refs.push([p, where]) }
+  for (const g of data.games) {
+    push(g.bgImage, `game ${g.slug} card background`)
+    push(g.cardLogo?.src, `game ${g.slug} card logo`)
+    push(g.pageLogo?.src, `game ${g.slug} page logo`)
+    push(g.storyImage?.src, `game ${g.slug} story image`)
+    push(g.heroBackground?.primary, `game ${g.slug} hero primary`)
+    push(g.heroBackground?.overlay, `game ${g.slug} hero overlay`)
+  }
+  push(data.site?.defaultImage, 'site default share image')
+  for (const [k, v] of Object.entries(data.gameRoutes)) push(v.ogImage, `SEO /games/${k} OG image`)
+  for (const [k, v] of Object.entries(data.staticRoutes)) push(v.ogImage, `SEO ${k} OG image`)
+  for (const l of data.socialLinks ?? []) push(l.src, `social icon "${l.name || '?'}"`)
+  push(data.heroContent?.logo?.src, 'hero logo')
+  push(data.heroContent?.background?.src, 'hero fixed background')
+  push(data.footerBrand?.logo?.src, 'footer brand logo')
+  push(head.favicon, 'favicon')
+  push(head.appleTouchIcon, 'apple-touch icon')
+  for (const [p, where] of refs) if (!exists(p)) add('error', `Missing file for ${where}: ${p}`)
+
+  // Required head images / share image can't be empty.
+  if (!head.favicon) add('error', 'Favicon is empty in index.html <head>.', goTab('branding'))
+  if (!head.appleTouchIcon) add('error', 'Apple-touch icon is empty in index.html <head>.', goTab('branding'))
+  if (!data.site?.defaultImage) add('error', 'Default share image (SITE.defaultImage) is empty.', goTab('branding'))
+
+  // Concept-art variants — raster with no variants is invisible; stale needs a regen.
+  if (artData) for (const g of artData.games) for (const c of g.categories) for (const s of c.sources) {
+    if (s.missingVariants)
+      add('warn', `Concept art ${g.slug}/${c.name}/${s.file} has no variants — invisible in the gallery until regenerated.`, goTab('art'))
+    else if (s.variants.some((v) => v.stale))
+      add('warn', `Concept art ${g.slug}/${c.name}/${s.file} has stale variants — regenerate.`, goTab('art'))
+  }
+
+  // Nav/footer social drift.
+  if (JSON.stringify(data.socialLinks) !== JSON.stringify(data.footerSocials))
+    add('warn', 'Nav and footer social lists differ — save in the Social tab to unify them.', goTab('social'))
+
+  const errors = items.filter((i) => i.level === 'error')
+  const warns = items.filter((i) => i.level === 'warn')
+  const row = (i) => el('div', { class: 'art-card', style: i.level === 'error' ? 'border-color:var(--err)' : undefined },
+    el('div', { class: 'meta' }, el('div', { style: `color:${i.level === 'error' ? 'var(--err)' : 'var(--text)'}` }, i.text)),
+    i.jump ? el('button', { class: 'ghost', style: 'color:var(--accent)', onclick: i.jump }, 'fix →') : '')
+
+  $('#form').replaceChildren(
+    el('h2', {}, `Health — ${errors.length} error(s), ${warns.length} warning(s)`),
+    ...(items.length ? [] : [el('div', { class: 'placeholder', style: 'color:var(--ok)' }, '✓ All checks passed.')]),
+    ...(errors.length ? [el('h2', { style: 'color:var(--err)' }, 'Errors — break the build or deploy')] : []),
+    el('div', { class: 'art-grid' }, ...errors.map(row)),
+    ...(warns.length ? [el('h2', {}, 'Warnings')] : []),
+    el('div', { class: 'art-grid' }, ...warns.map(row)))
+
+  preview('/')
+}
+
 // ---- changes tab -----------------------------------------------------------
-// A read-only window on `git status` / `git diff` for the repo, so after
-// editing here you can see exactly which source files changed before taking
-// them through the branch → staging → PR flow by hand. Never writes anything.
+// A window on `git status` / `git diff` for the repo, so after editing here you
+// can see exactly which source files changed and take them through the branch →
+// staging → PR flow. Also offers the local, non-destructive-to-remote actions:
+// revert a file, commit on the current branch (never on main), and branch off.
 
 async function renderGit() {
   let git
@@ -1137,11 +1345,46 @@ async function renderGit() {
     return
   }
   if (!git.files.some((f) => f.path === selected)) selected = git.files[0]?.path ?? null
+  const onMain = git.branch === 'main' || git.branch === 'master'
+  const track = git.upstream
+    ? `↑${git.ahead ?? '?'} ahead · ↓${git.behind ?? '?'} behind ${git.upstream}`
+    : 'no upstream tracked'
+
+  // Commit box: stages everything and commits on the current branch. Blocked
+  // on main/master (server refuses too) — the repo is PR-only onto main.
+  const commitMsg = el('input', { type: 'text', placeholder: 'commit message',
+    onkeydown: (e) => { if (e.key === 'Enter') doCommit() } })
+  const doCommit = async () => {
+    if (!commitMsg.value.trim()) return status('commit message is required', 'err')
+    try {
+      const r = await api('POST', '/__admin/api/git/commit', { message: commitMsg.value })
+      status(`committed ✓ — ${r.output}`, 'ok'); renderGit()
+    } catch (e) { status(`commit failed: ${e.message}`, 'err') }
+  }
+  // New-branch box: create + switch (e.g. before committing off main).
+  const branchName = el('input', { type: 'text', placeholder: 'new-branch-name',
+    onkeydown: (e) => { if (e.key === 'Enter') doBranch() } })
+  const doBranch = async () => {
+    try {
+      const r = await api('POST', '/__admin/api/git/branch', { name: branchName.value })
+      status(`switched to ${r.branch} ✓`, 'ok'); selected = null; renderGit()
+    } catch (e) { status(`branch failed: ${e.message}`, 'err') }
+  }
 
   $('#list').replaceChildren(
     el('div', { class: 'placeholder', style: 'padding:8px 10px;text-align:left' },
-      el('div', {}, 'on branch ', el('strong', { style: 'color:var(--text)' }, git.branch)),
-      el('button', { class: 'add', style: 'margin-top:8px', onclick: () => renderGit() }, '↻ refresh')),
+      el('div', {}, 'on branch ', el('strong', { style: `color:${onMain ? 'var(--err)' : 'var(--text)'}` }, git.branch)),
+      el('small', { style: 'color:var(--dim)' }, track),
+      el('button', { class: 'add', style: 'margin-top:8px', onclick: () => renderGit() }, '↻ refresh'),
+      el('label', { style: 'margin-top:12px' }, 'New branch'),
+      branchName,
+      el('button', { class: 'add', style: 'margin-top:4px', onclick: doBranch }, 'create & switch'),
+      el('label', { style: 'margin-top:12px' }, 'Commit all changes'),
+      commitMsg,
+      el('button', { class: 'add', style: `margin-top:4px${onMain ? ';opacity:.4;cursor:default' : ''}`,
+        onclick: onMain ? () => status(`on ${git.branch} — create a branch first (repo is PR-only)`, 'err') : doCommit },
+        onMain ? 'commit (disabled on main)' : 'commit'),
+      el('div', { style: 'margin-top:10px' }, el('span', { id: 'status' }))),
     ...git.files.map((f) => el('button', {
       class: `item${f.path === selected ? ' active' : ''}`,
       onclick: () => { selected = f.path; renderGit() },
@@ -1151,6 +1394,16 @@ async function renderGit() {
     $('#form').replaceChildren(el('div', { class: 'placeholder' }, 'Working tree clean — nothing to commit.'))
     return
   }
+
+  // Revert restores the file to HEAD (or removes it if it's new). Armed like
+  // the delete buttons — the second click is the confirmation.
+  const revertBtn = armedDelete('revert file', async () => {
+    try {
+      const r = await api('POST', '/__admin/api/git/revert', { file: selected })
+      status(`${selected} ${r.action === 'removed' ? 'removed (was new)' : 'reverted to HEAD'} ✓`, 'ok')
+      selected = null; renderGit()
+    } catch (e) { status(`revert failed: ${e.message}`, 'err') }
+  }, 'click again to revert this file')
 
   $('#form').replaceChildren(el('div', { class: 'placeholder' }, 'loading diff…'))
   try {
@@ -1162,8 +1415,10 @@ async function renderGit() {
         : line.startsWith('@@') ? 'hunk' : line.startsWith('diff ') || line.startsWith('index ') ? 'meta' : ''
       pre.append(el('span', { class: `dl ${cls}` }, line + '\n'))
     }
-    $('#form').replaceChildren(el('h2', {}, selected), diff.trim() ? pre
-      : el('div', { class: 'placeholder' }, 'no textual diff (binary or unchanged)'))
+    $('#form').replaceChildren(
+      el('div', { class: 'row', style: 'align-items:baseline' },
+        el('h2', { style: 'margin:0;flex:1' }, selected), revertBtn),
+      diff.trim() ? pre : el('div', { class: 'placeholder' }, 'no textual diff (binary or unchanged)'))
   } catch (err) {
     $('#form').replaceChildren(el('div', { class: 'placeholder' }, `diff failed: ${err.message}`))
   }
@@ -1186,7 +1441,7 @@ function render() {
   }, label)))
   ;({ games: renderGames, crowdfunding: renderCrowdfunding, pages: renderPages, banner: renderBanner,
     branding: renderBranding, social: renderSocial, seo: renderSeo, endpoints: renderEndpoints,
-    art: renderArt, git: renderGit })[tab]()
+    art: renderArt, health: renderHealth, git: renderGit })[tab]()
 }
 
 async function load() {
