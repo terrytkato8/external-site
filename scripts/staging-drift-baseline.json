@@ -61,6 +61,10 @@
       "kind": "prod-only",
       "reason": "Prod-only dev-admin tooling: asset lister + image upload for the picker."
     },
+    "scripts/dev-admin/formspree-doc.mjs": {
+      "kind": "prod-only",
+      "reason": "Prod-only dev-admin tooling: regenerates FORMSPREE.md's table from the endpoint maps."
+    },
     "scripts/dev-admin/head-images.mjs": {
       "kind": "prod-only",
       "reason": "Prod-only dev-admin tooling: favicon/apple-touch/OG editor for index.html head."
