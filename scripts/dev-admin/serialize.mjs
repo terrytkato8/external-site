@@ -39,6 +39,7 @@ export const BLOCKS = {
   footerBrand: { file: 'src/components/Footer.jsx', anchor: 'const footerBrand = ' },
   footerLegal: { file: 'src/components/Footer.jsx', anchor: 'const footerLegal = ' },
   aboutContent: { file: 'src/pages/AboutPage.jsx', anchor: 'const aboutContent = ' },
+  notFoundContent: { file: 'src/pages/NotFoundPage.jsx', anchor: 'const notFoundContent = ' },
   heroContent: { file: 'src/components/Hero.jsx', anchor: 'const heroContent = ' },
   conventionBanner: { file: 'src/components/ConventionBanner.jsx', anchor: 'const conventionBanner = ' },
 }
