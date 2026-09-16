@@ -12,18 +12,7 @@
  */
 const conventionBanner = {
   lead: 'Catch Kato.8 in Seattle this September —',
-  conventions: [
-    {
-      name: 'Seattle SLICE',
-      dates: 'Sept 2',
-      href: 'https://seattleslice.org/',
-    },
-    {
-      name: 'PAX West',
-      dates: 'Sept 4–7',
-      href: 'https://west.paxsite.com/en-us.html',
-    },
-  ],
+  conventions: [],
 }
 
 function ConventionName({ name, href }) {
