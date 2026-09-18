@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { trackEvent } from '../utils/track.js'
 
 /**
  * Reusable per-game Discord community sign-up form. Self-contained:
@@ -117,6 +118,7 @@ export default function DiscordSignupForm({
       } else {
         console.warn(`DiscordSignupForm: no endpoint provided (source=${source}); skipping network call.`)
       }
+      trackEvent('discord_signup', { source, game: gameTitle })
       setStatus('success')
       setName('')
       setEmail('')
