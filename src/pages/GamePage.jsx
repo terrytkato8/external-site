@@ -131,7 +131,7 @@ export default function GamePage({ slug: slugProp }) {
 
           {game.kickstarterUrl && (
             <div className="game-hero-kickstarter">
-              <KickstarterButton href={game.kickstarterUrl} />
+              <KickstarterButton href={game.kickstarterUrl} gameTitle={game.title} />
             </div>
           )}
 

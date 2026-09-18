@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { trackEvent } from '../utils/track.js'
 
 /**
  * Reusable per-game playtest sign-up form. Self-contained: validation,
@@ -100,6 +101,7 @@ export default function PlaytestSignupForm({
       } else {
         console.warn(`PlaytestSignupForm: no endpoint provided (source=${source}); skipping network call.`)
       }
+      trackEvent('playtest_signup', { source, game: gameTitle })
       setStatus('success')
       setName('')
       setEmail('')
