@@ -18,6 +18,7 @@
 import { Link } from 'react-router-dom'
 import { games } from '../data/games'
 import { asset } from '../utils/asset.js'
+import { trackEvent } from '../utils/track.js'
 
 const footerSocials = [
   {
@@ -130,7 +131,13 @@ export default function Footer() {
             </li>
             {footerSocials.map((social) => (
               <li key={social.name}>
-                <a href={social.href} target="_blank" rel="noopener noreferrer" className="footer_link w-inline-block">
+                <a
+                  href={social.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="footer_link w-inline-block"
+                  onClick={() => trackEvent('social_click', { network: social.name, location: 'footer' })}
+                >
                   <div className="footer_icon">
                     <img src={asset(social.src)} alt="" width="20" height="20" />
                   </div>
