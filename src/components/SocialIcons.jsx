@@ -12,6 +12,7 @@
  *   a new tab. Used by `Nav` and `MobileMenu`.
  */
 import { asset } from '../utils/asset.js'
+import { trackEvent } from '../utils/track.js'
 
 export const socialLinks = [
   {
@@ -48,7 +49,13 @@ export const socialLinks = [
 
 export function SocialIcon({ name, href, src }) {
   return (
-    <a href={href} target="_blank" rel="noopener noreferrer" className="w-inline-block">
+    <a
+      href={href}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="w-inline-block"
+      onClick={() => trackEvent('social_click', { network: name, location: 'nav' })}
+    >
       <div className="w-embed">
         <img src={asset(src)} alt={name} width="20" height="20" />
       </div>
