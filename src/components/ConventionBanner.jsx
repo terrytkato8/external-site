@@ -1,3 +1,5 @@
+import { trackEvent } from '../utils/track.js'
+
 /**
  * Thin announcement strip rendered above the nav on every page (mounted in
  * App.jsx). Announces where Kato.8 will be appearing in person.
@@ -18,7 +20,13 @@ const conventionBanner = {
 function ConventionName({ name, href }) {
   if (href) {
     return (
-      <a href={href} target="_blank" rel="noopener noreferrer" className="convention-banner_link">
+      <a
+        href={href}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="convention-banner_link"
+        onClick={() => trackEvent('convention_click', { convention: name })}
+      >
         {name}
       </a>
     )
