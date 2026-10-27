@@ -18,6 +18,13 @@ const indexPath = path.join(docsDir, 'index.html')
 
 const MARKER_RE = /<!-- seo:start -->[\s\S]*?<!-- seo:end -->/
 
+// Staging (aeiti.github.io/kato8-staging) must stay out of search results.
+// A robots.txt can't do it: crawlers only read one at the host root, and the
+// project site lives under a subpath. So every prerendered page carries a
+// noindex meta instead. It has no data-prerender attribute, so it survives
+// hydration (Helmet only takes over the data-prerender tags).
+const NOINDEX = (process.env.VITE_DEPLOY_TARGET || 'prod') === 'staging'
+
 function escapeAttr(str = '') {
   return String(str)
     .replace(/&/g, '&amp;')
@@ -44,6 +51,7 @@ function buildSeoBlock(pathname, meta) {
 
   const lines = [
     '<!-- seo:start -->',
+    NOINDEX && '    <meta name="robots" content="noindex, nofollow" />',
     `    <title data-prerender>${escapeText(meta.title)}</title>`,
     `    <meta data-prerender name="description" content="${escapeAttr(meta.description)}" />`,
     `    <link data-prerender rel="canonical" href="${escapeAttr(url)}" />`,
