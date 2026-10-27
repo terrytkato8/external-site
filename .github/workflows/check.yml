@@ -1,0 +1,42 @@
+name: Check
+
+# Builds every pull request for both deploy targets and runs the built-site
+# reference check, so a broken build or a bad asset path fails the PR instead
+# of the deploy that follows the merge. Nothing is published.
+
+on:
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: check-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        target: [prod, staging]
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: 'npm'
+
+      - run: npm ci
+
+      - name: Build (${{ matrix.target }})
+        env:
+          VITE_DEPLOY_TARGET: ${{ matrix.target }}
+        run: npm run build
+
+      - name: Check built site for broken internal references
+        run: node scripts/check-built-site.mjs
