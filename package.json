@@ -3,6 +3,9 @@
   "private": true,
   "version": "0.0.0",
   "type": "module",
+  "engines": {
+    "node": ">=20"
+  },
   "scripts": {
     "prepare": "git config core.hooksPath .githooks || true",
     "dev": "node scripts/generate-image-variants.mjs && vite",
