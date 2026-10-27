@@ -225,9 +225,25 @@
       "kind": "staging-only",
       "reason": "Staging carries the unmerged crowdfunding feature (CrowdfundingGame*, SimpleGamePage, preview/, crowdfunding routes). Expected until that feature lands on prod."
     },
+    "src/pages/GamePage.jsx": {
+      "kind": "differs",
+      "reason": "Staging dropped GamePage's slug prop along with the wrappers. Prod keeps the per-game page wrappers (af1bf05) as seams for game-specific layouts; staging removed them as unused in staging PR #73, since Last Light routes to SimpleGamePage there. Decided 2026-10-27 to keep both."
+    },
     "src/pages/SimpleGamePage.jsx": {
       "kind": "staging-only",
       "reason": "Staging carries the unmerged crowdfunding feature (CrowdfundingGame* components/pages/data, SimpleGamePage for Last Light). Expected until that feature lands on prod."
+    },
+    "src/pages/games/BigBossCleanupPage.jsx": {
+      "kind": "prod-only",
+      "reason": "Prod keeps the per-game page wrappers (af1bf05) as seams for game-specific layouts; staging removed them as unused in staging PR #73, since Last Light routes to SimpleGamePage there. Decided 2026-10-27 to keep both."
+    },
+    "src/pages/games/LastLightPage.jsx": {
+      "kind": "prod-only",
+      "reason": "Prod keeps the per-game page wrappers (af1bf05) as seams for game-specific layouts; staging removed them as unused in staging PR #73, since Last Light routes to SimpleGamePage there. Decided 2026-10-27 to keep both."
+    },
+    "src/pages/games/UniversalSerialBladePage.jsx": {
+      "kind": "prod-only",
+      "reason": "Prod keeps the per-game page wrappers (af1bf05) as seams for game-specific layouts; staging removed them as unused in staging PR #73, since Last Light routes to SimpleGamePage there. Decided 2026-10-27 to keep both."
     },
     "src/preview/PreviewPage.jsx": {
       "kind": "staging-only",
