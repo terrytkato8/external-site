@@ -12,3 +12,6 @@ dist-ssr
 # at build time by scripts/generate-image-variants.mjs). Source images
 # are committed; variants regenerate from them on every build.
 src/assets/games/**/concept/**/*-[0-9]*w.webp
+
+# Build output. CI builds and deploys it via the Pages action; never commit it.
+docs/
