@@ -49,10 +49,6 @@
       "kind": "staging-only",
       "reason": "Staging carries the unmerged crowdfunding feature (CrowdfundingGame* components/pages/data, SimpleGamePage for Last Light). Expected until that feature lands on prod."
     },
-    "scripts/check-built-site.mjs": {
-      "kind": "prod-only",
-      "reason": "Prod-only tooling (PR #87); scripts/ is not mirrored."
-    },
     "scripts/dev-admin/art.mjs": {
       "kind": "prod-only",
       "reason": "Prod-only dev-admin tooling (PR #86)."
