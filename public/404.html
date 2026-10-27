@@ -8,7 +8,10 @@
       // GitHub Pages serves this 404.html for any path that doesn't map to a real file.
       // We encode the requested path into a query string and redirect to / so the SPA
       // can read it and restore the route. Paired with the decode snippet in index.html.
-      // Root-domain deployment (kato8studios.com), so pathSegmentsToKeep = 0.
+      // pathSegmentsToKeep is the number of path segments in the deploy base:
+      // 0 on prod (kato8studios.com/), 1 on staging (aeiti.github.io/kato8-staging/).
+      // The build sets it per target (scripts/write-cname.mjs); this source value
+      // is prod's, so the file is identical in both repos.
       var pathSegmentsToKeep = 0
       var l = window.location
       l.replace(

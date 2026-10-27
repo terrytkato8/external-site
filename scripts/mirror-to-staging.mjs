@@ -17,10 +17,33 @@
 //   node scripts/mirror-to-staging.mjs main..my-branch # plan a range
 //   node scripts/mirror-to-staging.mjs <sha>           # plan one commit
 //   node scripts/mirror-to-staging.mjs --apply         # perform safe copies
+//   node scripts/mirror-to-staging.mjs --commit        # replay commits (below)
 //   node scripts/mirror-to-staging.mjs --staging <path>
 //
-// Never writes to diverged files, never touches git in the staging repo —
-// committing, branching, and PRs there stay manual on purpose.
+// --apply writes the range's net result into staging's working tree and
+// leaves git to you. --commit instead replays the range commit by commit:
+//
+//   - creates a staging worktree on a new branch from staging's origin/main
+//     (--onto <ref> to start elsewhere), at
+//     <staging>/.claude/worktrees/<branch>;
+//   - plans against that ref, not staging's working tree;
+//   - for each prod commit, writes its SAFE COPY / SAFE DELETE files at that
+//     commit's content and mode (100755 stays executable) and commits them
+//     with the prod commit's message, author and author date;
+//   - finally checks every touched file is byte-identical (same blob, same
+//     mode) to prod's head, and that the worktree is clean.
+//
+//   --branch <name>    staging branch name (default: prod's current branch)
+//   --onto <ref>       staging ref to branch from (default: origin/main)
+//   --allow-diverged   don't refuse when the range touches DIVERGED files;
+//                      leave them out of the replay and list them, to apply
+//                      by hand on the new branch
+//
+// Files modified in prod but absent from staging are never replayed; they
+// are listed. Merge commits in the range are refused (replay a linear range).
+//
+// Never writes to diverged files. Never pushes or opens PRs — that stays
+// manual on purpose.
 
 import fs from 'node:fs'
 import path from 'node:path'
@@ -32,8 +55,9 @@ const PROD_ROOT = path.resolve(__dirname, '..')
 
 // Paths that must never be mirrored, per CLAUDE.md "Standard change flow":
 // docs are canonical in prod (staging README is a pointer, no ARCHITECTURE.md
-// there), workflows/CNAME/404 are deploy-target-specific, docs/ is a build
-// artifact CI regenerates.
+// there), workflows/CNAME are deploy-target-specific, docs/ is a build
+// artifact CI regenerates. (public/404.html mirrors: its per-target value is
+// set at build time by write-cname.mjs.)
 const NEVER_MIRROR = [
   /^README\.md$/,
   /^ARCHITECTURE\.md$/,
@@ -45,28 +69,40 @@ const NEVER_MIRROR = [
   /^\.gitignore$/,
   /^\.claude\//,
   /^\.env/,
-  /^public\/404\.html$/,
 ]
 
 function usage(msg) {
   if (msg) console.error(`error: ${msg}\n`)
-  console.error('usage: node scripts/mirror-to-staging.mjs [range|commit] [--apply] [--staging <path>]')
+  console.error(
+    'usage: node scripts/mirror-to-staging.mjs [range|commit] [--apply | --commit [--branch <name>] ' +
+      '[--onto <ref>] [--allow-diverged]] [--staging <path>]',
+  )
   process.exit(msg ? 1 : 0)
 }
 
 const argv = process.argv.slice(2)
 let apply = false
+let commit = false
+let allowDiverged = false
+let branchArg = null
+let ontoArg = 'origin/main'
 let stagingRoot = null
 let rangeArg = null
 for (let i = 0; i < argv.length; i++) {
   const a = argv[i]
   if (a === '--apply') apply = true
+  else if (a === '--commit') commit = true
+  else if (a === '--allow-diverged') allowDiverged = true
+  else if (a === '--branch') branchArg = argv[++i] ?? usage('--branch needs a name')
+  else if (a === '--onto') ontoArg = argv[++i] ?? usage('--onto needs a ref')
   else if (a === '--staging') stagingRoot = argv[++i] ?? usage('--staging needs a path')
   else if (a === '--help' || a === '-h') usage()
   else if (a.startsWith('-')) usage(`unknown flag ${a}`)
   else if (rangeArg) usage('only one range argument allowed')
   else rangeArg = a
 }
+if (apply && commit) usage('--apply and --commit are exclusive')
+if (!commit && (allowDiverged || branchArg)) usage('--allow-diverged and --branch need --commit')
 
 function git(args, opts = {}) {
   return execFileSync('git', ['-C', PROD_ROOT, ...args], {
@@ -84,6 +120,29 @@ if (!stagingRoot) {
 }
 if (!fs.existsSync(path.join(stagingRoot, 'package.json'))) {
   usage(`staging repo not found at ${stagingRoot} (pass --staging <path>)`)
+}
+
+function sgit(args, opts = {}) {
+  return execFileSync('git', ['-C', opts.cwd ?? stagingRoot, ...args], {
+    encoding: opts.buffer ? 'buffer' : 'utf8',
+    maxBuffer: 64 * 1024 * 1024,
+    stdio: ['pipe', 'pipe', opts.allowFail ? 'ignore' : 'inherit'],
+    env: { ...process.env, GIT_LITERAL_PATHSPECS: '1', ...opts.env },
+    ...(opts.input !== undefined ? { input: opts.input } : {}),
+  })
+}
+
+// In --commit mode the plan is made against a staging *ref* (fetched fresh),
+// since that is what the new branch starts from — not whatever the staging
+// checkout happens to have on disk.
+let onto = null
+if (commit) {
+  sgit(['fetch', '-q', 'origin'])
+  try {
+    onto = sgit(['rev-parse', '--verify', `${ontoArg}^{commit}`], { allowFail: true }).trim()
+  } catch {
+    usage(`cannot resolve staging ref "${ontoArg}"`)
+  }
 }
 
 // Resolve the commit range. `A..B`/`A...B` both mean merge-base(A,B) → B
@@ -137,6 +196,13 @@ function addedLinesAlreadyPresent(file, current) {
 }
 
 function stagingBytes(file) {
+  if (onto) {
+    try {
+      return sgit(['cat-file', 'blob', `${onto}:${file}`], { buffer: true, allowFail: true })
+    } catch {
+      return null
+    }
+  }
   const p = path.join(stagingRoot, file)
   try {
     return fs.readFileSync(p)
@@ -206,7 +272,7 @@ const shortBase = base.slice(0, 7)
 const shortHead = head.slice(0, 7)
 console.log(`Mirror plan: ${PROD_ROOT}`)
 console.log(`  range   ${shortBase}..${shortHead}`)
-console.log(`  staging ${stagingRoot}\n`)
+console.log(`  staging ${stagingRoot}${onto ? ` @ ${ontoArg} (${onto.slice(0, 7)})` : ''}\n`)
 
 function section(title, rows, fmt) {
   if (!rows.length) return
@@ -235,7 +301,9 @@ if (entries.some(({ file }) => /^src\/(pages|components)\//.test(file))) {
   for (const dir of ['src/pages', 'src/components']) {
     let names = []
     try {
-      names = fs.readdirSync(path.join(stagingRoot, dir))
+      names = onto
+        ? sgit(['ls-tree', '--name-only', `${onto}:${dir}`], { allowFail: true }).split('\n').filter(Boolean)
+        : fs.readdirSync(path.join(stagingRoot, dir))
     } catch {}
     for (const name of names) {
       if (!fs.existsSync(path.join(PROD_ROOT, dir, name))) stagingOnly.push(`${dir}/${name}`)
@@ -257,6 +325,11 @@ if (subjects) {
 }
 
 // ---- apply -----------------------------------------------------------------
+
+if (commit) {
+  replayCommits()
+  process.exit(0)
+}
 
 if (!apply) {
   if (plan.copy.length || plan.del.length) {
@@ -294,3 +367,147 @@ console.log(`\nApplied ${plan.copy.length} copies, ${plan.del.length} deletions.
 console.log(manual
   ? `${manual} file(s) still need manual attention (see DIVERGED / ABSENT sections above).`
   : 'No manual follow-up needed — review, commit on a staging branch, and open the PR.')
+
+// ---- commit (replay) -------------------------------------------------------
+
+function fail(msg) {
+  console.error(`\nerror: ${msg}`)
+  process.exit(1)
+}
+
+// "<mode> <type> <oid>\t<path>" for one path at a tree-ish, or null if absent.
+function treeEntry(gitFn, rev, file) {
+  const out = gitFn(['ls-tree', '-z', rev, '--', file]).replace(/\0$/, '')
+  if (!out) return null
+  const [meta] = out.split('\t')
+  const [mode, , oid] = meta.split(' ')
+  return { mode, oid }
+}
+
+function replayCommits() {
+  if (plan.diverged.length && !allowDiverged) {
+    fail(
+      `${plan.diverged.length} DIVERGED file(s) in this range (listed above). Re-run with --allow-diverged ` +
+        'to replay everything else and apply those by hand on the new branch.',
+    )
+  }
+
+  const commits = git(['rev-list', '--reverse', '--topo-order', '--parents', `${base}..${head}`])
+    .trim()
+    .split('\n')
+    .filter(Boolean)
+    .map((line) => line.split(' '))
+  if (!commits.length) fail('no commits in range')
+  const merges = commits.filter((c) => c.length > 2)
+  if (merges.length) {
+    fail(`range contains merge commit(s) ${merges.map((c) => c[0].slice(0, 7)).join(', ')}; replay a linear range`)
+  }
+
+  const branch = branchArg ?? git(['branch', '--show-current']).trim()
+  if (!branch) fail('prod is on a detached HEAD; pass --branch <name>')
+  if (branch === 'main') fail('refusing to replay onto a branch named main; pass --branch <name>')
+  if (branch.startsWith('claude/')) fail(`plain branch names only; pass --branch instead of "${branch}"`)
+  for (const ref of [`refs/heads/${branch}`, `refs/remotes/origin/${branch}`]) {
+    try {
+      sgit(['rev-parse', '--verify', '-q', ref], { allowFail: true })
+      fail(`staging already has ${ref}; pick another --branch or delete it first`)
+    } catch (e) {
+      if (e.status === undefined) throw e
+    }
+  }
+
+  // Worktrees live beside the staging *main* checkout, even when --staging
+  // pointed at another worktree.
+  const commonDir = sgit(['rev-parse', '--path-format=absolute', '--git-common-dir']).trim()
+  const worktree = path.join(path.dirname(commonDir), '.claude', 'worktrees', branch.replace(/\//g, '-'))
+  if (fs.existsSync(worktree)) fail(`${worktree} already exists`)
+
+  sgit(['worktree', 'add', '-q', '-b', branch, worktree, onto])
+  const wgit = (args, opts = {}) => sgit(args, { ...opts, cwd: worktree })
+  console.log(`Created staging worktree ${worktree}`)
+  console.log(`  branch ${branch} from ${ontoArg} (${onto.slice(0, 7)})\n`)
+
+  const replayable = new Set([...plan.copy, ...plan.del].map((r) => r.file))
+  let made = 0
+  for (const [sha] of commits) {
+    // :oldmode newmode oldoid newoid status NUL path NUL, renames split into D + A.
+    const parts = git(['diff-tree', '-r', '-z', '--no-renames', '--no-commit-id', `${sha}^`, sha])
+      .split('\0')
+      .filter(Boolean)
+    const written = []
+    for (let i = 0; i < parts.length; i += 2) {
+      const [, newMode, , newOid, status] = parts[i].slice(1).split(' ')
+      const file = parts[i + 1]
+      if (!replayable.has(file)) continue
+      const dest = path.join(worktree, file)
+      if (status === 'D') {
+        fs.rmSync(dest, { force: true })
+      } else {
+        fs.mkdirSync(path.dirname(dest), { recursive: true })
+        fs.rmSync(dest, { force: true })
+        if (newMode === '120000') {
+          fs.symlinkSync(git(['cat-file', 'blob', newOid]), dest)
+        } else if (newMode === '100644' || newMode === '100755') {
+          fs.writeFileSync(dest, git(['cat-file', 'blob', newOid], { buffer: true }))
+          fs.chmodSync(dest, newMode === '100755' ? 0o755 : 0o644)
+        } else {
+          fail(`${file} has mode ${newMode} in ${sha.slice(0, 7)}; not replayable`)
+        }
+      }
+      written.push(file)
+    }
+
+    const subject = git(['log', '-1', '--format=%s', sha]).trim()
+    const label = `${sha.slice(0, 7)} ${subject}`
+    if (!written.length) {
+      console.log(`skip     ${label}  (no mirrorable files)`)
+      continue
+    }
+    wgit(['add', '-A', '--', ...written])
+    try {
+      wgit(['diff', '--cached', '--quiet'], { allowFail: true })
+      console.log(`skip     ${label}  (staging already had this content)`)
+      continue
+    } catch {}
+    const [name, email, date] = git(['log', '-1', '--format=%an%x00%ae%x00%aI', sha]).trim().split('\0')
+    wgit(['commit', '-q', '-F', '-'], {
+      input: git(['log', '-1', '--format=%B', sha]),
+      env: { GIT_AUTHOR_NAME: name, GIT_AUTHOR_EMAIL: email, GIT_AUTHOR_DATE: date },
+    })
+    made++
+    console.log(`commit   ${label}  (${written.length} file${written.length === 1 ? '' : 's'})`)
+  }
+
+  // Byte-identity: equal blob ids mean identical bytes; mode is compared
+  // separately because a lost +x bit leaves the content (and diff) unchanged.
+  const problems = []
+  for (const file of [...replayable].sort()) {
+    const want = treeEntry(git, head, file)
+    const got = treeEntry(wgit, 'HEAD', file)
+    if (!want && !got) continue
+    if (!want) problems.push(`${file}: deleted in prod, still on the staging branch`)
+    else if (!got) problems.push(`${file}: missing on the staging branch`)
+    else if (want.oid !== got.oid) problems.push(`${file}: content differs from prod ${shortHead}`)
+    else if (want.mode !== got.mode) problems.push(`${file}: mode ${got.mode}, prod has ${want.mode}`)
+  }
+  const dirty = wgit(['status', '--porcelain']).trim()
+  if (dirty) problems.push(`worktree not clean after replay:\n${dirty}`)
+
+  console.log(`\nReplayed ${made} of ${commits.length} commit(s) onto ${branch}.`)
+  if (problems.length) {
+    console.error(`\nBYTE-IDENTITY CHECK FAILED (${problems.length}):`)
+    for (const p of problems) console.error(`  ${p}`)
+    fail(`the replay is incomplete; remove the worktree and branch, then redo it:\n` +
+      `  git -C ${stagingRoot} worktree remove --force ${worktree}\n` +
+      `  git -C ${stagingRoot} branch -D ${branch}`)
+  }
+  console.log(`Byte-identity check: ${replayable.size} file(s) match prod ${shortHead} (content and mode).`)
+
+  const manual = [...plan.diverged, ...plan.missing]
+  if (manual.length) {
+    console.log('\nNot replayed — apply by hand on the branch if they should mirror:')
+    for (const r of plan.diverged) console.log(`  DIVERGED  ${r.file}`)
+    for (const r of plan.missing) console.log(`  ABSENT    ${r.file}`)
+  }
+  console.log(`\nNext: review in ${worktree}, then push ${branch} and open the staging PR.`)
+}

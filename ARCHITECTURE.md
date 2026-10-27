@@ -123,7 +123,7 @@ gh workflow run deploy.yml --ref main
 
 ### Cross-repo release tooling
 
-Prod-only helpers for the mirror-based release flow (the two repos share no history — a release is a file-copy mirror, not a push): [`scripts/mirror-to-staging.mjs`](./scripts/mirror-to-staging.mjs) classifies and applies the prod→staging mirror, and `verify-deploy.mjs`/`staging-drift.mjs` (above) confirm and monitor it. The `/ship` skill (`.claude/skills/ship/`, local-only) orchestrates the whole sequence.
+Prod-only helpers for the mirror-based release flow (the two repos share no history — a release is a file-copy mirror, not a push): [`scripts/mirror-to-staging.mjs`](./scripts/mirror-to-staging.mjs) classifies the prod→staging mirror and either copies the safe files (`--apply`) or replays the commits onto a staging branch (`--commit`), and `verify-deploy.mjs`/`staging-drift.mjs` (above) confirm and monitor it. The `/ship` skill (`~/.claude/skills/ship/`, local-only) orchestrates the whole sequence.
 
 ## Versioning
 

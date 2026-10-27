@@ -41,10 +41,6 @@
       "kind": "differs",
       "reason": "Staging README is a short pointer to prod; prod is canonical."
     },
-    "public/404.html": {
-      "kind": "differs",
-      "reason": "Deploy-target-specific base path in the SPA fallback redirect."
-    },
     "public/assets/img/last-light-cover.svg": {
       "kind": "staging-only",
       "reason": "Staging carries the unmerged crowdfunding feature (CrowdfundingGame* components/pages/data, SimpleGamePage for Last Light). Expected until that feature lands on prod."

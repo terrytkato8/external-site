@@ -11,6 +11,8 @@
 //     (this is what the `asset()` helper emits, so a bad asset path in JSX
 //      is caught here even though nothing imports the file)
 //   - that every route in listPrerenderRoutes() actually emitted an HTML file
+//   - that 404.html's pathSegmentsToKeep matches the base path, so the SPA
+//     fallback redirects into the deployed site and not to the host root
 //
 // Two things it deliberately does NOT check:
 //
@@ -225,7 +227,20 @@ function main() {
     return !fs.existsSync(path.join(builtDir, rel))
   })
 
-  if (misses.length || missingRoutes.length) {
+  // The SPA fallback keeps this many leading path segments when it redirects;
+  // it must equal the segment count of the base ('/' → 0, '/kato8-staging/' → 1).
+  let fallbackError = null
+  const fallbackPath = path.join(builtDir, '404.html')
+  if (fs.existsSync(fallbackPath)) {
+    const m = fs.readFileSync(fallbackPath, 'utf8').match(/var pathSegmentsToKeep = (\d+)/)
+    const want = base.split('/').filter(Boolean).length
+    if (!m) fallbackError = '404.html has no `var pathSegmentsToKeep = <n>` line'
+    else if (Number(m[1]) !== want) {
+      fallbackError = `404.html keeps ${m[1]} path segment(s), but base '${base}' needs ${want}`
+    }
+  }
+
+  if (misses.length || missingRoutes.length || fallbackError) {
     if (misses.length) {
       console.error(`check-built-site: ${misses.length} broken reference(s) in ${display(builtDir)}/\n`)
       for (const m of misses) {
@@ -239,6 +254,9 @@ function main() {
       console.error(`check-built-site: ${missingRoutes.length} prerendered route(s) missing an HTML file:\n`)
       for (const r of missingRoutes) console.error(`  ${r}`)
       console.error('\nlistPrerenderRoutes() promises these but the build did not emit them. Did prerender.mjs run?')
+    }
+    if (fallbackError) {
+      console.error(`check-built-site: ${fallbackError}. Did write-cname.mjs run for this target?`)
     }
     process.exit(1)
   }

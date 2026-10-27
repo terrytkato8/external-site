@@ -1,6 +1,7 @@
 import { Routes, Route, useLocation } from 'react-router-dom'
 import Nav from './components/Nav'
 import ConventionBanner from './components/ConventionBanner'
+import StagingBanner from './components/StagingBanner'
 import Footer from './components/Footer'
 import ScrollToTop from './components/ScrollToTop'
 import Analytics from './components/Analytics'
@@ -18,7 +19,7 @@ import NotFoundPage from './pages/NotFoundPage'
  * Renders the persistent chrome (`Nav` above, `Footer` below) around a
  * `<Routes>` block, plus two zero-render helpers — `ScrollToTop` (resets
  * scroll on route change) and `Analytics` (fires GA `page_view` on route
- * change).
+ * change). `StagingBanner` renders only on the staging build.
  *
  * Routes:
  *   `/`                → HomePage
@@ -40,6 +41,7 @@ export default function App() {
     <div className={bodyClass}>
       <ScrollToTop />
       <Analytics />
+      <StagingBanner />
       <ConventionBanner />
       <Nav />
       <Routes>
