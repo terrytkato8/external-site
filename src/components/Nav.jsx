@@ -76,7 +76,7 @@ function GamesDropdown() {
  *
  * Two bars:
  *   - The main tall wavy header (in-flow at the top): logo, Games dropdown,
- *     About, socials on desktop; hamburger → MobileMenu on mobile.
+ *     About, Investors, socials on desktop; hamburger → MobileMenu on mobile.
  *   - A compact pinned bar (`.nav-compact`) that slides down once the user
  *     scrolls past the header, so navigation stays reachable — handy for a
  *     phone visitor who scanned a convention QR. Same controls, slimmed down.
@@ -128,6 +128,10 @@ export default function Nav() {
             About
           </Link>
 
+          <Link to="/investors" className="nav-about-link">
+            Investors
+          </Link>
+
           <div className="nav-social-icons">
             {socialLinks.map((link) => (
               <SocialIcon key={link.name} {...link} />
@@ -162,6 +166,9 @@ export default function Nav() {
             <GamesDropdown />
             <Link to="/about-us" className="nav-about-link">
               About
+            </Link>
+            <Link to="/investors" className="nav-about-link">
+              Investors
             </Link>
             <div className="nav-social-icons">
               {socialLinks.map((link) => (

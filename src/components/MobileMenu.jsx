@@ -10,7 +10,7 @@ import { socialLinks, SocialIcon } from './SocialIcons'
  * hamburger button and the open/close state.
  *
  * Sections (mirror the desktop nav): Games (from `games.js`), Studio
- * (About link), Community (social icons from `SocialIcons`).
+ * (About and Investors links), Community (social icons from `SocialIcons`).
  *
  * Behavior:
  *   - Closes automatically when the route changes (so tapping a link
@@ -74,6 +74,11 @@ export default function MobileMenu({ open, onClose }) {
             <li>
               <Link to="/about-us" className="mobile-menu-link">
                 About
+              </Link>
+            </li>
+            <li>
+              <Link to="/investors" className="mobile-menu-link">
+                Investors
               </Link>
             </li>
           </ul>
