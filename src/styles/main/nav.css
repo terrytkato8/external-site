@@ -1,4 +1,7 @@
 .nav {
+  /* Space between top-level nav items (Games, About, the icon group) in both
+     the main header and the compact pinned bar. */
+  --nav-item-gap: 1.25rem;
   z-index: 99;
   width: 100%;
   color: var(--text-primary);
@@ -40,19 +43,6 @@
   display: flex;
 }
 
-.nav_menu {
-  background-color: #0000;
-  justify-content: center;
-  align-self: center;
-  align-items: center;
-  height: 100%;
-  margin-bottom: 0;
-  padding-left: 0;
-  display: flex;
-  position: static;
-  transform: none !important;
-}
-
 .nav_left {
   grid-column-gap: var(--space-2);
   grid-row-gap: var(--space-2);
@@ -64,8 +54,7 @@
 }
 
 .nav_right {
-  grid-column-gap: 12px;
-  grid-row-gap: 12px;
+  gap: var(--nav-item-gap);
   object-fit: contain;
   flex: 0 auto;
   justify-content: flex-end;
@@ -87,15 +76,6 @@
 
 .nav_logo:hover {
   color: color-mix(in srgb, currentColor 80%, transparent);
-}
-
-.nav_menu-list {
-  grid-column-gap: 0px;
-  grid-row-gap: 0px;
-  flex-flow: row;
-  margin-bottom: 0;
-  padding-left: 0;
-  display: flex;
 }
 
 .nav_logo-icon {
@@ -145,14 +125,13 @@
 
 /* The Webflow dropdown toggle reserves 40px of right padding for its
    absolutely-positioned caret (itself inset 20px from the edge), leaving
-   ~20px of dead space after "Games ▾". That made the gap before the next
-   nav item read as ~32px vs the even 12px between the other items. Tighten
-   the toggle so its box hugs the caret and all nav gaps match. */
-.nav_right .w-dropdown-toggle {
+   ~20px of dead space after "Games ▾" on top of the gap to the next item.
+   Tighten the toggle so its box hugs the caret, in both bars. */
+.nav .w-dropdown-toggle {
   padding-right: 20px;
 }
 
-.nav_right .nav-dropdown-caret {
+.nav .nav-dropdown-caret {
   margin-right: 0;
 }
 
@@ -207,7 +186,7 @@
 
 .nav-compact-right {
   align-items: center;
-  gap: 1.25rem;
+  gap: var(--nav-item-gap);
   display: flex;
 }
 
@@ -220,22 +199,6 @@
   .nav {
           height: auto;
           padding-inline: 80px;
-        }
-
-  .nav_menu {
-          height: auto;
-          padding: var(--space-1);
-          border-radius: var(--radius-md);
-          background-color: var(--bg-primary);
-          max-height: calc(100dvh - 10rem);
-          position: absolute;
-          top: 100%;
-          overflow: auto;
-          box-shadow: 0 4px 8px #0000001a;
-        }
-
-  .nav_menu-list {
-          flex-flow: column;
         }
 
   .nav-about-link {
@@ -266,10 +229,6 @@
 
   .nav_container {
           height: 64px;
-        }
-
-  .nav_menu {
-          transform: translate(0);
         }
 }
 
