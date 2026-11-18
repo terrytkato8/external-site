@@ -34,6 +34,11 @@ main.jsx
     │   ├── /about-us    → <AboutPage>
     │   │                   ├── <Seo>
     │   │                   └── <GoFundMeWidget>
+    │   ├── /investors   → <InvestorsPage>
+    │   │                   ├── <Seo>
+    │   │                   └── <InvestorRequestForm>
+    │   │                       ├── <RadioGroup>
+    │   │                       └── <Turnstile>
     │   └── *            → <NotFoundPage>
     │                       └── <Seo noindex>
     └── <Footer>                       persistent bottom bar
@@ -48,6 +53,7 @@ Routes are declared in [`src/App.jsx`](./src/App.jsx).
 | `/` | [`src/pages/HomePage.jsx`](./src/pages/HomePage.jsx) | Landing page. Composes Hero + GameGrid + SupportSection. |
 | `/games/:slug` | [`src/pages/GamePage.jsx`](./src/pages/GamePage.jsx) | Per-game detail page. Reads slug from URL, looks up the game in `src/data/games.js`, renders hero + optional Kickstarter CTA + story + concept-art gallery + per-game playtest and Discord sign-up forms. Unknown slug falls back to `NotFoundPage`. |
 | `/about-us` | [`src/pages/AboutPage.jsx`](./src/pages/AboutPage.jsx) | Studio mission, story behind the name, embedded documentary episode, GoFundMe pitch. Copy is hand-authored in the file. |
+| `/investors` | [`src/pages/InvestorsPage.jsx`](./src/pages/InvestorsPage.jsx) | Page for prospective investors and publishers: cobalt hero, highlight cards, a strip of the studio's games, and the investor / publisher contact form. |
 | `*` | [`src/pages/NotFoundPage.jsx`](./src/pages/NotFoundPage.jsx) | Catch-all 404 page. Also rendered by `GamePage` for unknown slugs. |
 
 To add a route: add a `<Route>` in `App.jsx`, a page component under `src/pages/`, and an entry in `src/data/seo-config.js` so the prerender step generates static HTML for it.
@@ -58,7 +64,7 @@ These mount once at the app root (see `App.jsx`) and appear on every page.
 
 | Component | File | Purpose |
 |---|---|---|
-| `<Nav>` | [`src/components/Nav.jsx`](./src/components/Nav.jsx) | Top bar. Logo, Games dropdown, About link, social icons. Owns the mobile menu open/close state. |
+| `<Nav>` | [`src/components/Nav.jsx`](./src/components/Nav.jsx) | Top bar. Logo, Games dropdown, About and Investors links, social icons. Owns the mobile menu open/close state. |
 | `<Footer>` | [`src/components/Footer.jsx`](./src/components/Footer.jsx) | Bottom bar. Brand block, games list, studio links, social links, footer policies. |
 | `<MobileMenu>` | [`src/components/MobileMenu.jsx`](./src/components/MobileMenu.jsx) | Slide-in panel for narrow viewports. Rendered by `Nav`. |
 | `<Analytics>` | [`src/components/Analytics.jsx`](./src/components/Analytics.jsx) | Zero-render. Fires GA `page_view` on every route change. |
@@ -80,6 +86,9 @@ Composed into pages.
 | `<KickstarterButton>` | [`src/components/KickstarterButton.jsx`](./src/components/KickstarterButton.jsx) | GamePage | "Back on Kickstarter" CTA. Rendered only when the game entry in `src/data/games.js` has a `kickstarterUrl`. Opens in a new tab. |
 | `<PlaytestSignupForm>` | [`src/components/PlaytestSignupForm.jsx`](./src/components/PlaytestSignupForm.jsx) | GamePage | Per-game playtest sign-up. Posts to the game's Formspree endpoint from `src/data/playtestEndpoints.js`. Missing endpoint = form still works locally, no network call. |
 | `<DiscordSignupForm>` | [`src/components/DiscordSignupForm.jsx`](./src/components/DiscordSignupForm.jsx) | GamePage | Per-game Discord community sign-up. Same shape as the playtest form; endpoints in `src/data/discordEndpoints.js`. |
+| `<InvestorRequestForm>` | [`src/components/InvestorRequestForm.jsx`](./src/components/InvestorRequestForm.jsx) | InvestorsPage | Investor / publisher contact form (name, email, optional phone, investor or publisher, company, details) with a Turnstile bot check. Posts to the investor-contact Cloudflare Worker from `src/data/investorContact.js`, which forwards to Formspree and emails the visitor a confirmation. |
+| `<RadioGroup>` | [`src/components/RadioGroup.jsx`](./src/components/RadioGroup.jsx) | InvestorRequestForm | Labeled single-choice radio group (fieldset + legend), styled to sit in a `.signup-form`. |
+| `<Turnstile>` | [`src/components/Turnstile.jsx`](./src/components/Turnstile.jsx) | InvestorRequestForm | Cloudflare Turnstile widget. Loads Cloudflare's script once, reports the token, and exposes `reset()` for retries. |
 | `<NewsletterSignup>` | [`src/components/NewsletterSignup.jsx`](./src/components/NewsletterSignup.jsx) | (not currently mounted) | General newsletter sign-up form. Posts to `VITE_NEWSLETTER_ENDPOINT`. Kept around for future placement — drop into any page as `<NewsletterSignup source="..." />`. |
 
 ## Shared utilities
@@ -99,6 +108,7 @@ These define the content the components render. Editing them is usually how you 
 | Games | [`src/data/games.js`](./src/data/games.js) | One entry per game: slug, title, tagline, categories, story/gameplay paragraphs, asset paths, optional `kickstarterUrl`. Consumed by Nav, MobileMenu, Footer, GameGrid, GamePage. |
 | SEO config | [`src/data/seo-config.js`](./src/data/seo-config.js) | Per-route SEO metadata. Used by `<Seo>` at runtime and by `scripts/prerender.mjs` at build time. |
 | Playtest endpoints | [`src/data/playtestEndpoints.js`](./src/data/playtestEndpoints.js) | Per-game Formspree endpoint for `<PlaytestSignupForm>`, keyed by slug. Mirror any change in [FORMSPREE.md](./FORMSPREE.md). |
+| Investor contact | [`src/data/investorContact.js`](./src/data/investorContact.js) | The investor-contact Worker URL and Turnstile site key for `<InvestorRequestForm>`. |
 | Discord endpoints | [`src/data/discordEndpoints.js`](./src/data/discordEndpoints.js) | Per-game Formspree endpoint for `<DiscordSignupForm>`, keyed by slug. Mirror any change in [FORMSPREE.md](./FORMSPREE.md). |
 
 ## Common tasks

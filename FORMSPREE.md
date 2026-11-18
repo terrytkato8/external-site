@@ -10,5 +10,6 @@ Submission endpoints for forms on the marketing site. Keeping the IDs in one pla
 | Universal Serial Blade Playtest | <https://formspree.io/f/xqerpngw> |
 | Last Light Playtest | <https://formspree.io/f/xykreobv> |
 | Big Boss Cleanup Playtest | <https://formspree.io/f/mojgerpg> |
+| Investor / publisher contact (via the investor-contact Worker, not posted to directly) | <https://formspree.io/f/moejwaar> |
 
 When adding a new form, create the endpoint in Formspree first, then add a row above.

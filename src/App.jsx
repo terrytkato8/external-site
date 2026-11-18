@@ -11,6 +11,7 @@ import UniversalSerialBladePage from './pages/games/UniversalSerialBladePage'
 import LastLightPage from './pages/games/LastLightPage'
 import BigBossCleanupPage from './pages/games/BigBossCleanupPage'
 import AboutPage from './pages/AboutPage'
+import InvestorsPage from './pages/InvestorsPage'
 import NotFoundPage from './pages/NotFoundPage'
 
 /**
@@ -25,6 +26,7 @@ import NotFoundPage from './pages/NotFoundPage'
  *   `/`                → HomePage
  *   `/games/:slug`     → GamePage (404s in-app for unknown slugs)
  *   `/about-us`        → AboutPage
+ *   `/investors`       → InvestorsPage
  *   anything else      → NotFoundPage
  *
  * Body class toggle: game pages use `body-2`, everything else uses
@@ -54,6 +56,7 @@ export default function App() {
         <Route path="/games/big-boss-cleanup" element={<BigBossCleanupPage />} />
         <Route path="/games/:slug" element={<GamePage />} />
         <Route path="/about-us" element={<AboutPage />} />
+        <Route path="/investors" element={<InvestorsPage />} />
         <Route path="*" element={<NotFoundPage />} />
       </Routes>
       <Footer />

@@ -1,0 +1,213 @@
+/*
+ * Investor / publisher page (/investors): a cobalt hero band, the highlight
+ * cards, a strip of the studio's games, then the shared `.signup-form`
+ * contact form. Type comes from the main-site tokens (RocknRoll One
+ * headings, Reem Kufi body, --text-* / --space-* variables). Colors come
+ * from the main site too: the nav wave's cobalt (#424065 → --dark-cobalt)
+ * and its pink→peach ribbon (#e6738a → #fecb86).
+ */
+
+.investors {
+  font-family: 'Reem Kufi', sans-serif;
+}
+
+/* ---- Hero band ---- */
+
+/* Pulled up under the nav's transparent lower edge (its 48px bottom
+   padding) so the cobalt runs straight on from the nav's pink ribbon
+   instead of leaving a strip of pearl between them. The nav is
+   position: relative + z-index: 99, so its ribbon stays on top. */
+.investors-hero {
+  position: relative;
+  margin-top: -48px;
+  color: var(--light-pearl, #f5efef);
+  text-align: center;
+}
+
+/* The gradient lives on the text block (not the whole header) so it ends
+   exactly where the wave SVG starts, on the same color as the SVG's band. */
+.investors-hero_inner {
+  padding: calc(48px + var(--space-3, 2.5rem)) 1rem 1rem;
+  background: linear-gradient(180deg, #424065 0%, var(--dark-cobalt, #1b1b26) 100%);
+}
+
+.investors-hero_content {
+  max-width: 46rem;
+  margin-inline: auto;
+}
+
+.investors-hero_eyebrow {
+  margin: 0 0 0.5rem;
+  font-size: 0.875rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #fecb86;
+}
+
+.investors-hero_title {
+  margin: 0 0 1rem;
+  font-family: 'RocknRoll One', sans-serif;
+  font-size: clamp(2rem, 5vw, 3rem);
+  font-weight: 400;
+  line-height: 1.1;
+  color: var(--light-pearl, #f5efef);
+}
+
+.investors-hero_lead {
+  margin: 0 auto;
+  max-width: 38rem;
+  font-size: 1.125rem;
+  line-height: 1.6;
+  color: var(--light-pearl, #f5efef);
+  opacity: 0.9;
+}
+
+/* The SVG continues the band (cobalt top) into a pink→peach ribbon; below
+   the ribbon it's transparent, so the page background shows through.
+   Pulled up 1px so no seam shows against the gradient. */
+.investors-hero_wave {
+  display: block;
+  width: 100%;
+  height: clamp(64px, 10vw, 150px);
+  margin-top: -1px;
+}
+
+.investors-hero_wave-band {
+  fill: var(--dark-cobalt, #1b1b26); /* = the band gradient's last stop */
+}
+
+/* ---- Body: highlights, games, form ---- */
+
+.investors-body {
+  max-width: 46rem;
+  margin-inline: auto;
+  padding: var(--space-3, 2.5rem) 1rem var(--space-4, 4rem);
+  color: var(--text-primary);
+}
+
+.investors-highlights {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.25rem;
+  margin-bottom: var(--space-3, 2.5rem);
+}
+
+.investors-highlight {
+  padding: 1.25rem;
+  border: 2px solid color-mix(in srgb, var(--text-primary) 18%, transparent);
+  border-radius: 0.75rem;
+}
+
+.investors-highlight_title {
+  margin: 0 0 0.4rem;
+  font-family: 'RocknRoll One', sans-serif;
+  font-size: 1.0625rem;
+  font-weight: 400;
+  line-height: 1.2;
+  color: var(--text-primary);
+}
+
+.investors-highlight_body {
+  margin: 0;
+  font-size: 0.9375rem;
+  line-height: 1.5;
+  color: var(--text-primary);
+  opacity: 0.8;
+}
+
+.investors-games {
+  margin-bottom: var(--space-3, 2.5rem);
+}
+
+.investors-games_heading {
+  margin: 0 0 1rem;
+  text-align: center;
+  font-family: 'RocknRoll One', sans-serif;
+  font-size: clamp(1.5rem, 3vw, 2rem);
+  font-weight: 400;
+  line-height: 1.15;
+  color: var(--text-primary);
+}
+
+.investors-games_list {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.investors-game {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  gap: 0.5rem;
+  aspect-ratio: 4 / 5;
+  padding: 1rem;
+  overflow: hidden;
+  border-radius: var(--card-radius, 0.75rem);
+  background-size: cover;
+  background-position: center;
+  color: var(--light-pearl, #f5efef);
+  text-decoration: none;
+  isolation: isolate;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+/* Darken the lower half so the logo and tagline stay legible on any art. */
+.investors-game::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: linear-gradient(180deg, transparent 35%, rgba(27, 27, 38, 0.85) 100%);
+}
+
+.investors-game:hover,
+.investors-game:focus-visible {
+  transform: translateY(-3px);
+  box-shadow: 0 10px 24px rgba(27, 27, 38, 0.25);
+}
+
+.investors-game:focus-visible {
+  outline: 3px solid var(--squid-pink, #e5718a);
+  outline-offset: 3px;
+}
+
+.investors-game_logo {
+  max-width: 85%;
+  max-height: 4rem;
+  object-fit: contain;
+  object-position: left bottom;
+}
+
+.investors-game_title {
+  font-family: 'RocknRoll One', sans-serif;
+  font-size: 1.25rem;
+  line-height: 1.15;
+}
+
+.investors-game_tagline {
+  font-size: 0.9375rem;
+  line-height: 1.35;
+}
+
+/* The submit button's block-shadow cleanup lives with the form
+   component itself — see src/styles/investor-request-form.css. */
+
+@media (max-width: 640px) {
+  .investors-highlights {
+    grid-template-columns: 1fr;
+    gap: 0.9rem;
+  }
+
+  .investors-games_list {
+    grid-template-columns: 1fr;
+  }
+
+  .investors-game {
+    aspect-ratio: 16 / 9;
+  }
+}

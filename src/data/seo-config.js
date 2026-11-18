@@ -48,6 +48,14 @@ export const staticRoutes = {
     ogDescription:
       'Kato.8 Studios crafts meaningful, human-centered games inspired by the classics. Meet the team and learn the story behind our name.',
   },
+  '/investors': {
+    title: 'Investors & Publishers | Kato.8 Studios',
+    description:
+      'Kato.8 Studios is an independent game studio building original titles and the community around them. Investors and publishers: get in touch.',
+    ogTitle: 'Partner with Kato.8 Studios',
+    ogDescription:
+      'We’re opening early conversations with investors and publishers. Tell us a little about yourself and we’ll follow up.',
+  },
 }
 
 export const gameRoutes = {
