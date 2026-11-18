@@ -1,0 +1,60 @@
+/*
+ * RadioGroup — a single-choice group of short options.
+ *
+ * Typography matches the shared signup-form labels and checkboxes
+ * (signup-form.css) so the group sits
+ * naturally among a form's text fields, but nothing here depends on
+ * those classes: the consent checkbox can change without moving this.
+ */
+.radio-group {
+  border: 0;
+  margin: 0;
+  padding: 0;
+  min-width: 0;
+}
+
+.radio-group__legend {
+  padding: 0;
+  margin-bottom: 0.25rem;
+  font-family: Reem Kufi, sans-serif;
+  font-size: 0.875rem;
+}
+
+.radio-group__required {
+  color: var(--squid-pink);
+  margin-left: 0.15em;
+}
+
+.radio-group__options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 1.5rem;
+}
+
+/* One-line labels, so the radio centers on the text. */
+.radio-group__option {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  font-family: Reem Kufi, sans-serif;
+  font-size: 0.9375rem;
+  line-height: 1.4;
+  cursor: pointer;
+}
+
+.radio-group__input {
+  flex-shrink: 0;
+  width: 1.1rem;
+  height: 1.1rem;
+  margin: 0;
+  accent-color: var(--squid-pink);
+  cursor: inherit;
+}
+
+.radio-group:disabled {
+  opacity: 0.6;
+}
+
+.radio-group:disabled .radio-group__option {
+  cursor: not-allowed;
+}
