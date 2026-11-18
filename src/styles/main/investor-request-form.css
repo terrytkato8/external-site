@@ -1,0 +1,19 @@
+/*
+ * InvestorRequestForm — component-specific styling.
+ *
+ * The form's look comes almost entirely from the shared `.signup-form`
+ * styles (signup-form.css). The only
+ * bespoke rule is the submit button: the shared `.button` carries an
+ * offset "block" drop shadow (4px 4px, growing to 7px 7px on hover)
+ * that, on this full-width submit button, reads as a dark ghost strip
+ * hugging the right and bottom edges rather than a deliberate lift.
+ *
+ * Scope it away on the form's own root class so the clean button
+ * travels with the component everywhere it's used, keeping the crisp inset outline
+ * ring, and without touching the global button style used elsewhere.
+ */
+.investor-request-form .button,
+.investor-request-form .button:hover,
+.investor-request-form .button:active {
+  box-shadow: 0 0 0 2px var(--text-primary) inset;
+}
